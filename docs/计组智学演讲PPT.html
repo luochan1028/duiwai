@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>计组智学 - 教育智能体演讲PPT</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: #0a0e14;
+    color: #fff;
+    overflow: hidden;
+  }
+  .slide {
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 80px;
+    position: relative;
+    background: linear-gradient(135deg, #0a0e14 0%, #111827 50%, #0a0e14 100%);
+  }
+  .slide.active { display: flex; }
+  .slide::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle at 20% 20%, rgba(0,212,255,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(123,47,247,0.08) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  /* 封面 */
+  .cover .title {
+    font-size: 72px;
+    font-weight: bold;
+    background: linear-gradient(90deg, #00d4ff, #7b2ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .cover .subtitle {
+    font-size: 24px;
+    color: #9ca3af;
+    margin-bottom: 60px;
+  }
+  .cover .meta {
+    font-size: 18px;
+    color: #6b7280;
+    text-align: center;
+    line-height: 2;
+  }
+
+  /* 通用 */
+  .page-title {
+    font-size: 48px;
+    font-weight: bold;
+    background: linear-gradient(90deg, #00d4ff, #7b2ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+  .page-number {
+    position: absolute;
+    bottom: 30px;
+    right: 40px;
+    font-size: 16px;
+    color: #4b5563;
+  }
+
+  /* 架构页 */
+  .arch-layers {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 900px;
+  }
+  .arch-layer {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 16px;
+    padding: 24px 32px;
+  }
+  .arch-layer .name {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 12px;
+  }
+  .arch-layer.cyan .name { color: #00d4ff; }
+  .arch-layer.purple .name { color: #7b2ff7; }
+  .arch-layer.green .name { color: #00ff9d; }
+  .arch-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .arch-items span {
+    padding: 6px 16px;
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.3);
+    border-radius: 20px;
+    font-size: 14px;
+    color: #00d4ff;
+  }
+
+  /* 功能模块网格 */
+  .modules-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    width: 100%;
+    max-width: 1100px;
+  }
+  .module-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 28px;
+    transition: all 0.3s;
+  }
+  .module-card:hover {
+    border-color: rgba(0,212,255,0.5);
+    transform: translateY(-4px);
+  }
+  .module-card .icon {
+    font-size: 40px;
+    margin-bottom: 16px;
+  }
+  .module-card h3 {
+    font-size: 22px;
+    margin-bottom: 12px;
+    color: #fff;
+  }
+  .module-card p {
+    font-size: 14px;
+    color: #9ca3af;
+    line-height: 1.6;
+  }
+
+  /* 成效页 */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    width: 100%;
+    max-width: 1100px;
+    margin-bottom: 50px;
+  }
+  .stat-card {
+    text-align: center;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 16px;
+    padding: 30px 20px;
+  }
+  .stat-card .num {
+    font-size: 48px;
+    font-weight: bold;
+    color: #00d4ff;
+    margin-bottom: 8px;
+  }
+  .stat-card .label {
+    font-size: 16px;
+    color: #9ca3af;
+  }
+  .effect-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    width: 100%;
+    max-width: 900px;
+  }
+  .effect-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(123,47,247,0.2);
+    border-radius: 16px;
+    padding: 28px;
+  }
+  .effect-card h3 {
+    font-size: 20px;
+    color: #7b2ff7;
+    margin-bottom: 16px;
+  }
+  .effect-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .effect-item span { color: #d1d5db; font-size: 15px; }
+  .effect-item .up { color: #00ff9d; font-weight: bold; }
+
+  /* 创新点页 */
+  .innovations {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    width: 100%;
+    max-width: 1000px;
+  }
+  .innovation-item {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .innovation-item .num {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+  .innovation-item h4 {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #fff;
+  }
+  .innovation-item p {
+    font-size: 14px;
+    color: #9ca3af;
+    line-height: 1.6;
+  }
+
+  /* 结束页 */
+  .end-page .thanks {
+    font-size: 64px;
+    font-weight: bold;
+    background: linear-gradient(90deg, #00d4ff, #7b2ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 30px;
+  }
+  .end-page .url {
+    font-size: 20px;
+    color: #00d4ff;
+    font-family: monospace;
+    background: rgba(0,212,255,0.1);
+    padding: 12px 32px;
+    border-radius: 8px;
+    border: 1px solid rgba(0,212,255,0.3);
+    margin-top: 20px;
+  }
+
+  /* 导航 */
+  .nav-btns {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 100;
+  }
+  .nav-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover {
+    background: rgba(0,212,255,0.2);
+    border-color: rgba(0,212,255,0.5);
+  }
+  .dots {
+    position: fixed;
+    top: 50%;
+    right: 30px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 100;
+  }
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #374151;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .dot.active {
+    background: #00d4ff;
+    box-shadow: 0 0 10px rgba(0,212,255,0.5);
+  }
+</style>
+</head>
+<body>
+
+<!-- 第1页：封面 -->
+<div class="slide cover active">
+  <div class="title">计组智学</div>
+  <div class="subtitle">计算机组成原理 · 教育智能体</div>
+  <div class="meta">
+    <p>AI技术赋能专业基础课教学的创新实践</p>
+    <p style="margin-top:20px; font-size:16px;">成都东软学院 · 网络空间安全专业</p>
+  </div>
+  <div class="page-number">1 / 10</div>
+</div>
+
+<!-- 第2页：项目背景 -->
+<div class="slide">
+  <div class="page-title">项目背景与痛点</div>
+  <div class="innovations" style="grid-template-columns: 1fr 1fr;">
+    <div class="innovation-item">
+      <div class="num">1</div>
+      <div>
+        <h4>师资力量有限</h4>
+        <p>专业基础课班级规模大，教师难以兼顾每位学生的个性化问题，答疑时间受限。</p>
+      </div>
+    </div>
+    <div class="innovation-item">
+      <div class="num">2</div>
+      <div>
+        <h4>抽象概念难理解</h4>
+        <p>计算机组成原理涉及CPU、指令系统、存储层次等抽象概念，学生理解困难。</p>
+      </div>
+    </div>
+    <div class="innovation-item">
+      <div class="num">3</div>
+      <div>
+        <h4>实验指导不足</h4>
+        <p>汇编语言实验调试难度大，学生遇到代码问题难以及时获得针对性指导。</p>
+      </div>
+    </div>
+    <div class="innovation-item">
+      <div class="num">4</div>
+      <div>
+        <h4>学情掌握滞后</h4>
+        <p>教师难以及时掌握学生学习难点，教学调整依赖经验，缺乏数据支撑。</p>
+      </div>
+    </div>
+  </div>
+  <div class="page-number">2 / 10</div>
+</div>
+
+<!-- 第3页：系统架构 -->
+<div class="slide">
+  <div class="page-title">系统架构</div>
+  <div class="arch-layers">
+    <div class="arch-layer cyan">
+      <div class="name">🛋 应用层</div>
+      <div class="arch-items">
+        <span>智能问答</span><span>知识图谱</span><span>学习路径</span>
+        <span>实验辅助</span><span>自测系统</span><span>教师端学情分析</span>
+      </div>
+    </div>
+    <div class="arch-layer purple">
+      <div class="name">⚡ 引擎层</div>
+      <div class="arch-items">
+        <span>AI对话引擎</span><span>个性化推荐算法</span><span>代码调试引擎</span>
+      </div>
+    </div>
+    <div class="arch-layer green">
+      <div class="name">📦 数据层</div>
+      <div class="arch-items">
+        <span>课程标准</span><span>教学日历</span><span>超星题库</span><span>实验指导书</span>
+      </div>
+    </div>
+  </div>
+  <div class="page-number">3 / 10</div>
+</div>
+
+<!-- 第4页：核心功能1 -->
+<div class="slide">
+  <div class="page-title">核心功能（上）</div>
+  <div class="modules-grid" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="module-card">
+      <div class="icon">💬</div>
+      <h3>智能问答</h3>
+      <p>自然语言交互，Markdown渲染，教学日历关联，微课资源推荐，教学团队审核，隐私数据保护。</p>
+    </div>
+    <div class="module-card">
+      <div class="icon">🕸️</div>
+      <h3>知识图谱</h3>
+      <p>可视化概念关联，拖拽缩放交互，节点高亮联动，跨模块跳转，五步学习路径建议。</p>
+    </div>
+    <div class="module-card">
+      <div class="icon">📈</div>
+      <h3>学习路径</h3>
+      <p>七维数据统计，六维掌握度雷达，章节进度追踪，个性化推荐，学习报告自动生成。</p>
+    </div>
+  </div>
+  <div class="page-number">4 / 10</div>
+</div>
+
+<!-- 第5页：核心功能2 -->
+<div class="slide">
+  <div class="page-title">核心功能（下）</div>
+  <div class="modules-grid" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="module-card">
+      <div class="icon">💻</div>
+      <h3>实验辅助</h3>
+      <p>8086汇编语法高亮，代码上传，智能调试，错误/警告精准定位，代码对比视图，质量评分。</p>
+    </div>
+    <div class="module-card">
+      <div class="icon">📝</div>
+      <h3>自测系统</h3>
+      <p>12个知识点覆盖，三级难度选择，动态抽题，收藏标记，成绩即时分析，薄弱点识别。</p>
+    </div>
+    <div class="module-card">
+      <div class="icon">📊</div>
+      <h3>教师端学情</h3>
+      <p>多班级对比，高频问题TOP10，趋势分析，知识点掌握度柱状图，智能教学建议生成。</p>
+    </div>
+  </div>
+  <div class="page-number">5 / 10</div>
+</div>
+
+<!-- 第6页：创新特色 -->
+<div class="slide">
+  <div class="page-title">创新特色</div>
+  <div class="innovations">
+    <div class="innovation-item">
+      <div class="num">📚</div>
+      <div>
+        <h4>知识深度融合</h4>
+        <p>与教学日历深度绑定，确保AI回答与教学进度、课程标准保持一致，避免知识点超纲。</p>
+      </div>
+    </div>
+    <div class="innovation-item">
+      <div class="num">🔄</div>
+      <div>
+        <h4>教-学-评-辅闭环</h4>
+        <p>从预习到复习全流程覆盖，问答、图谱、路径、实验、自测形成完整学习闭环。</p>
+      </div>
+    </div>
+    <div class="innovation-item">
+      <div class="num">🔒</div>
+      <div>
+        <h4>数据安全并重</h4>
+        <p>学习数据本地化存储，不用于模型训练，在保障学习效果同时保护学生隐私。</p>
+      </div>
+    </div>
+    <div class="innovation-item">
+      <div class="num">🚀</div>
+      <div>
+        <h4>可推广架构</h4>
+        <p>模块化设计，可快速迁移至数据结构、操作系统等其他专业基础课程。</p>
+      </div>
+    </div>
+  </div>
+  <div class="page-number">6 / 10</div>
+</div>
+
+<!-- 第7页：应用成效-数据 -->
+<div class="slide">
+  <div class="page-title">应用成效 · 试点数据</div>
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="num">86人</div>
+      <div class="label">试点学生数</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">62人</div>
+      <div class="label">日均活跃用户</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">1347次</div>
+      <div class="label">累计问答</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">213次</div>
+      <div class="label">实验代码辅助</div>
+    </div>
+  </div>
+  <div class="effect-row">
+    <div class="effect-card">
+      <h3>📈 成绩提升</h3>
+      <div class="effect-item">
+        <span>布尔代数化简平均分</span>
+        <span class="up">+12.3%</span>
+      </div>
+      <div class="effect-item">
+        <span>指令系统设计平均分</span>
+        <span class="up">+9.7%</span>
+      </div>
+    </div>
+    <div class="effect-card">
+      <h3>😊 学生反馈</h3>
+      <div class="effect-item">
+        <span>显著提升学习体验</span>
+        <span class="up">91.2%</span>
+      </div>
+      <div class="effect-item">
+        <span>更愿主动探索难点</span>
+        <span class="up">86.7%</span>
+      </div>
+    </div>
+  </div>
+  <div class="page-number">7 / 10</div>
+</div>
+
+<!-- 第8页：技术方案 -->
+<div class="slide">
+  <div class="page-title">技术方案</div>
+  <div class="modules-grid" style="grid-template-columns: repeat(2, 1fr);">
+    <div class="module-card">
+      <div class="icon">⚛️</div>
+      <h3>前端技术栈</h3>
+      <p>React 18 + TypeScript<br>Vite 6 构建工具<br>Tailwind CSS 样式框架<br>ECharts 数据可视化<br>Lucide 图标库</p>
+    </div>
+    <div class="module-card">
+      <div class="icon">🏗️</div>
+      <h3>架构设计</h3>
+      <p>组件化开发<br>响应式布局<br>暗色科技主题<br>本地数据存储<br>模块化功能设计</p>
+    </div>
+    <div class="module-card">
+      <div class="icon">📱</div>
+      <h3>用户体验</h3>
+      <p>玻璃拟态设计风格<br>流畅动画过渡<br>赛博朋克视觉效果<br>键盘快捷操作<br>演示视频自动播放</p>
+    </div>
+    <div class="module-card">
+      <div class="icon">🌐</div>
+      <h3>部署方式</h3>
+      <p>静态资源CDN加速<br>Nginx反向代理<br>systemd进程守护<br>自动拉起保障高可用<br>云主机一键部署</p>
+    </div>
+  </div>
+  <div class="page-number">8 / 10</div>
+</div>
+
+<!-- 第9页：未来规划 -->
+<div class="slide">
+  <div class="page-title">未来规划</div>
+  <div class="innovations">
+    <div class="innovation-item">
+      <div class="num">🤖</div>
+      <div>
+        <h4>接入大模型API</h4>
+        <p>集成专业领域大模型，提升回答深度和广度，支持更复杂的问题解答。</p>
+      </div>
+    </div>
+    <div class="innovation-item">
+      <div class="num">📊</div>
+      <div>
+        <h4>扩展数据分析</h4>
+        <p>增加学习行为分析、学情预警、学习风格识别等更深度的数据洞察。</p>
+      </div>
+    </div>
+    <div class="innovation-item">
+      <div class="num">📚</div>
+      <div>
+        <h4>课程横向扩展</h4>
+        <p>将架构迁移至数据结构、操作系统、计算机网络等更多专业基础课。</p>
+      </div>
+    </div>
+    <div class="innovation-item">
+      <div class="num">🏫</div>
+      <div>
+        <h4>多校推广应用</h4>
+        <p>在更多院校试点应用，收集反馈持续优化，形成可复制的AI+教育方案。</p>
+      </div>
+    </div>
+  </div>
+  <div class="page-number">9 / 10</div>
+</div>
+
+<!-- 第10页：结束 -->
+<div class="slide end-page">
+  <div class="thanks">感谢聆听</div>
+  <div style="font-size:20px; color:#9ca3af; margin-bottom:20px;">计组智学教育智能体</div>
+  <div style="font-size:16px; color:#6b7280; margin-top:10px;">
+    成都东软学院 · 网络空间安全专业
+  </div>
+  <div class="url">🌐 http://159.138.92.82/qa</div>
+  <div class="page-number">10 / 10</div>
+</div>
+
+<!-- 导航按钮 -->
+<div class="nav-btns">
+  <button class="nav-btn" onclick="prevSlide()">◀</button>
+  <button class="nav-btn" onclick="toggleFullscreen()">⛶</button>
+  <button class="nav-btn" onclick="nextSlide()">▶</button>
+</div>
+
+<!-- 指示点 -->
+<div class="dots" id="dots"></div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const dotsContainer = document.getElementById('dots');
+
+  // 生成指示点
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goTo(i);
+    dotsContainer.appendChild(dot);
+  }
+
+  function goTo(index) {
+    slides[current].classList.remove('active');
+    document.querySelectorAll('.dot')[current].classList.remove('active');
+    current = index;
+    slides[current].classList.add('active');
+    document.querySelectorAll('.dot')[current].classList.add('active');
+  }
+
+  function nextSlide() {
+    if (current < total - 1) goTo(current + 1);
+  }
+
+  function prevSlide() {
+    if (current > 0) goTo(current - 1);
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  }
+
+  // 键盘控制
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+    if (e.key === 'ArrowLeft') prevSlide();
+    if (e.key === 'f' || e.key === 'F') toggleFullscreen();
+  });
+</script>
+
+</body>
+</html>

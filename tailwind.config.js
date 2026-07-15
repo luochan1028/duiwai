@@ -32,9 +32,12 @@ export default {
         'circuit-flow': 'circuit-flow 8s linear infinite',
         'typing': 'typing 3.5s steps(40, end)',
         'blink': 'blink 1s step-end infinite',
+        'fade-in': 'fade-in 0.5s ease-out forwards',
         'fade-in-up': 'fade-in-up 0.6s ease-out forwards',
         'glow-pulse': 'glow-pulse 2s ease-in-out infinite',
         'scan-line': 'scan-line 4s linear infinite',
+        'pulse-border': 'pulse-border 1.5s ease-in-out infinite',
+        'progress': 'progress 1s ease-out forwards',
       },
       keyframes: {
         'pulse-glow': {
@@ -57,9 +60,21 @@ export default {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0' },
         },
+        'fade-in': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
         'fade-in-up': {
           '0%': { opacity: '0', transform: 'translateY(20px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        'pulse-border': {
+          '0%, 100%': { borderColor: 'rgba(0, 212, 255, 0.3)' },
+          '50%': { borderColor: 'rgba(0, 212, 255, 0.8)' },
+        },
+        'progress': {
+          '0%': { width: '0%' },
+          '100%': { width: 'var(--progress-width, 100%)' },
         },
         'glow-pulse': {
           '0%, 100%': { opacity: '0.5' },
