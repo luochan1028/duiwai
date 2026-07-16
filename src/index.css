@@ -2,14 +2,168 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap');
+
+/* ==================== 主题变量 ==================== */
+
+/* 暗色科技主题（默认） */
+:root, .theme-dark {
+  --color-bg-primary: #0a0e1a;
+  --color-bg-secondary: #111827;
+  --color-bg-card: rgba(17, 24, 39, 0.8);
+  --color-bg-card-hover: rgba(17, 24, 39, 0.95);
+  
+  --color-accent-primary: #00d4ff;
+  --color-accent-secondary: #7b2ff7;
+  --color-accent-pink: #ff2d92;
+  --color-accent-green: #00ff9d;
+  --color-accent-yellow: #ffaa00;
+  
+  --color-text-primary: #e5e7eb;
+  --color-text-secondary: #9ca3af;
+  --color-text-muted: #6b7280;
+  
+  --color-border: rgba(0, 212, 255, 0.15);
+  --color-border-hover: rgba(0, 212, 255, 0.3);
+  --color-border-glow: rgba(0, 212, 255, 0.5);
+  
+  --color-glass-bg: rgba(17, 24, 39, 0.7);
+  --color-glass-border: rgba(0, 212, 255, 0.15);
+  
+  --scrollbar-track: rgba(17, 24, 39, 0.5);
+  --scrollbar-thumb: rgba(0, 212, 255, 0.3);
+  --scrollbar-thumb-hover: rgba(0, 212, 255, 0.5);
+}
+
+/* 明亮白色主题 */
+.theme-light {
+  --color-bg-primary: #f8fafc;
+  --color-bg-secondary: #ffffff;
+  --color-bg-card: rgba(255, 255, 255, 0.9);
+  --color-bg-card-hover: rgba(255, 255, 255, 1);
+  
+  --color-accent-primary: #0ea5e9;
+  --color-accent-secondary: #8b5cf6;
+  --color-accent-pink: #ec4899;
+  --color-accent-green: #10b981;
+  --color-accent-yellow: #f59e0b;
+  
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94a3b8;
+  
+  --color-border: rgba(15, 23, 42, 0.1);
+  --color-border-hover: rgba(15, 23, 42, 0.2);
+  --color-border-glow: rgba(14, 165, 233, 0.4);
+  
+  --color-glass-bg: rgba(255, 255, 255, 0.8);
+  --color-glass-border: rgba(15, 23, 42, 0.1);
+  
+  --scrollbar-track: rgba(241, 245, 249, 0.8);
+  --scrollbar-thumb: rgba(14, 165, 233, 0.3);
+  --scrollbar-thumb-hover: rgba(14, 165, 233, 0.5);
+}
+
+/* 红色主题 - 纯白底色 鲜艳红色点缀 */
+.theme-red {
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #ffffff;
+  --color-bg-card: #ffffff;
+  --color-bg-card-hover: #fff5f5;
+  
+  --color-accent-primary: #dc2626;
+  --color-accent-secondary: #ef4444;
+  --color-accent-pink: #f87171;
+  --color-accent-green: #16a34a;
+  --color-accent-yellow: #ea580c;
+  
+  --color-text-primary: #111827;
+  --color-text-secondary: #374151;
+  --color-text-muted: #6b7280;
+  
+  --color-border: rgba(220, 38, 38, 0.15);
+  --color-border-hover: rgba(220, 38, 38, 0.4);
+  --color-border-glow: rgba(220, 38, 38, 0.35);
+  
+  --color-glass-bg: rgba(255, 255, 255, 0.95);
+  --color-glass-border: rgba(220, 38, 38, 0.15);
+  
+  --scrollbar-track: rgba(243, 244, 246, 0.8);
+  --scrollbar-thumb: rgba(220, 38, 38, 0.25);
+  --scrollbar-thumb-hover: rgba(220, 38, 38, 0.45);
+}
+
+.theme-red body {
+  font-family: 'Noto Serif SC', 'Source Han Serif CN', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+.theme-red .font-tech {
+  font-family: 'Noto Serif SC', 'Source Han Serif CN', 'Orbitron', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+/* 红色主题下的玻璃卡片 */
+.theme-red .glass-card {
+  background: #ffffff;
+  border-color: rgba(220, 38, 38, 0.15);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+}
+
+.theme-red .glass-card:hover {
+  border-color: rgba(220, 38, 38, 0.35);
+  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.1);
+}
+
+/* 红色主题下的按钮 */
+.theme-red .btn-tech {
+  background: rgba(220, 38, 38, 0.05);
+  border-color: rgba(220, 38, 38, 0.4);
+  color: #dc2626;
+}
+
+.theme-red .btn-tech:hover {
+  background: rgba(220, 38, 38, 0.1);
+  border-color: rgba(220, 38, 38, 0.6);
+  box-shadow: 0 0 12px rgba(220, 38, 38, 0.15);
+}
+
+.theme-red .btn-primary {
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.theme-red .btn-primary:hover {
+  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.35);
+}
+
+/* 红色主题下的发光文字 */
+.theme-red .glow-text {
+  color: #dc2626;
+  text-shadow: none;
+}
+
+.theme-red .glow-text-purple {
+  color: #ef4444;
+  text-shadow: none;
+}
+
+/* 红色主题下的进度条 */
+.theme-red .progress-bar-glow {
+  background: linear-gradient(90deg, #dc2626, #ef4444, #dc2626);
+  background-size: 200% 100%;
+  box-shadow: 0 0 8px rgba(220, 38, 38, 0.3);
+}
+
+/* ==================== 基础样式 ==================== */
 
 :root {
   font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   line-height: 1.6;
   font-weight: 400;
-  color: #e5e7eb;
-  background-color: #0a0e1a;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -25,6 +179,8 @@
 body {
   min-height: 100vh;
   overflow-x: hidden;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
 }
 
 .font-tech {
@@ -35,79 +191,53 @@ body {
   font-family: 'JetBrains Mono', monospace;
 }
 
-.circuit-bg {
-  background-image:
-    linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
-  background-size: 50px 50px;
-  position: relative;
-}
-
-.circuit-bg::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(ellipse at top, rgba(123, 47, 247, 0.08) 0%, transparent 50%),
-              radial-gradient(ellipse at bottom right, rgba(0, 212, 255, 0.06) 0%, transparent 50%);
-  pointer-events: none;
-}
+/* ==================== 玻璃卡片 ==================== */
 
 .glass-card {
-  background: rgba(17, 24, 39, 0.7);
+  background: var(--color-glass-bg);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(0, 212, 255, 0.15);
+  border: 1px solid var(--color-glass-border);
   border-radius: 12px;
+  transition: all 0.3s ease;
 }
 
 .glass-card:hover {
-  border-color: rgba(0, 212, 255, 0.3);
-  box-shadow: 0 0 30px rgba(0, 212, 255, 0.1);
+  border-color: var(--color-border-hover);
+  box-shadow: 0 0 30px var(--color-border-glow);
 }
 
+/* ==================== 发光文字 ==================== */
+
 .glow-text {
-  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5),
-               0 0 20px rgba(0, 212, 255, 0.3);
+  color: var(--color-accent-primary);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--color-accent-primary) 50%, transparent),
+               0 0 20px color-mix(in srgb, var(--color-accent-primary) 30%, transparent);
 }
 
 .glow-text-purple {
-  text-shadow: 0 0 10px rgba(123, 47, 247, 0.5),
-               0 0 20px rgba(123, 47, 247, 0.3);
+  color: var(--color-accent-secondary);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--color-accent-secondary) 50%, transparent),
+               0 0 20px color-mix(in srgb, var(--color-accent-secondary) 30%, transparent);
 }
 
-.tech-border {
-  position: relative;
-  border: 1px solid rgba(0, 212, 255, 0.2);
+.glow-text-pink {
+  color: var(--color-accent-pink);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--color-accent-pink) 50%, transparent),
+               0 0 20px color-mix(in srgb, var(--color-accent-pink) 30%, transparent);
 }
 
-.tech-border::before,
-.tech-border::after {
-  content: '';
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  border-color: #00d4ff;
-  border-style: solid;
+.glow-text-green {
+  color: var(--color-accent-green);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--color-accent-green) 50%, transparent),
+               0 0 20px color-mix(in srgb, var(--color-accent-green) 30%, transparent);
 }
 
-.tech-border::before {
-  top: -1px;
-  left: -1px;
-  border-width: 2px 0 0 2px;
-}
-
-.tech-border::after {
-  bottom: -1px;
-  right: -1px;
-  border-width: 0 2px 2px 0;
-}
+/* ==================== 按钮样式 ==================== */
 
 .btn-tech {
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(123, 47, 247, 0.1) 100%);
-  border: 1px solid rgba(0, 212, 255, 0.3);
-  color: #00d4ff;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--color-accent-primary) 10%, transparent) 0%, color-mix(in srgb, var(--color-accent-secondary) 10%, transparent) 100%);
+  border: 1px solid var(--color-accent-primary);
+  color: var(--color-accent-primary);
   padding: 8px 20px;
   border-radius: 6px;
   cursor: pointer;
@@ -116,9 +246,9 @@ body {
 }
 
 .btn-tech:hover {
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(123, 47, 247, 0.2) 100%);
-  border-color: rgba(0, 212, 255, 0.6);
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--color-accent-primary) 20%, transparent) 0%, color-mix(in srgb, var(--color-accent-secondary) 20%, transparent) 100%);
+  border-color: var(--color-accent-primary);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--color-accent-primary) 40%, transparent);
   transform: translateY(-1px);
 }
 
@@ -127,9 +257,9 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #00d4ff 0%, #7b2ff7 100%);
+  background: linear-gradient(135deg, var(--color-accent-primary) 0%, var(--color-accent-secondary) 100%);
   border: none;
-  color: #0a0e1a;
+  color: #fff;
   padding: 10px 24px;
   border-radius: 6px;
   cursor: pointer;
@@ -138,56 +268,55 @@ body {
 }
 
 .btn-primary:hover {
-  box-shadow: 0 0 25px rgba(0, 212, 255, 0.4);
+  box-shadow: 0 0 25px color-mix(in srgb, var(--color-accent-primary) 40%, transparent);
   transform: translateY(-2px);
 }
 
+/* ==================== 聊天气泡 ==================== */
+
 .chat-bubble-user {
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(0, 212, 255, 0.05) 100%);
-  border: 1px solid rgba(0, 212, 255, 0.3);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--color-accent-primary) 15%, transparent) 0%, color-mix(in srgb, var(--color-accent-primary) 5%, transparent) 100%);
+  border: 1px solid color-mix(in srgb, var(--color-accent-primary) 30%, transparent);
   border-radius: 12px 12px 4px 12px;
 }
 
 .chat-bubble-ai {
-  background: linear-gradient(135deg, rgba(123, 47, 247, 0.1) 0%, rgba(123, 47, 247, 0.05) 100%);
-  border: 1px solid rgba(123, 47, 247, 0.3);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--color-accent-secondary) 10%, transparent) 0%, color-mix(in srgb, var(--color-accent-secondary) 5%, transparent) 100%);
+  border: 1px solid color-mix(in srgb, var(--color-accent-secondary) 30%, transparent);
   border-radius: 12px 12px 12px 4px;
 }
 
-.sidebar-item {
-  position: relative;
-  transition: all 0.3s ease;
-}
-
-.sidebar-item::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 0;
-  background: linear-gradient(to bottom, #00d4ff, #7b2ff7);
-  border-radius: 0 3px 3px 0;
-  transition: height 0.3s ease;
-}
-
-.sidebar-item:hover::before,
-.sidebar-item.active::before {
-  height: 60%;
-}
-
-.sidebar-item.active {
-  background: linear-gradient(90deg, rgba(0, 212, 255, 0.1) 0%, transparent 100%);
-}
+/* ==================== 进度条 ==================== */
 
 .progress-bar-glow {
-  background: linear-gradient(90deg, #00d4ff, #7b2ff7, #00d4ff);
+  background: linear-gradient(90deg, var(--color-accent-primary), var(--color-accent-secondary), var(--color-accent-primary));
   background-size: 200% 100%;
   animation: circuit-flow 3s linear infinite;
   border-radius: 999px;
-  box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--color-accent-primary) 50%, transparent);
 }
+
+/* ==================== 滚动条 ==================== */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* ==================== 代码编辑器 ==================== */
 
 .code-editor-theme {
   background: #0d1117;
@@ -204,82 +333,52 @@ body {
 .code-register { color: #d2a8ff; }
 .code-instruction { color: #7ee787; }
 
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* ==================== 科技边框 ==================== */
+
+.tech-border {
+  position: relative;
+  border: 1px solid var(--color-border);
 }
 
-::-webkit-scrollbar-track {
-  background: rgba(17, 24, 39, 0.5);
+.tech-border::before,
+.tech-border::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: var(--color-accent-primary);
+  border-style: solid;
 }
 
-::-webkit-scrollbar-thumb {
-  background: rgba(0, 212, 255, 0.3);
-  border-radius: 3px;
+.tech-border::before {
+  top: -1px;
+  left: -1px;
+  border-width: 2px 0 0 2px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 212, 255, 0.5);
+.tech-border::after {
+  bottom: -1px;
+  right: -1px;
+  border-width: 0 2px 2px 0;
 }
+
+/* ==================== 动画 ==================== */
 
 .typing-cursor::after {
   content: '|';
   animation: blink 1s step-end infinite;
-  color: #00d4ff;
+  color: var(--color-accent-primary);
   margin-left: 2px;
 }
 
-.node-pulse {
-  animation: node-pulse-anim 2s ease-in-out infinite;
+@keyframes blink {
+  0%, 100% { opacity: '1'; }
+  50% { opacity: '0'; }
 }
 
-@keyframes node-pulse-anim {
-  0%, 100% {
-    filter: drop-shadow(0 0 5px currentColor);
-  }
-  50% {
-    filter: drop-shadow(0 0 15px currentColor);
-  }
-}
-
-.chip-decoration {
-  position: relative;
-}
-
-.chip-decoration::before {
-  content: '';
-  position: absolute;
-  top: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40px;
-  height: 8px;
-  background: repeating-linear-gradient(
-    90deg,
-    rgba(0, 212, 255, 0.4),
-    rgba(0, 212, 255, 0.4) 4px,
-    transparent 4px,
-    transparent 8px
-  );
-  clip-path: polygon(10% 100%, 90% 100%, 100% 0, 0 0);
-}
-
-.chip-decoration::after {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40px;
-  height: 8px;
-  background: repeating-linear-gradient(
-    90deg,
-    rgba(0, 212, 255, 0.4),
-    rgba(0, 212, 255, 0.4) 4px,
-    transparent 4px,
-    transparent 8px
-  );
-  clip-path: polygon(0 100%, 100% 100%, 90% 0, 10% 0);
+@keyframes circuit-flow {
+  0% { background-position: '0% 50%'; }
+  100% { background-position: '200% 50%'; }
 }
 
 .stagger-1 { animation-delay: 0.1s; }
@@ -289,3 +388,58 @@ body {
 .stagger-5 { animation-delay: 0.5s; }
 
 .opacity-0 { opacity: 0; }
+
+/* ==================== 电路背景（仅暗色主题） ==================== */
+
+.theme-dark .circuit-bg {
+  background-image:
+    linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  position: relative;
+}
+
+.theme-dark .circuit-bg::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at top, rgba(123, 47, 247, 0.08) 0%, transparent 50%),
+              radial-gradient(ellipse at bottom right, rgba(0, 212, 255, 0.06) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* 明亮主题背景 */
+.theme-light .circuit-bg {
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.02) 1px, transparent 1px);
+  background-size: 50px 50px;
+  position: relative;
+}
+
+/* 红色主题背景 - 纯白底色 鲜艳红色点缀 */
+.theme-red .circuit-bg {
+  background-image:
+    linear-gradient(rgba(220, 38, 38, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(220, 38, 38, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  position: relative;
+}
+
+.theme-red .circuit-bg::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(ellipse at top right, rgba(220, 38, 38, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom left, rgba(255, 240, 240, 0.8) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.theme-red .circuit-bg::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: none;
+  pointer-events: none;
+}

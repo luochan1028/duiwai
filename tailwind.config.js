@@ -9,22 +9,23 @@ export default {
     },
     extend: {
       colors: {
-        'bg-primary': '#0a0e1a',
-        'bg-secondary': '#111827',
-        'bg-card': 'rgba(17, 24, 39, 0.8)',
-        'accent-cyan': '#00d4ff',
-        'accent-purple': '#7b2ff7',
-        'accent-pink': '#ff2d92',
-        'accent-green': '#00ff9d',
-        'text-primary': '#e5e7eb',
-        'text-secondary': '#9ca3af',
-        'border-glow': 'rgba(0, 212, 255, 0.3)',
+        'bg-primary': 'var(--color-bg-primary)',
+        'bg-secondary': 'var(--color-bg-secondary)',
+        'bg-card': 'var(--color-bg-card)',
+        'accent-cyan': 'var(--color-accent-primary)',
+        'accent-purple': 'var(--color-accent-secondary)',
+        'accent-pink': 'var(--color-accent-pink)',
+        'accent-green': 'var(--color-accent-green)',
+        'accent-yellow': 'var(--color-accent-yellow)',
+        'text-primary': 'var(--color-text-primary)',
+        'text-secondary': 'var(--color-text-secondary)',
+        'border-glow': 'var(--color-border-glow)',
       },
       boxShadow: {
-        'glow-cyan': '0 0 20px rgba(0, 212, 255, 0.3)',
-        'glow-purple': '0 0 20px rgba(123, 47, 247, 0.3)',
-        'glow-green': '0 0 20px rgba(0, 255, 157, 0.3)',
-        'glow-pink': '0 0 20px rgba(255, 45, 146, 0.3)',
+        'glow-cyan': '0 0 20px var(--color-accent-primary)',
+        'glow-purple': '0 0 20px var(--color-accent-secondary)',
+        'glow-green': '0 0 20px var(--color-accent-green)',
+        'glow-pink': '0 0 20px var(--color-accent-pink)',
       },
       animation: {
         'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
@@ -41,8 +42,8 @@ export default {
       },
       keyframes: {
         'pulse-glow': {
-          '0%, 100%': { boxShadow: '0 0 5px rgba(0, 212, 255, 0.3)' },
-          '50%': { boxShadow: '0 0 20px rgba(0, 212, 255, 0.6)' },
+          '0%, 100%': { boxShadow: '0 0 5px var(--color-accent-primary)' },
+          '50%': { boxShadow: '0 0 20px var(--color-accent-primary)' },
         },
         'float': {
           '0%, 100%': { transform: 'translateY(0px)' },
@@ -69,8 +70,8 @@ export default {
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         'pulse-border': {
-          '0%, 100%': { borderColor: 'rgba(0, 212, 255, 0.3)' },
-          '50%': { borderColor: 'rgba(0, 212, 255, 0.8)' },
+          '0%, 100%': { borderColor: 'var(--color-border)' },
+          '50%': { borderColor: 'var(--color-accent-primary)' },
         },
         'progress': {
           '0%': { width: '0%' },
