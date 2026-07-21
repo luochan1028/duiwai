@@ -280,15 +280,21 @@ export default function VideoPage() {
                   sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
                 />
               </div>
+            ) : playingVideo.url ? (
+              <div className="relative w-full mb-4 bg-black rounded-lg overflow-hidden" style={{ aspectRatio: '16/9' }}>
+                <video
+                  src={playingVideo.url}
+                  controls
+                  className="w-full h-full"
+                  poster={playingVideo.url}
+                />
+              </div>
             ) : (
               <div className="relative bg-black rounded-lg overflow-hidden mb-4 flex items-center justify-center" style={{ aspectRatio: '16/9' }}>
                 <div className={`absolute inset-0 bg-gradient-to-br ${playingVideo.color || 'from-blue-600 to-purple-600'}/30`} />
                 <div className="relative text-center">
                   <PlayCircle className="w-16 h-16 text-white/80 mx-auto mb-2 animate-pulse" />
-                  <p className="text-white/70 text-sm">无法嵌入播放</p>
-                  <a href={playingVideo.url} target="_blank" rel="noopener noreferrer" className="text-white/50 text-xs mt-1 underline">
-                    点击前往原始链接观看
-                  </a>
+                  <p className="text-white/70 text-sm">无法播放</p>
                 </div>
               </div>
             )}
@@ -367,11 +373,15 @@ export default function VideoPage() {
               <div
                 key={video.id}
                 className="glass-card overflow-hidden cursor-pointer hover:scale-[1.02] transition-all duration-300 group"
-                onClick={() => video.embedUrl && setPlayingVideo(video)}
+                onClick={() => setPlayingVideo(video)}
               >
                 {/* 缩略图 */}
-                <div className={`relative aspect-video bg-gradient-to-br ${video.color || 'from-blue-500 to-cyan-500'} flex items-center justify-center`}>
-                  <Play className="w-12 h-12 text-white/80 group-hover:scale-125 transition-transform" />
+                <div className={`relative aspect-video ${video.url && !video.embedUrl ? 'bg-black' : `bg-gradient-to-br ${video.color || 'from-blue-500 to-cyan-500'}`} flex items-center justify-center`}>
+                  {video.url && !video.embedUrl ? (
+                    <img src={video.url} alt={video.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <Play className="w-12 h-12 text-white/80 group-hover:scale-125 transition-transform" />
+                  )}
                   {video.duration && (
                     <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
                       {video.duration}
@@ -402,7 +412,7 @@ export default function VideoPage() {
                       )}
                     </div>
                   </div>
-                  {!video.embedUrl && (
+                  {!video.embedUrl && video.url && !video.url.startsWith('blob:') && (
                     <a
                       href={video.url}
                       target="_blank"
