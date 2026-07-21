@@ -129,7 +129,7 @@ const scenes: DemoScene[] = [
   },
   {
     id: 'outro', title: '总结', duration: 25,
-    narration: '计组智学实现了AI技术与专业课程的深度耦合，教-学-评-辅形成闭环，架构可迁移至数据结构、操作系统等课程。试用平台：http://116.63.203.1/ 谢谢！',
+    narration: '计组智学实现了AI技术与专业课程的深度耦合，教-学-评-辅形成闭环，架构可迁移至数据结构、操作系统等课程。谢谢！',
     navTarget: 'qa',
   },
 ];
@@ -2099,8 +2099,6 @@ function OutroContent() {
       </div>
       <div className="mt-10 text-text-secondary animate-fade-in-up" style={{ animationDelay: '1.8s' }}>
         <p className="text-lg">成都东软学院 · 网络空间安全专业</p>
-        <p className="text-sm mt-2 text-accent-cyan">谢谢！试用平台，可以访问：</p>
-        <p className="text-base mt-1 font-tech text-accent-cyan glow-text">http://159.138.92.82/qa</p>
       </div>
     </div>
   );
