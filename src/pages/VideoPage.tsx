@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   Video, Plus, ExternalLink, Trash2, Play, Film, Youtube, FileVideo,
-  PlayCircle, FileText, Maximize, X
+  PlayCircle, FileText, Maximize, X, Lock, User,
 } from 'lucide-react';
 
 interface VideoItem {
@@ -17,80 +17,14 @@ interface VideoItem {
   color?: string;
 }
 
-const defaultVideos: VideoItem[] = [
-  {
-    id: '1',
-    title: '计算机组成原理 - CPU工作原理',
-    url: 'https://www.bilibili.com/video/BV1tY411T7jZ',
-    category: '课程讲解',
-    embedUrl: 'https://player.bilibili.com/player.html?bvid=BV1tY411T7jZ&page=1',
-    duration: '18:32',
-    views: '2.3万',
-    desc: '本视频详细讲解CPU的基本结构和工作原理，包括运算器、控制器、寄存器组等核心部件的功能与协作机制。通过动画演示指令执行的完整流程，帮助学生深入理解计算机系统的核心运作方式。',
-    tags: ['CPU结构', '运算器', '控制器', '指令周期', '寄存器'],
-    color: 'from-blue-500 to-cyan-500',
-  },
-  {
-    id: '2',
-    title: '汇编语言程序设计入门',
-    url: 'https://www.bilibili.com/video/BV1E64y1X7aS',
-    category: '实验指导',
-    embedUrl: 'https://player.bilibili.com/player.html?bvid=BV1E64y1X7aS&page=1',
-    duration: '24:15',
-    views: '1.8万',
-    desc: '从零开始学习8086汇编语言程序设计，涵盖基本语法、寄存器操作、内存寻址和常见指令。配合实验项目，动手编写第一个汇编程序。',
-    tags: ['8086汇编', '寄存器', '寻址方式', '指令系统'],
-    color: 'from-green-500 to-emerald-500',
-  },
-  {
-    id: '3',
-    title: '存储系统与Cache原理',
-    url: 'https://www.bilibili.com/video/BV1vi4y1g7cP',
-    category: '课程讲解',
-    embedUrl: 'https://player.bilibili.com/player.html?bvid=BV1vi4y1g7cP&page=1',
-    duration: '32:08',
-    views: '3.1万',
-    desc: '深入解析存储器层次结构、Cache映射方式（直接映射、全相联、组相联）及替换算法。通过实例分析Cache命中率对性能的影响。',
-    tags: ['存储器', 'Cache', '映射方式', '替换算法', '命中率'],
-    color: 'from-purple-500 to-pink-500',
-  },
-  {
-    id: '4',
-    title: '指令系统设计详解',
-    url: 'https://www.bilibili.com/video/BV1D44y1v7jL',
-    category: '重点难点',
-    embedUrl: 'https://player.bilibili.com/player.html?bvid=BV1D44y1v7jL&page=1',
-    duration: '28:45',
-    views: '4.2万',
-    desc: '系统讲解指令格式设计、寻址方式和指令系统优化。涵盖RISC与CISC架构对比，指令编码原理和扩展技术。',
-    tags: ['指令格式', '寻址方式', 'RISC', 'CISC', '指令编码'],
-    color: 'from-amber-500 to-orange-500',
-  },
-  {
-    id: '5',
-    title: '流水线技术与性能分析',
-    url: 'https://www.bilibili.com/video/BV1ab4y1z7mK',
-    category: '重点难点',
-    embedUrl: 'https://player.bilibili.com/player.html?bvid=BV1ab4y1z7mK&page=1',
-    duration: '21:20',
-    views: '1.5万',
-    desc: '讲解流水线基本原理、流水线冲突（结构冲突、数据冲突、控制冲突）及解决方案。通过性能分析公式计算加速比。',
-    tags: ['流水线', '数据冲突', '分支预测', '加速比'],
-    color: 'from-red-500 to-rose-500',
-  },
-  {
-    id: '6',
-    title: 'IO系统与中断机制',
-    url: 'https://www.bilibili.com/video/BV1nm4y1p7qR',
-    category: '课程讲解',
-    embedUrl: 'https://player.bilibili.com/player.html?bvid=BV1nm4y1p7qR&page=1',
-    duration: '16:55',
-    views: '9.8千',
-    desc: '介绍IO系统的基本概念、程序查询方式、程序中断方式和DMA方式。对比三种IO控制方式的效率差异。',
-    tags: ['IO系统', '中断', 'DMA', '程序查询'],
-    color: 'from-indigo-500 to-blue-500',
-  },
-];
+interface UserRole {
+  isAdmin: boolean;
+  username: string;
+}
+
+const ADMIN_CREDENTIALS = { username: 'admin', password: 'admin' };
+
+const defaultVideos: VideoItem[] = [];
 
 const categories = ['全部', '课程讲解', '实验指导', '重点难点', '其他'];
 
@@ -122,12 +56,37 @@ export default function VideoPage() {
   const [videos, setVideos] = useState<VideoItem[]>(defaultVideos);
   const [activeCategory, setActiveCategory] = useState('全部');
   const [showAdd, setShowAdd] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newUrl, setNewUrl] = useState('');
   const [newCategory, setNewCategory] = useState('其他');
   const [playingVideo, setPlayingVideo] = useState<VideoItem | null>(null);
+  const [showPermissionDenied, setShowPermissionDenied] = useState(false);
+
+  const [userRole, setUserRole] = useState<UserRole>({
+    isAdmin: false,
+    username: '普通用户',
+  });
+
+  const [loginForm, setLoginForm] = useState({
+    username: '',
+    password: '',
+    error: '',
+  });
 
   const filtered = activeCategory === '全部' ? videos : videos.filter(v => v.category === activeCategory);
+
+  const handleLogin = () => {
+    if (loginForm.username === ADMIN_CREDENTIALS.username &&
+        loginForm.password === ADMIN_CREDENTIALS.password) {
+      setUserRole({ isAdmin: true, username: loginForm.username });
+      setShowLoginModal(false);
+      setLoginForm({ username: '', password: '', error: '' });
+      setShowAdd(true);
+    } else {
+      setLoginForm(f => ({ ...f, error: '用户名或密码错误，请输入 admin/admin' }));
+    }
+  };
 
   const handleAdd = () => {
     if (!newTitle.trim() || !newUrl.trim()) return;
@@ -152,8 +111,20 @@ export default function VideoPage() {
   };
 
   const handleDelete = (id: string) => {
+    if (!userRole.isAdmin) {
+      setShowPermissionDenied(true);
+      return;
+    }
     setVideos(videos.filter(v => v.id !== id));
     if (playingVideo?.id === id) setPlayingVideo(null);
+  };
+
+  const handleAddClick = () => {
+    if (userRole.isAdmin) {
+      setShowAdd(!showAdd);
+    } else {
+      setShowLoginModal(true);
+    }
   };
 
   const getCategoryIcon = (cat: string) => {
@@ -176,17 +147,28 @@ export default function VideoPage() {
             <p className="text-sm text-[var(--color-text-secondary)]">精选课程视频，助力深度学习</p>
           </div>
         </div>
-        <button
-          onClick={() => setShowAdd(!showAdd)}
-          className="btn-primary flex items-center gap-2 px-4 py-2"
-        >
-          <Plus className="w-4 h-4" />
-          添加视频
-        </button>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
+            <User className="w-4 h-4" />
+            <span>{userRole.username}</span>
+            {userRole.isAdmin && (
+              <span className="px-2 py-0.5 text-xs rounded bg-red-500 text-white">管理员</span>
+            )}
+          </div>
+          {userRole.isAdmin && (
+            <button
+              onClick={handleAddClick}
+              className="btn-primary flex items-center gap-2 px-4 py-2"
+            >
+              <Plus className="w-4 h-4" />
+              添加视频
+            </button>
+          )}
+        </div>
       </div>
 
       {/* 添加表单 */}
-      {showAdd && (
+      {showAdd && userRole.isAdmin && (
         <div className="glass-card p-5 space-y-4 animate-fade-in-up">
           <h3 className="text-base font-bold text-[var(--color-text-primary)]">添加新视频</h3>
           <div className="grid grid-cols-3 gap-4">
@@ -377,12 +359,14 @@ export default function VideoPage() {
                     <span className="px-2 py-0.5 rounded bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)]">{video.category}</span>
                     <div className="flex items-center gap-2">
                       {video.views && <span>{video.views}次播放</span>}
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleDelete(video.id); }}
-                        className="p-1 text-[var(--color-text-muted)] hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
+                      {userRole.isAdmin && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleDelete(video.id); }}
+                          className="p-1 text-[var(--color-text-muted)] hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      )}
                     </div>
                   </div>
                   {!video.embedUrl && (
@@ -407,7 +391,92 @@ export default function VideoPage() {
       {filtered.length === 0 && !playingVideo && (
         <div className="text-center py-12">
           <Video className="w-12 h-12 text-[var(--color-text-muted)] mx-auto mb-3" />
-          <p className="text-[var(--color-text-secondary)]">暂无该分类的视频资源</p>
+          <p className="text-[var(--color-text-secondary)]">暂无视频资源，请联系管理员添加</p>
+        </div>
+      )}
+
+      {/* 登录弹窗 */}
+      {showLoginModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-8">
+          <div className="bg-[var(--color-bg-secondary)] rounded-2xl max-w-md w-full overflow-hidden">
+            <div className="p-6 border-b border-[var(--color-border)] flex items-center justify-between">
+              <h3 className="text-lg font-bold text-[var(--color-text-primary)] flex items-center gap-2">
+                <Lock className="w-5 h-5 text-red-600" />
+                管理员登录
+              </h3>
+              <button
+                onClick={() => setShowLoginModal(false)}
+                className="text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)]"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">用户名</label>
+                <input
+                  type="text"
+                  value={loginForm.username}
+                  onChange={(e) => setLoginForm(f => ({ ...f, username: e.target.value, error: '' }))}
+                  className="w-full px-3 py-2 bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:border-red-400"
+                  placeholder="输入管理员用户名"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">密码</label>
+                <input
+                  type="password"
+                  value={loginForm.password}
+                  onChange={(e) => setLoginForm(f => ({ ...f, password: e.target.value, error: '' }))}
+                  className="w-full px-3 py-2 bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:border-red-400"
+                  placeholder="输入管理员密码"
+                />
+              </div>
+              {loginForm.error && (
+                <div className="p-3 bg-red-50 rounded-lg text-red-600 text-sm">
+                  {loginForm.error}
+                </div>
+              )}
+              <div className="text-xs text-[var(--color-text-secondary)] bg-[var(--color-bg-primary)] p-3 rounded-lg">
+                默认管理员账号：admin / admin
+              </div>
+              <div className="flex justify-end gap-3 pt-4">
+                <button
+                  onClick={() => setShowLoginModal(false)}
+                  className="px-4 py-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={handleLogin}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  登录
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 权限提示弹窗 */}
+      {showPermissionDenied && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-8">
+          <div className="bg-[var(--color-bg-secondary)] rounded-2xl max-w-md w-full overflow-hidden">
+            <div className="p-6 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-50 flex items-center justify-center">
+                <Lock className="w-8 h-8 text-red-600" />
+              </div>
+              <h3 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">权限不足</h3>
+              <p className="text-[var(--color-text-secondary)] mb-6">普通用户不允许修改视频，请联系管理员。</p>
+              <button
+                onClick={() => setShowPermissionDenied(false)}
+                className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                确定
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
