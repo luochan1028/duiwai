@@ -1,9 +1,10 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   Flag, Star, Award, BookOpen, Users, Heart, Zap,
   ChevronRight, Target, Lightbulb, GraduationCap, Shield,
   Upload, Play, Trash2, Plus, X, Video, Lock, User,
 } from 'lucide-react';
+import { saveVideoFile, loadVideoFile, deleteVideoFile, saveVideoMeta, loadVideoMeta } from '@/lib/videoStorage';
 
 interface RedEducationItem {
   id: string;
@@ -154,6 +155,23 @@ export default function RedEducationPage() {
     ? videos
     : videos.filter(v => v.category === activeCategory);
 
+  const META_KEY = 'red-education-video-meta';
+
+  // 页面加载时从 IndexedDB 恢复视频
+  useEffect(() => {
+    const meta = loadVideoMeta(META_KEY);
+    if (meta && meta.length > 0) {
+      Promise.all(
+        meta.map(async (m) => {
+          const url = await loadVideoFile(m.id);
+          return { ...m, url: url || '' };
+        })
+      ).then(loaded => {
+        setVideos(loaded.filter(v => v.url));
+      });
+    }
+  }, []);
+
   const handleLogin = () => {
     if (loginForm.username === ADMIN_CREDENTIALS.username &&
         loginForm.password === ADMIN_CREDENTIALS.password) {
@@ -166,7 +184,7 @@ export default function RedEducationPage() {
     }
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setUploadProgress(0);
@@ -174,31 +192,48 @@ export default function RedEducationPage() {
         setUploadProgress(p => {
           if (p >= 100) {
             clearInterval(interval);
-            const url = URL.createObjectURL(file);
-            const video: VideoCase = {
-              id: `v${Date.now()}`,
-              title: newVideo.title || file.name.replace(/\.[^/.]+$/, ''),
-              category: newVideo.category,
-              url,
-              thumbnail: url,
-              duration: '00:00',
-              playCount: 0,
-              description: newVideo.description,
-              tags: newVideo.tags.split(/[,，\s]+/).filter(Boolean),
-            };
-            setVideos(v => [...v, video]);
-            setShowUploadModal(false);
-            setNewVideo({ title: '', category: '课程育人', url: '', description: '', tags: '' });
             return 100;
           }
           return p + 10;
         });
       }, 200);
+
+      try {
+        const videoId = `v${Date.now()}`;
+        const url = await saveVideoFile(videoId, file);
+        const video: VideoCase = {
+          id: videoId,
+          title: newVideo.title || file.name.replace(/\.[^/.]+$/, ''),
+          category: newVideo.category,
+          url,
+          thumbnail: url,
+          duration: '00:00',
+          playCount: 0,
+          description: newVideo.description,
+          tags: newVideo.tags.split(/[,，\s]+/).filter(Boolean),
+        };
+        setVideos(v => {
+          const updated = [...v, video];
+          saveVideoMeta(META_KEY, updated);
+          return updated;
+        });
+        setShowUploadModal(false);
+        setNewVideo({ title: '', category: '课程育人', url: '', description: '', tags: '' });
+        setUploadProgress(0);
+      } catch (err) {
+        setUploadProgress(0);
+        alert('视频保存失败，请重试');
+      }
     }
   };
 
   const handleDeleteVideo = (id: string) => {
-    setVideos(v => v.filter(video => video.id !== id));
+    setVideos(v => {
+      const updated = v.filter(video => video.id !== id);
+      saveVideoMeta(META_KEY, updated);
+      return updated;
+    });
+    deleteVideoFile(id).catch(() => {});
   };
 
   const handleUploadClick = () => {
