@@ -1855,52 +1855,55 @@ function VideoContent({ interact }: { interact: VideoInteract }) {
 
             {/* 视频区域 */}
             <div className="relative bg-black" style={{ aspectRatio: '16/9' }}>
-              <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-white/10 flex items-center justify-center">
-                    <PlayCircle className="w-10 h-10 text-white/60" />
+              {videos[0]?.url ? (
+                <video
+                  src={videos[0].url}
+                  controls
+                  className="w-full h-full"
+                  poster={videos[0].thumbnail || undefined}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className={`absolute inset-0 bg-gradient-to-br ${videos[0]?.color || 'from-blue-600 to-purple-600'}/30`} />
+                  <div className="relative text-center">
+                    <PlayCircle className="w-16 h-16 text-white/80 mx-auto mb-2 animate-pulse" />
+                    <p className="text-white/70 text-sm">无法播放</p>
                   </div>
-                  <p className="text-white/50 text-sm">CPU工作原理 - 视频播放中</p>
                 </div>
-              </div>
-              {/* 播放控件 */}
-              <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/80 to-transparent flex items-center px-4 gap-3">
-                <Play className="w-5 h-5 text-white" />
-                <div className="flex-1 h-1 bg-white/20 rounded-full">
-                  <div className="h-full w-1/3 bg-accent-cyan rounded-full" />
-                </div>
-                <span className="text-white text-xs">6:20 / 18:32</span>
-                <Maximize className="w-4 h-4 text-white/70" />
-              </div>
+              )}
             </div>
 
             {/* 视频信息 */}
             <div className="p-6">
-              <h2 className="text-xl font-bold text-text-primary mb-3">计算机组成原理 - CPU工作原理</h2>
+              <h2 className="text-xl font-bold text-text-primary mb-3">{videos[0]?.title || '视频标题'}</h2>
               <div className="flex items-center gap-3 text-sm text-text-secondary mb-4">
-                <span className="px-2 py-0.5 rounded bg-accent-cyan/10 text-accent-cyan">课程讲解</span>
-                <span>2.3万次播放</span>
-                <span>时长 18:32</span>
+                <span className="px-2 py-0.5 rounded bg-accent-cyan/10 text-accent-cyan">{videos[0]?.category || '课程讲解'}</span>
+                {(videos[0]?.views || videos[0]?.playCount) && <span>{videos[0]?.views || videos[0]?.playCount}次播放</span>}
+                {videos[0]?.duration && <span>时长 {videos[0].duration}</span>}
               </div>
-              <div className="mb-4">
-                <h3 className="font-bold text-text-primary mb-2 flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-accent-cyan" />
-                  视频简介
-                </h3>
-                <p className="text-sm text-text-secondary leading-relaxed">
-                  {videos[0].desc}
-                </p>
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-text-primary mb-2">关联知识点</h4>
-                <div className="flex flex-wrap gap-2">
-                  {videos[0].tags.map(tag => (
-                    <span key={tag} className="px-2 py-1 text-xs rounded-full bg-accent-cyan/10 text-accent-cyan">
-                      {tag}
-                    </span>
-                  ))}
+              {videos[0]?.desc && (
+                <div className="mb-4">
+                  <h3 className="font-bold text-text-primary mb-2 flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-accent-cyan" />
+                    视频简介
+                  </h3>
+                  <p className="text-sm text-text-secondary leading-relaxed">
+                    {videos[0].desc}
+                  </p>
                 </div>
-              </div>
+              )}
+              {videos[0]?.tags && videos[0].tags.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-medium text-text-primary mb-2">关联知识点</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {videos[0].tags.map(tag => (
+                      <span key={tag} className="px-2 py-1 text-xs rounded-full bg-accent-cyan/10 text-accent-cyan">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* 推荐视频横向滚动 */}
@@ -1916,11 +1919,24 @@ function VideoContent({ interact }: { interact: VideoInteract }) {
                     className="flex-shrink-0 w-48 cursor-pointer group animate-fade-in-up"
                     style={{ animationDelay: `${idx * 80}ms` }}
                   >
-                    <div className={`relative aspect-video rounded-lg overflow-hidden bg-gradient-to-br ${v.color} flex items-center justify-center`}>
-                      <Play className="w-8 h-8 text-white/70 group-hover:scale-125 transition-transform" />
-                      <div className="absolute bottom-1.5 right-1.5 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
-                        {v.duration}
+                    <div className={`relative aspect-video rounded-lg overflow-hidden ${v.thumbnail ? '' : `bg-gradient-to-br ${v.color || 'from-blue-500 to-cyan-500'}`}`}>
+                      {v.thumbnail ? (
+                        <img src={v.thumbnail} alt={v.title} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Play className="w-8 h-8 text-white/70" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center">
+                          <Play className="w-5 h-5 text-gray-800 ml-0.5" />
+                        </div>
                       </div>
+                      {v.duration && (
+                        <div className="absolute bottom-1.5 right-1.5 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
+                          {v.duration}
+                        </div>
+                      )}
                     </div>
                     <p className="text-sm text-text-primary mt-2 line-clamp-2 group-hover:text-accent-cyan transition-colors">
                       {v.title}
