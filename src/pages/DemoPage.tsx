@@ -2164,7 +2164,6 @@ function OutroContent() {
 // ==================== 侧边栏 ====================
 
 const sidebarStudentItems = [
-  { id: 'philosophy', label: '教育理念', icon: BookOpen },
   { id: 'red-education', label: '红色育人', icon: Flag },
   { id: 'qa', label: '智能问答', icon: MessageSquare },
   { id: 'graph', label: '知识图谱', icon: Network },
@@ -2175,6 +2174,7 @@ const sidebarStudentItems = [
 ];
 
 const sidebarTeacherItems = [
+  { id: 'philosophy', label: '教育理念', icon: BookOpen },
   { id: 'teacher', label: '学情分析', icon: BarChart3 },
 ];
 

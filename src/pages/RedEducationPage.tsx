@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   Flag, Star, Award, BookOpen, Users, Heart, Zap,
   ChevronRight, Target, Lightbulb, GraduationCap, Shield,
+  Upload, Play, Trash2, Plus, X, Video,
 } from 'lucide-react';
 
 interface RedEducationItem {
@@ -14,6 +15,18 @@ interface RedEducationItem {
   borderColor: string;
   content: string;
   keywords: string[];
+}
+
+interface VideoCase {
+  id: string;
+  title: string;
+  category: string;
+  url: string;
+  thumbnail: string;
+  duration: string;
+  playCount: number;
+  description: string;
+  tags: string[];
 }
 
 const redEducationItems: RedEducationItem[] = [
@@ -85,6 +98,42 @@ const redEducationItems: RedEducationItem[] = [
   },
 ];
 
+const defaultVideos: VideoCase[] = [
+  {
+    id: 'v1',
+    title: '银河一号超级计算机研制历程',
+    category: '课程育人',
+    url: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    thumbnail: 'https://images.unsplash.com/photo-1605379399642-870262d3d051?w=400&h=225&fit=crop',
+    duration: '05:23',
+    playCount: 328,
+    description: '讲述我国第一台亿次超级计算机"银河一号"的研制历程，展现科技工作者攻坚克难的科学家精神。',
+    tags: ['银河一号', '超级计算机', '科学家精神'],
+  },
+  {
+    id: 'v2',
+    title: '龙芯CPU自主创新之路',
+    category: '实践育人',
+    url: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&h=225&fit=crop',
+    duration: '08:45',
+    playCount: 256,
+    description: '介绍龙芯CPU从无到有的自主创新之路，激励学生投身国产芯片研发事业。',
+    tags: ['龙芯', '国产芯片', '自主创新'],
+  },
+  {
+    id: 'v3',
+    title: '邓小平科技思想与中国计算机事业',
+    category: '文化育人',
+    url: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop',
+    duration: '12:15',
+    playCount: 189,
+    description: '探讨邓小平科技思想对我国计算机事业发展的深远影响，传承红色科技基因。',
+    tags: ['邓小平', '科技思想', '红色基因'],
+  },
+];
+
 const categories = ['全部', '课程育人', '文化育人', '实践育人', '管理育人', '网络育人', '心理育人'];
 
 const stats = [
@@ -97,22 +146,83 @@ const stats = [
 export default function RedEducationPage() {
   const [activeCategory, setActiveCategory] = useState('全部');
   const [selectedItem, setSelectedItem] = useState<RedEducationItem | null>(null);
+  const [videos, setVideos] = useState<VideoCase[]>(defaultVideos);
+  const [selectedVideo, setSelectedVideo] = useState<VideoCase | null>(null);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [newVideo, setNewVideo] = useState({
+    title: '',
+    category: '课程育人',
+    url: '',
+    description: '',
+    tags: '',
+  });
 
   const filtered = activeCategory === '全部'
     ? redEducationItems
     : redEducationItems.filter(item => item.category === activeCategory);
 
+  const filteredVideos = activeCategory === '全部'
+    ? videos
+    : videos.filter(v => v.category === activeCategory);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setUploadProgress(0);
+      const interval = setInterval(() => {
+        setUploadProgress(p => {
+          if (p >= 100) {
+            clearInterval(interval);
+            const url = URL.createObjectURL(file);
+            const video: VideoCase = {
+              id: `v${Date.now()}`,
+              title: newVideo.title || file.name.replace(/\.[^/.]+$/, ''),
+              category: newVideo.category,
+              url,
+              thumbnail: url,
+              duration: '00:00',
+              playCount: 0,
+              description: newVideo.description,
+              tags: newVideo.tags.split(/[,，\s]+/).filter(Boolean),
+            };
+            setVideos(v => [...v, video]);
+            setShowUploadModal(false);
+            setNewVideo({ title: '', category: '课程育人', url: '', description: '', tags: '' });
+            return 100;
+          }
+          return p + 10;
+        });
+      }, 200);
+    }
+  };
+
+  const handleDeleteVideo = (id: string) => {
+    setVideos(v => v.filter(video => video.id !== id));
+  };
+
   return (
     <div className="p-6 space-y-5 animate-fade-in">
       {/* 标题栏 */}
-      <div className="flex items-center gap-3">
-        <div className="p-3 rounded-xl bg-gradient-to-br from-red-600 to-rose-600">
-          <Flag className="w-7 h-7 text-white" />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-3 rounded-xl bg-gradient-to-br from-red-600 to-rose-600">
+            <Flag className="w-7 h-7 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">红色育人</h1>
+            <p className="text-sm text-[var(--color-text-secondary)]">将红色基因融入专业教学，培养科技报国时代新人</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">红色育人</h1>
-          <p className="text-sm text-[var(--color-text-secondary)]">将红色基因融入专业教学，培养科技报国时代新人</p>
-        </div>
+        <button
+          onClick={() => setShowUploadModal(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+        >
+          <Upload className="w-4 h-4" />
+          上传视频案例
+        </button>
       </div>
 
       {/* 统计卡片 */}
@@ -145,72 +255,287 @@ export default function RedEducationPage() {
         ))}
       </div>
 
-      {/* 详情视图 */}
-      {selectedItem ? (
-        <div className="glass-card p-6 animate-fade-in-up">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className={`p-3 rounded-lg ${selectedItem.bgColor}`}>
-                <selectedItem.icon className={`w-6 h-6 ${selectedItem.color}`} />
+      {/* 视频案例区域 */}
+      <div>
+        <h2 className="text-lg font-bold text-[var(--color-text-primary)] mb-4 flex items-center gap-2">
+          <Video className="w-5 h-5 text-red-600" />
+          视频案例库
+        </h2>
+        <div className="grid grid-cols-3 gap-4">
+          {filteredVideos.map(video => (
+            <div
+              key={video.id}
+              onClick={() => setSelectedVideo(video)}
+              className="glass-card overflow-hidden cursor-pointer hover:scale-[1.02] transition-all duration-300 group"
+            >
+              <div className="relative h-36 bg-gradient-to-br from-red-600/20 to-rose-600/20">
+                <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
+                    <Play className="w-6 h-6 text-red-600 ml-1" />
+                  </div>
+                </div>
+                <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/60 rounded text-xs text-white">
+                  {video.duration}
+                </div>
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleDeleteVideo(video.id); }}
+                  className="absolute top-2 right-2 p-1.5 bg-black/50 rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                >
+                  <Trash2 className="w-4 h-4 text-white" />
+                </button>
               </div>
-              <div>
-                <h2 className="text-xl font-bold text-[var(--color-text-primary)]">{selectedItem.title}</h2>
-                <span className={`text-sm px-2 py-0.5 rounded ${selectedItem.bgColor} ${selectedItem.color}`}>
-                  {selectedItem.category}
-                </span>
+              <div className="p-4">
+                <h3 className="font-bold text-[var(--color-text-primary)] text-sm mb-1 truncate">{video.title}</h3>
+                <div className="flex items-center gap-3 text-xs text-[var(--color-text-secondary)] mb-2">
+                  <span>{video.playCount}次播放</span>
+                  <span className="px-2 py-0.5 rounded bg-red-50 text-red-600">{video.category}</span>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {video.tags.slice(0, 2).map(tag => (
+                    <span key={tag} className="px-2 py-0.5 text-xs rounded bg-[var(--color-bg-primary)] text-[var(--color-text-muted)]">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
-            <button
-              onClick={() => setSelectedItem(null)}
-              className="text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)]"
-            >
-              <ChevronRight className="w-5 h-5 rotate-180" />
-            </button>
-          </div>
-          <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed mb-4">
-            {selectedItem.content}
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {selectedItem.keywords.map(kw => (
-              <span key={kw} className="px-3 py-1 text-xs rounded-full bg-red-50 text-red-700 border border-red-200">
-                {kw}
-              </span>
-            ))}
+          ))}
+          <div
+            onClick={() => setShowUploadModal(true)}
+            className="glass-card h-full flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-red-300 transition-colors border-2 border-dashed border-[var(--color-border)]"
+          >
+            <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
+              <Plus className="w-6 h-6 text-red-600" />
+            </div>
+            <span className="text-sm text-[var(--color-text-secondary)]">上传视频</span>
           </div>
         </div>
-      ) : (
-        /* 卡片列表 */
-        <div className="grid grid-cols-2 gap-5">
-          {filtered.map(item => (
-            <div
-              key={item.id}
-              onClick={() => setSelectedItem(item)}
-              className={`glass-card p-5 cursor-pointer hover:scale-[1.02] transition-all duration-300 border-l-4 ${item.borderColor}`}
-            >
-              <div className="flex items-start gap-3 mb-3">
-                <div className={`p-2.5 rounded-lg ${item.bgColor}`}>
-                  <item.icon className={`w-5 h-5 ${item.color}`} />
+      </div>
+
+      {/* 育人维度区域 */}
+      <div>
+        <h2 className="text-lg font-bold text-[var(--color-text-primary)] mb-4 flex items-center gap-2">
+          <Target className="w-5 h-5 text-red-600" />
+          育人维度
+        </h2>
+        {selectedItem ? (
+          <div className="glass-card p-6 animate-fade-in-up">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className={`p-3 rounded-lg ${selectedItem.bgColor}`}>
+                  <selectedItem.icon className={`w-6 h-6 ${selectedItem.color}`} />
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-[var(--color-text-primary)] mb-1">{item.title}</h3>
-                  <span className={`text-xs px-2 py-0.5 rounded ${item.bgColor} ${item.color}`}>
-                    {item.category}
+                <div>
+                  <h3 className="text-xl font-bold text-[var(--color-text-primary)]">{selectedItem.title}</h3>
+                  <span className={`text-sm px-2 py-0.5 rounded ${selectedItem.bgColor} ${selectedItem.color}`}>
+                    {selectedItem.category}
                   </span>
                 </div>
-                <ChevronRight className="w-4 h-4 text-[var(--color-text-muted)]" />
               </div>
-              <p className="text-sm text-[var(--color-text-secondary)] line-clamp-3 leading-relaxed">
-                {item.content}
-              </p>
-              <div className="flex flex-wrap gap-1.5 mt-3">
-                {item.keywords.slice(0, 3).map(kw => (
-                  <span key={kw} className="px-2 py-0.5 text-xs rounded bg-[var(--color-bg-primary)] text-[var(--color-text-muted)]">
-                    {kw}
+              <button
+                onClick={() => setSelectedItem(null)}
+                className="text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)]"
+              >
+                <ChevronRight className="w-5 h-5 rotate-180" />
+              </button>
+            </div>
+            <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed mb-4">
+              {selectedItem.content}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {selectedItem.keywords.map(kw => (
+                <span key={kw} className="px-3 py-1 text-xs rounded-full bg-red-50 text-red-700 border border-red-200">
+                  {kw}
+                </span>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-5">
+            {filtered.map(item => (
+              <div
+                key={item.id}
+                onClick={() => setSelectedItem(item)}
+                className={`glass-card p-5 cursor-pointer hover:scale-[1.02] transition-all duration-300 border-l-4 ${item.borderColor}`}
+              >
+                <div className="flex items-start gap-3 mb-3">
+                  <div className={`p-2.5 rounded-lg ${item.bgColor}`}>
+                    <item.icon className={`w-5 h-5 ${item.color}`} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-[var(--color-text-primary)] mb-1">{item.title}</h3>
+                    <span className={`text-xs px-2 py-0.5 rounded ${item.bgColor} ${item.color}`}>
+                      {item.category}
+                    </span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-[var(--color-text-muted)]" />
+                </div>
+                <p className="text-sm text-[var(--color-text-secondary)] line-clamp-3 leading-relaxed">
+                  {item.content}
+                </p>
+                <div className="flex flex-wrap gap-1.5 mt-3">
+                  {item.keywords.slice(0, 3).map(kw => (
+                    <span key={kw} className="px-2 py-0.5 text-xs rounded bg-[var(--color-bg-primary)] text-[var(--color-text-muted)]">
+                      {kw}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* 视频播放弹窗 */}
+      {selectedVideo && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-8">
+          <div className="bg-[var(--color-bg-secondary)] rounded-2xl max-w-5xl w-full overflow-hidden">
+            <div className="relative bg-black aspect-video">
+              <video src={selectedVideo.url} controls className="w-full h-full" />
+              <button
+                onClick={() => setSelectedVideo(null)}
+                className="absolute top-4 right-4 p-2 bg-black/50 rounded-full text-white hover:bg-red-600 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6">
+              <h3 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">{selectedVideo.title}</h3>
+              <div className="flex items-center gap-4 text-sm text-[var(--color-text-secondary)] mb-3">
+                <span className="px-2 py-0.5 rounded bg-red-50 text-red-600">{selectedVideo.category}</span>
+                <span>{selectedVideo.playCount}次播放</span>
+                <span>{selectedVideo.duration}</span>
+              </div>
+              <p className="text-sm text-[var(--color-text-secondary)] mb-4">{selectedVideo.description}</p>
+              <div className="flex flex-wrap gap-2">
+                {selectedVideo.tags.map(tag => (
+                  <span key={tag} className="px-3 py-1 text-xs rounded-full bg-red-50 text-red-700 border border-red-200">
+                    {tag}
                   </span>
                 ))}
               </div>
             </div>
-          ))}
+          </div>
+        </div>
+      )}
+
+      {/* 上传视频弹窗 */}
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-8">
+          <div className="bg-[var(--color-bg-secondary)] rounded-2xl max-w-2xl w-full overflow-hidden">
+            <div className="p-6 border-b border-[var(--color-border)] flex items-center justify-between">
+              <h3 className="text-lg font-bold text-[var(--color-text-primary)]">上传视频案例</h3>
+              <button
+                onClick={() => {
+                  setShowUploadModal(false);
+                  setNewVideo({ title: '', category: '课程育人', url: '', description: '', tags: '' });
+                }}
+                className="text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)]"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              {uploadProgress > 0 && uploadProgress < 100 && (
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-[var(--color-text-secondary)]">上传进度</span>
+                    <span className="text-[var(--color-accent-primary)]">{uploadProgress}%</span>
+                  </div>
+                  <div className="w-full h-2 bg-[var(--color-bg-primary)] rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-red-500 to-rose-500 transition-all duration-200"
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">视频标题</label>
+                  <input
+                    type="text"
+                    value={newVideo.title}
+                    onChange={(e) => setNewVideo(v => ({ ...v, title: e.target.value }))}
+                    className="w-full px-3 py-2 bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:border-red-400"
+                    placeholder="输入视频标题"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">分类</label>
+                  <select
+                    value={newVideo.category}
+                    onChange={(e) => setNewVideo(v => ({ ...v, category: e.target.value }))}
+                    className="w-full px-3 py-2 bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:border-red-400"
+                  >
+                    {categories.filter(c => c !== '全部').map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">视频描述</label>
+                <textarea
+                  value={newVideo.description}
+                  onChange={(e) => setNewVideo(v => ({ ...v, description: e.target.value }))}
+                  className="w-full px-3 py-2 bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:border-red-400"
+                  rows={3}
+                  placeholder="输入视频描述"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">标签（用逗号或空格分隔）</label>
+                <input
+                  type="text"
+                  value={newVideo.tags}
+                  onChange={(e) => setNewVideo(v => ({ ...v, tags: e.target.value }))}
+                  className="w-full px-3 py-2 bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:border-red-400"
+                  placeholder="如：银河一号, 科学家精神"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">选择视频文件</label>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="video/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full p-4 border-2 border-dashed border-[var(--color-border)] rounded-lg hover:border-red-400 transition-colors flex items-center justify-center gap-2 text-[var(--color-text-secondary)]"
+                >
+                  <Upload className="w-5 h-5" />
+                  点击选择视频文件或拖拽到此处
+                </button>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4">
+                <button
+                  onClick={() => {
+                    setShowUploadModal(false);
+                    setNewVideo({ title: '', category: '课程育人', url: '', description: '', tags: '' });
+                  }}
+                  className="px-4 py-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  上传视频
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

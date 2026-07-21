@@ -17,7 +17,6 @@ import {
 
 // 学生端导航项
 const studentItems = [
-  { id: 'philosophy', label: '教育理念', icon: BookOpen, path: '/philosophy' },
   { id: 'red-education', label: '红色育人', icon: Flag, path: '/red-education' },
   { id: 'qa', label: '智能问答', icon: MessageSquare, path: '/qa' },
   { id: 'graph', label: '知识图谱', icon: Network, path: '/graph' },
@@ -29,6 +28,7 @@ const studentItems = [
 
 // 教师端导航项
 const teacherItems = [
+  { id: 'philosophy', label: '教育理念', icon: BookOpen, path: '/philosophy' },
   { id: 'teacher', label: '学情分析', icon: BarChart3, path: '/teacher' },
 ];
 
