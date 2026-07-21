@@ -12,7 +12,7 @@ import {
   Upload, Copy, Bug, GitCompare, CheckCircle, AlertCircle,
   Users, TrendingDown, Minus, School, Activity, Settings2, Filter,
   Trophy, XCircle, Bookmark, BookmarkCheck, ChevronLeft,
-  TrendingUp,
+  TrendingUp, User,
   Flag,
 } from 'lucide-react';
 import {
@@ -34,108 +34,108 @@ interface DemoScene {
 
 const scenes: DemoScene[] = [
   {
-    id: 'intro', title: '开场', duration: 20,
-    narration: '大家好，欢迎观看计组智学教育智能体演示视频。计组智学是为计算机组成原理课程打造的AI辅导平台，提供智能问答、知识图谱、学习路径等七大功能模块。',
+    id: 'intro', title: '开场', duration: 18,
+    narration: '大家好，欢迎观看计组智学教育智能体演示视频。计组智学是为计算机组成原理课程打造的AI辅导平台，覆盖学生端七大功能和教师端两大模块。',
     navTarget: 'philosophy',
   },
   {
-    id: 'philosophy-1', title: '教育理念·十五五规划', duration: 20,
+    id: 'philosophy-1', title: '教育理念·十五五规划', duration: 22,
     narration: '首先了解产品背后的教育理念。计组智学深度契合十五五教育规划五大育人理念：立德树人、科教融汇、拔尖创新、多元协同和质量导向。',
     navTarget: 'philosophy',
   },
   {
-    id: 'philosophy-2', title: '教育理念·未来教育新范式', duration: 20,
+    id: 'philosophy-2', title: '教育理念·未来教育新范式', duration: 22,
     narration: '计组智学积极实践未来教育新范式，关注个性化学习、人机协同、教师角色转型和能力本位评价，为每位学生提供定制化辅导。',
     navTarget: 'philosophy',
   },
   {
     id: 'red-education', title: '红色育人·课程思政', duration: 28,
-    narration: '红色育人模块将红色基因融入专业教学。涵盖课程思政、红色文化传承、科技报国、红色网络阵地等六大维度。通过讲述我国计算机发展史中的科学家精神，激发学生科技报国情怀。',
+    narration: '红色育人模块将红色基因融入专业教学。涵盖课程思政、红色文化传承、科技报国、红色网络阵地等六大维度。管理员可上传红色视频案例，激发学生科技报国情怀。',
     navTarget: 'red-education',
   },
   {
-    id: 'architecture', title: '系统架构', duration: 28,
-    narration: '系统采用三层架构。底层融合课程标准、教学日历、题库和实验指导书四大数据源。中层部署AI对话引擎、推荐算法和代码调试引擎三大核心引擎。上层提供七大功能模块。',
+    id: 'architecture', title: '系统架构', duration: 25,
+    narration: '系统采用三层架构。底层融合课程标准、教学日历、题库和实验指导书四大数据源。中层部署AI对话引擎、推荐算法和代码调试引擎三大核心引擎。上层提供九大功能模块。',
     navTarget: 'qa',
   },
   {
-    id: 'qa-1', title: '智能问答·提问与回答', duration: 28,
+    id: 'qa-1', title: '智能问答·提问与回答', duration: 27,
     narration: '首先是智能问答模块。页面顶部展示热门问题，带有知识点标签。学生输入问题后，AI逐字呈现回答，支持Markdown格式，包含表格和列表。',
     navTarget: 'qa',
   },
   {
-    id: 'qa-2', title: '智能问答·关联与审核', duration: 28,
+    id: 'qa-2', title: '智能问答·关联与审核', duration: 27,
     narration: 'AI回答底部自动关联教学日历，推荐关联微课资源。知识点标签可点击跳转到知识图谱。每条回答都有教学团队已审核标识，学习数据本地化存储。',
     navTarget: 'qa',
   },
   {
-    id: 'graph-1', title: '知识图谱·画布交互', duration: 28,
+    id: 'graph-1', title: '知识图谱·画布交互', duration: 25,
     narration: '知识图谱模块展示课程核心概念及其关联关系。画布支持拖拽平移和滚轮缩放。点击任意节点，关联节点和连线自动高亮。',
     navTarget: 'graph',
   },
   {
-    id: 'graph-2', title: '知识图谱·详情与路径', duration: 28,
+    id: 'graph-2', title: '知识图谱·详情与路径', duration: 25,
     narration: '右侧详情面板展示选中节点的名称、分类和描述。提供跨模块跳转按钮，实现知识图谱与问答、自测的无缝衔接。还有五步学习路径建议。',
     navTarget: 'graph',
   },
   {
-    id: 'path-1', title: '学习路径·统计与进度', duration: 28,
+    id: 'path-1', title: '学习路径·统计与进度', duration: 27,
     narration: '学习路径模块是教-学-评-辅闭环的核心。顶部展示学习数据统计卡片，雷达图呈现六维掌握度。各章节进度条展示学习进度，薄弱知识点用红色标签标注。',
     navTarget: 'path',
   },
   {
-    id: 'path-2', title: '学习路径·计划与报告', duration: 28,
+    id: 'path-2', title: '学习路径·计划与报告', duration: 27,
     narration: '系统自动推送本周学习计划，分课前预习和课后巩固。待完成任务列表按类型分类。个性化推荐区提供薄弱点突破和拓展阅读建议。可生成学习报告。',
     navTarget: 'path',
   },
   {
-    id: 'lab-1', title: '实验辅助·编辑器', duration: 28,
+    id: 'lab-1', title: '实验辅助·编辑器', duration: 25,
     narration: '实验辅助模块提供代码级支持。左侧列出实验项目，中间代码编辑器支持8086汇编语法高亮。工具栏提供上传代码、重置和复制功能。',
     navTarget: 'lab',
   },
   {
-    id: 'lab-2', title: '实验辅助·调试与对比', duration: 28,
+    id: 'lab-2', title: '实验辅助·调试与对比', duration: 25,
     narration: '点击智能调试按钮后，右侧显示调试结果。错误用红色标记，显示行号和修复建议。可查看代码对比视图，还有优化建议和质量评分。',
     navTarget: 'lab',
   },
   {
-    id: 'video-1', title: '视频资源·分类与列表', duration: 28,
-    narration: '视频资源模块集成了丰富的课程视频。顶部分类标签支持按类型筛选。视频卡片展示标题、分类和时长，点击即可播放。支持Bilibili和YouTube链接解析。',
+    id: 'video-1', title: '视频资源·列表与上传', duration: 27,
+    narration: '视频资源模块集成丰富的课程视频。管理员登录后可上传本地视频案例，支持IndexedDB持久化存储，刷新后不丢失。分类标签支持按类型快速筛选。',
     navTarget: 'video',
   },
   {
-    id: 'video-2', title: '视频资源·在线播放', duration: 28,
-    narration: '点击视频卡片后，内嵌播放器直接播放。支持全屏观看，自动记忆播放进度。视频与知识点关联，配合教学日历推荐对应周次的学习视频。',
+    id: 'video-2', title: '视频资源·在线播放', duration: 27,
+    narration: '点击视频卡片即可播放。内嵌播放器支持进度控制和全屏观看。视频与知识点关联，配合教学日历推荐对应周次的学习视频，右侧推荐列表快速切换。',
     navTarget: 'video',
   },
   {
-    id: 'quiz-1', title: '自测系统·抽题配置', duration: 28,
+    id: 'quiz-1', title: '自测系统·抽题配置', duration: 25,
     narration: '自测系统支持按知识点和难度动态抽题。选择知识点、难度级别和题目数量，底部显示题库匹配结果，确认后开始答题。',
     navTarget: 'quiz',
   },
   {
-    id: 'quiz-2', title: '自测系统·答题与成绩', duration: 28,
+    id: 'quiz-2', title: '自测系统·答题与成绩', duration: 25,
     narration: '答题界面显示答题进度环形图和题目导航。提交后展示成绩分析，识别薄弱知识点，提供重新抽题和查看解析功能。',
     navTarget: 'quiz',
   },
   {
-    id: 'teacher-1', title: '教师端·班级与问题', duration: 28,
+    id: 'teacher-1', title: '教师端·班级与问题', duration: 25,
     narration: '教师端提供学情分析仪表盘。班级统计卡片展示活跃用户、平均分和完成率。高频问题TOP10排行帮助教师了解学生困惑集中点。',
     navTarget: 'teacher',
   },
   {
-    id: 'teacher-2', title: '教师端·柱状图与建议', duration: 28,
+    id: 'teacher-2', title: '教师端·柱状图与建议', duration: 25,
     narration: '知识点掌握度柱状图用渐变色展示各模块掌握情况。系统根据高频问题趋势自动生成教学调整建议，为教学优化提供数据支撑。',
     navTarget: 'teacher',
   },
   {
-    id: 'results', title: '应用成效', duration: 28,
+    id: 'results', title: '应用成效', duration: 22,
     narration: '在86名学生的4周试点中，日均活跃用户62人，累计回答问题1347次。难点模块随堂测验平均分提升12.3%和9.7%。91.2%的学生认为智能体显著提升学习体验。',
     navTarget: 'teacher',
   },
   {
-    id: 'outro', title: '总结', duration: 25,
-    narration: '计组智学实现了AI技术与专业课程的深度耦合，教-学-评-辅形成闭环，架构可迁移至数据结构、操作系统等课程。谢谢！',
+    id: 'outro', title: '总结', duration: 18,
+    narration: '计组智学实现了AI技术与专业课程的深度耦合，教-学-评-辅形成闭环，架构可迁移至数据结构、操作系统等课程。谢谢观看！',
     navTarget: 'qa',
   },
 ];
@@ -190,6 +190,8 @@ interface PhilosophyInteract {
 interface VideoInteract {
   showList: boolean;
   showPlayer: boolean;
+  showAdmin: boolean;
+  showUploadCard: boolean;
 }
 
 interface InteractState {
@@ -211,7 +213,7 @@ const defaultInteract = (): InteractState => ({
   quiz: { showConfig: false, showQuestion: false, showResult: false },
   teacher: { showClassStats: false, showTop10: false, showBarChart: false, showSuggestions: false },
   philosophy: { show15thPlan: false, showFutureEdu: false },
-  video: { showList: false, showPlayer: false },
+  video: { showList: false, showPlayer: false, showAdmin: false, showUploadCard: false },
 });
 
 // ==================== 开场内容 ====================
@@ -1464,14 +1466,14 @@ const COUNT_OPTIONS = [5, 10, 15, 20].map(c => ({ value: c, label: `${c} 题` })
 
 function VideoContent({ interact }: { interact: VideoInteract }) {
   const videos = [
-    { id: '1', title: '计算机组成原理 - CPU工作原理', category: '课程讲解', duration: '18:32', views: '2.3万', bvid: 'BV1tY411T7jZ', color: 'from-blue-500 to-cyan-500' },
-    { id: '2', title: '汇编语言程序设计入门', category: '实验指导', duration: '24:15', views: '1.8万', bvid: 'BV1E64y1X7aS', color: 'from-green-500 to-emerald-500' },
-    { id: '3', title: '存储系统与Cache原理', category: '课程讲解', duration: '32:08', views: '3.1万', bvid: 'BV1vi4y1g7cP', color: 'from-purple-500 to-pink-500' },
-    { id: '4', title: '指令系统设计详解', category: '重点难点', duration: '28:45', views: '4.2万', bvid: 'BV1D44y1v7jL', color: 'from-amber-500 to-orange-500' },
-    { id: '5', title: '流水线技术与性能分析', category: '重点难点', duration: '21:20', views: '1.5万', bvid: 'BV1ab4y1z7mK', color: 'from-red-500 to-rose-500' },
-    { id: '6', title: 'IO系统与中断机制', category: '课程讲解', duration: '16:55', views: '9.8千', bvid: 'BV1nm4y1p7qR', color: 'from-indigo-500 to-blue-500' },
+    { id: '1', title: '计算机组成原理 - CPU工作原理', category: '课程讲解', duration: '18:32', views: '2.3万', color: 'from-blue-500 to-cyan-500', desc: '本视频详细讲解CPU的基本结构和工作原理，包括运算器、控制器、寄存器组等核心部件的功能与协作机制。', tags: ['CPU结构', '运算器', '控制器', '指令周期'] },
+    { id: '2', title: '汇编语言程序设计入门', category: '实验指导', duration: '24:15', views: '1.8万', color: 'from-green-500 to-emerald-500', desc: '从零开始学习8086汇编语言，掌握基本指令和程序结构，配合实验案例加深理解。', tags: ['汇编语言', '8086', '程序设计'] },
+    { id: '3', title: '存储系统与Cache原理', category: '课程讲解', duration: '32:08', views: '3.1万', color: 'from-purple-500 to-pink-500', desc: '深入讲解存储器层次结构，Cache工作原理和地址映射方式，理解存储系统性能优化。', tags: ['存储系统', 'Cache', '地址映射'] },
+    { id: '4', title: '指令系统设计详解', category: '重点难点', duration: '28:45', views: '4.2万', color: 'from-amber-500 to-orange-500', desc: '全面解析指令系统的设计原则、指令格式和寻址方式，重点突破指令编码难点。', tags: ['指令系统', '寻址方式', '指令编码'] },
+    { id: '5', title: '流水线技术与性能分析', category: '重点难点', duration: '21:20', views: '1.5万', color: 'from-red-500 to-rose-500', desc: '讲解流水线工作原理、性能指标计算和相关冒险处理，提升对高性能计算的理解。', tags: ['流水线', '性能分析', '冒险处理'] },
+    { id: '6', title: 'IO系统与中断机制', category: '课程讲解', duration: '16:55', views: '9.8千', color: 'from-indigo-500 to-blue-500', desc: '介绍IO系统的组成和工作方式，中断机制的实现和应用场景。', tags: ['IO系统', '中断', 'DMA'] },
   ];
-  const categories = ['全部', '课程讲解', '实验指导', '重点难点'];
+  const categories = ['全部', '课程讲解', '实验指导', '重点难点', '其他'];
   const [activeCategory, setActiveCategory] = useState('全部');
 
   useEffect(() => {
@@ -1491,9 +1493,17 @@ function VideoContent({ interact }: { interact: VideoInteract }) {
             <p className="text-sm text-text-secondary">精选课程视频，助力深度学习</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button className="btn-secondary px-4 py-2 text-sm flex items-center gap-2">
-            <Plus className="w-4 h-4" /> 添加视频
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 text-sm text-text-secondary">
+            <User className="w-4 h-4" />
+            <span>{interact.showAdmin ? 'admin' : '普通用户'}</span>
+            {interact.showAdmin && (
+              <span className="px-2 py-0.5 text-xs rounded bg-red-500 text-white">管理员</span>
+            )}
+          </div>
+          <button className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+            <Upload className="w-4 h-4" />
+            上传视频案例
           </button>
         </div>
       </div>
@@ -1508,7 +1518,7 @@ function VideoContent({ interact }: { interact: VideoInteract }) {
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 animate-fade-in-up ${
                 activeCategory === cat
                   ? 'bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30'
-                  : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
+                  : 'bg-bg-card text-text-secondary border border-accent-cyan/10 hover:border-accent-cyan/30'
               }`}
               style={{ animationDelay: `${idx * 80}ms` }}
             >
@@ -1548,11 +1558,22 @@ function VideoContent({ interact }: { interact: VideoInteract }) {
                   </h3>
                   <div className="flex items-center justify-between text-xs text-text-secondary">
                     <span className="px-2 py-0.5 rounded bg-accent-cyan/10 text-accent-cyan">{video.category}</span>
-                    <span>{video.views}次播放</span>
+                    <div className="flex items-center gap-2">
+                      <span>{video.views}次播放</span>
+                    </div>
                   </div>
                 </div>
               </div>
             ))}
+            {/* 管理员上传卡片 */}
+            {interact.showAdmin && interact.showUploadCard && (
+              <div className="glass-card h-full flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-red-300 transition-colors border-2 border-dashed border-accent-cyan/20 min-h-[200px] animate-fade-in-up">
+                <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
+                  <Plus className="w-6 h-6 text-red-600" />
+                </div>
+                <span className="text-sm text-text-secondary">上传视频</span>
+              </div>
+            )}
           </div>
         )}
 
@@ -1561,12 +1582,15 @@ function VideoContent({ interact }: { interact: VideoInteract }) {
           <div className="h-full flex gap-5 animate-fade-in">
             {/* 主播放器 */}
             <div className="flex-1 flex flex-col">
-              <div className="relative bg-black rounded-lg overflow-hidden aspect-video mb-4 flex items-center justify-center">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/30 to-purple-600/30" />
-                <div className="relative text-center">
-                  <PlayCircle className="w-16 h-16 text-white/80 mx-auto mb-2 animate-pulse" />
-                  <p className="text-white/70 text-sm">正在加载视频...</p>
-                  <p className="text-white/50 text-xs mt-1">CPU工作原理 - 计算机组成原理</p>
+              <div className="relative bg-black rounded-lg overflow-hidden aspect-video mb-4">
+                {/* 视频播放画面模拟 */}
+                <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-white/10 flex items-center justify-center">
+                      <PlayCircle className="w-10 h-10 text-white/60" />
+                    </div>
+                    <p className="text-white/50 text-sm">CPU工作原理 - 视频播放中</p>
+                  </div>
                 </div>
                 {/* 播放控件 */}
                 <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/80 to-transparent flex items-center px-4 gap-3">
@@ -1590,13 +1614,12 @@ function VideoContent({ interact }: { interact: VideoInteract }) {
                   视频简介
                 </h3>
                 <p className="text-sm text-text-secondary leading-relaxed">
-                  本视频详细讲解CPU的基本结构和工作原理，包括运算器、控制器、寄存器组等核心部件的功能与协作机制。
-                  通过动画演示指令执行的完整流程，帮助学生深入理解计算机系统的核心运作方式。
+                  {videos[0].desc}
                 </p>
                 <div className="mt-4 pt-4 border-t border-accent-cyan/10">
                   <h4 className="text-sm font-medium text-text-primary mb-2">关联知识点</h4>
                   <div className="flex flex-wrap gap-2">
-                    {['CPU结构', '运算器', '控制器', '指令周期', '寄存器'].map(tag => (
+                    {videos[0].tags.map(tag => (
                       <span key={tag} className="px-2 py-1 text-xs rounded-full bg-accent-cyan/10 text-accent-cyan cursor-pointer hover:bg-accent-cyan/20">
                         {tag}
                       </span>
@@ -2452,9 +2475,11 @@ export default function DemoPage() {
         break;
       case 'video-1':
         timers.push(t(() => setInteractState(s => ({ ...s, video: { ...s.video, showList: true } })), 300));
+        timers.push(t(() => setInteractState(s => ({ ...s, video: { ...s.video, showList: true, showAdmin: true } })), 5000));
+        timers.push(t(() => setInteractState(s => ({ ...s, video: { ...s.video, showList: true, showAdmin: true, showUploadCard: true } })), 10000));
         break;
       case 'video-2':
-        timers.push(t(() => setInteractState(s => ({ ...s, video: { ...s.video, showList: true, showPlayer: true } })), 500));
+        timers.push(t(() => setInteractState(s => ({ ...s, video: { ...s.video, showList: true, showAdmin: true, showUploadCard: true, showPlayer: true } })), 500));
         break;
       case 'quiz-1':
         timers.push(t(() => setInteractState(s => ({ ...s, quiz: { ...s.quiz, showConfig: true } })), 300));
