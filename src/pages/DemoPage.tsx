@@ -9,7 +9,7 @@ import {
   Target, Award, Clock, ChevronRight,
   CheckCircle2, Circle, ClipboardList, BookMarked,
   FlaskConical, RotateCw, GraduationCap, AlertTriangle,
-  Upload, Copy, Bug, GitCompare, CheckCircle, AlertCircle,
+  Upload, Copy, Bug, GitCompare, CheckCircle, AlertCircle, Trash2,
   Users, TrendingDown, Minus, School, Activity, Settings2, Filter,
   Trophy, XCircle, Bookmark, BookmarkCheck, ChevronLeft,
   TrendingUp, User,
@@ -1550,6 +1550,15 @@ function VideoContent({ interact }: { interact: VideoInteract }) {
                       <Play className="w-7 h-7 text-gray-800 ml-1" />
                     </div>
                   </div>
+                  {/* 删除按钮 - 管理员模式下显示 */}
+                  {interact.showAdmin && (
+                    <button
+                      onClick={(e) => e.stopPropagation()}
+                      className="absolute top-2 right-2 p-1.5 bg-black/50 rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                    >
+                      <Trash2 className="w-4 h-4 text-white" />
+                    </button>
+                  )}
                 </div>
                 {/* 信息 */}
                 <div className="p-4">
