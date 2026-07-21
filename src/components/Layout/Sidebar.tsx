@@ -14,20 +14,17 @@ import {
 } from 'lucide-react';
 
 const navItems = [
+  { id: 'philosophy', label: '教育理念', icon: BookOpen, path: '/philosophy' },
   { id: 'qa', label: '智能问答', icon: MessageSquare, path: '/qa' },
   { id: 'graph', label: '知识图谱', icon: Network, path: '/graph' },
   { id: 'path', label: '学习路径', icon: Route, path: '/path' },
   { id: 'lab', label: '实验辅助', icon: Code2, path: '/lab' },
+  { id: 'video', label: '视频资源', icon: Video, path: '/video' },
   { id: 'quiz', label: '自测系统', icon: FileCheck, path: '/quiz' },
 ];
 
 const teacherItems = [
   { id: 'teacher', label: '学情分析', icon: BarChart3, path: '/teacher' },
-];
-
-const resourceItems = [
-  { id: 'philosophy', label: '教育理念', icon: BookOpen, path: '/philosophy' },
-  { id: 'video', label: '视频资源', icon: Video, path: '/video' },
 ];
 
 export default function Sidebar() {
@@ -94,27 +91,6 @@ export default function Sidebar() {
 
         {/* 分隔线 */}
         <div className="mx-4 my-2 border-t border-[var(--color-border)]" />
-
-        {/* 资源入口 */}
-        <div className="px-3 space-y-1 mb-4">
-          <p className="px-4 text-xs text-[var(--color-text-secondary)]/60 uppercase tracking-wider mb-1">资源中心</p>
-          {resourceItems.map((item) => (
-            <NavLink
-              key={item.id}
-              to={item.path}
-              className={({ isActive }) =>
-                `sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${
-                  isActive
-                    ? 'active text-[var(--color-accent-yellow)]'
-                    : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-accent-yellow)]/5'
-                }`
-              }
-            >
-              <item.icon className="w-5 h-5 group-hover:scale-110 transition-transform" />
-              <span className="font-medium">{item.label}</span>
-            </NavLink>
-          ))}
-        </div>
 
         {/* 学习状态卡片 */}
         <div className="px-4">

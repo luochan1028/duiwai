@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {
-  Video, Plus, ExternalLink, Trash2, Play, Film, Youtube, FileVideo
+  Video, Plus, ExternalLink, Trash2, Play, Film, Youtube, FileVideo,
+  PlayCircle, FileText, Maximize, X
 } from 'lucide-react';
 
 interface VideoItem {
@@ -9,6 +10,11 @@ interface VideoItem {
   url: string;
   category: string;
   embedUrl?: string;
+  duration?: string;
+  views?: string;
+  desc?: string;
+  tags?: string[];
+  color?: string;
 }
 
 const defaultVideos: VideoItem[] = [
@@ -18,6 +24,11 @@ const defaultVideos: VideoItem[] = [
     url: 'https://www.bilibili.com/video/BV1tY411T7jZ',
     category: '课程讲解',
     embedUrl: 'https://player.bilibili.com/player.html?bvid=BV1tY411T7jZ&page=1',
+    duration: '18:32',
+    views: '2.3万',
+    desc: '本视频详细讲解CPU的基本结构和工作原理，包括运算器、控制器、寄存器组等核心部件的功能与协作机制。通过动画演示指令执行的完整流程，帮助学生深入理解计算机系统的核心运作方式。',
+    tags: ['CPU结构', '运算器', '控制器', '指令周期', '寄存器'],
+    color: 'from-blue-500 to-cyan-500',
   },
   {
     id: '2',
@@ -25,6 +36,11 @@ const defaultVideos: VideoItem[] = [
     url: 'https://www.bilibili.com/video/BV1E64y1X7aS',
     category: '实验指导',
     embedUrl: 'https://player.bilibili.com/player.html?bvid=BV1E64y1X7aS&page=1',
+    duration: '24:15',
+    views: '1.8万',
+    desc: '从零开始学习8086汇编语言程序设计，涵盖基本语法、寄存器操作、内存寻址和常见指令。配合实验项目，动手编写第一个汇编程序。',
+    tags: ['8086汇编', '寄存器', '寻址方式', '指令系统'],
+    color: 'from-green-500 to-emerald-500',
   },
   {
     id: '3',
@@ -32,6 +48,11 @@ const defaultVideos: VideoItem[] = [
     url: 'https://www.bilibili.com/video/BV1vi4y1g7cP',
     category: '课程讲解',
     embedUrl: 'https://player.bilibili.com/player.html?bvid=BV1vi4y1g7cP&page=1',
+    duration: '32:08',
+    views: '3.1万',
+    desc: '深入解析存储器层次结构、Cache映射方式（直接映射、全相联、组相联）及替换算法。通过实例分析Cache命中率对性能的影响。',
+    tags: ['存储器', 'Cache', '映射方式', '替换算法', '命中率'],
+    color: 'from-purple-500 to-pink-500',
   },
   {
     id: '4',
@@ -39,28 +60,63 @@ const defaultVideos: VideoItem[] = [
     url: 'https://www.bilibili.com/video/BV1D44y1v7jL',
     category: '重点难点',
     embedUrl: 'https://player.bilibili.com/player.html?bvid=BV1D44y1v7jL&page=1',
+    duration: '28:45',
+    views: '4.2万',
+    desc: '系统讲解指令格式设计、寻址方式和指令系统优化。涵盖RISC与CISC架构对比，指令编码原理和扩展技术。',
+    tags: ['指令格式', '寻址方式', 'RISC', 'CISC', '指令编码'],
+    color: 'from-amber-500 to-orange-500',
+  },
+  {
+    id: '5',
+    title: '流水线技术与性能分析',
+    url: 'https://www.bilibili.com/video/BV1ab4y1z7mK',
+    category: '重点难点',
+    embedUrl: 'https://player.bilibili.com/player.html?bvid=BV1ab4y1z7mK&page=1',
+    duration: '21:20',
+    views: '1.5万',
+    desc: '讲解流水线基本原理、流水线冲突（结构冲突、数据冲突、控制冲突）及解决方案。通过性能分析公式计算加速比。',
+    tags: ['流水线', '数据冲突', '分支预测', '加速比'],
+    color: 'from-red-500 to-rose-500',
+  },
+  {
+    id: '6',
+    title: 'IO系统与中断机制',
+    url: 'https://www.bilibili.com/video/BV1nm4y1p7qR',
+    category: '课程讲解',
+    embedUrl: 'https://player.bilibili.com/player.html?bvid=BV1nm4y1p7qR&page=1',
+    duration: '16:55',
+    views: '9.8千',
+    desc: '介绍IO系统的基本概念、程序查询方式、程序中断方式和DMA方式。对比三种IO控制方式的效率差异。',
+    tags: ['IO系统', '中断', 'DMA', '程序查询'],
+    color: 'from-indigo-500 to-blue-500',
   },
 ];
 
 const categories = ['全部', '课程讲解', '实验指导', '重点难点', '其他'];
 
 function getEmbedUrl(url: string): string | undefined {
-  // Bilibili
   const biliMatch = url.match(/bilibili\.com\/video\/(BV[\w]+)/);
   if (biliMatch) {
     return `https://player.bilibili.com/player.html?bvid=${biliMatch[1]}&page=1`;
   }
-  // YouTube
   const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
   if (ytMatch) {
     return `https://www.youtube.com/embed/${ytMatch[1]}`;
   }
-  // 已经是embed链接
   if (url.includes('embed') || url.includes('player')) {
     return url;
   }
   return undefined;
 }
+
+const colorGradients = [
+  'from-blue-500 to-cyan-500',
+  'from-green-500 to-emerald-500',
+  'from-purple-500 to-pink-500',
+  'from-amber-500 to-orange-500',
+  'from-red-500 to-rose-500',
+  'from-indigo-500 to-blue-500',
+];
 
 export default function VideoPage() {
   const [videos, setVideos] = useState<VideoItem[]>(() => {
@@ -72,19 +128,25 @@ export default function VideoPage() {
   const [newTitle, setNewTitle] = useState('');
   const [newUrl, setNewUrl] = useState('');
   const [newCategory, setNewCategory] = useState('其他');
-  const [playingId, setPlayingId] = useState<string | null>(null);
+  const [playingVideo, setPlayingVideo] = useState<VideoItem | null>(null);
 
   const filtered = activeCategory === '全部' ? videos : videos.filter(v => v.category === activeCategory);
 
   const handleAdd = () => {
     if (!newTitle.trim() || !newUrl.trim()) return;
     const embedUrl = getEmbedUrl(newUrl);
+    const colorIdx = videos.length % colorGradients.length;
     const newItem: VideoItem = {
       id: Date.now().toString(),
       title: newTitle.trim(),
       url: newUrl.trim(),
       category: newCategory,
       embedUrl,
+      duration: '未知',
+      views: '0',
+      desc: '用户添加的视频资源',
+      tags: [],
+      color: colorGradients[colorIdx],
     };
     const updated = [...videos, newItem];
     setVideos(updated);
@@ -98,7 +160,7 @@ export default function VideoPage() {
     const updated = videos.filter(v => v.id !== id);
     setVideos(updated);
     localStorage.setItem('jizu-videos', JSON.stringify(updated));
-    if (playingId === id) setPlayingId(null);
+    if (playingVideo?.id === id) setPlayingVideo(null);
   };
 
   const getCategoryIcon = (cat: string) => {
@@ -111,19 +173,19 @@ export default function VideoPage() {
   };
 
   return (
-    <div className="p-6 space-y-6 animate-fade-in circuit-bg">
-      {/* 标题 */}
+    <div className="p-6 space-y-5 animate-fade-in circuit-bg">
+      {/* 标题栏 */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Video className="w-8 h-8 text-[var(--color-accent-primary)]" />
+          <PlayCircle className="w-8 h-8 text-[var(--color-accent-primary)]" />
           <div>
             <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">视频资源</h1>
-            <p className="text-sm text-[var(--color-text-secondary)]">课程视频、实验演示与微课资源</p>
+            <p className="text-sm text-[var(--color-text-secondary)]">精选课程视频，助力深度学习</p>
           </div>
         </div>
         <button
           onClick={() => setShowAdd(!showAdd)}
-          className="btn-primary flex items-center gap-2"
+          className="btn-primary flex items-center gap-2 px-4 py-2"
         >
           <Plus className="w-4 h-4" />
           添加视频
@@ -177,8 +239,8 @@ export default function VideoPage() {
         </div>
       )}
 
-      {/* 分类筛选 */}
-      <div className="flex gap-2">
+      {/* 分类标签 */}
+      <div className="flex items-center gap-2">
         {categories.map(cat => (
           <button
             key={cat}
@@ -192,77 +254,164 @@ export default function VideoPage() {
             {cat}
           </button>
         ))}
+        <div className="ml-auto text-sm text-[var(--color-text-muted)]">共 {filtered.length} 个视频</div>
       </div>
 
-      {/* 视频播放器 */}
-      {playingId && (() => {
-        const video = videos.find(v => v.id === playingId);
-        if (!video || !video.embedUrl) return null;
-        return (
-          <div className="glass-card p-4 animate-fade-in-up">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-base font-bold text-[var(--color-text-primary)]">{video.title}</h3>
-              <button onClick={() => setPlayingId(null)} className="text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] text-sm">关闭播放</button>
+      {/* 播放器视图 */}
+      {playingVideo && (
+        <div className="flex gap-5 animate-fade-in">
+          {/* 主播放器 */}
+          <div className="flex-1 flex flex-col">
+            {playingVideo.embedUrl ? (
+              <div className="relative w-full mb-4" style={{ paddingBottom: '56.25%' }}>
+                <iframe
+                  src={playingVideo.embedUrl}
+                  className="absolute inset-0 w-full h-full rounded-lg"
+                  allowFullScreen
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                />
+              </div>
+            ) : (
+              <div className="relative bg-black rounded-lg overflow-hidden mb-4 flex items-center justify-center" style={{ aspectRatio: '16/9' }}>
+                <div className={`absolute inset-0 bg-gradient-to-br ${playingVideo.color || 'from-blue-600 to-purple-600'}/30`} />
+                <div className="relative text-center">
+                  <PlayCircle className="w-16 h-16 text-white/80 mx-auto mb-2 animate-pulse" />
+                  <p className="text-white/70 text-sm">无法嵌入播放</p>
+                  <a href={playingVideo.url} target="_blank" rel="noopener noreferrer" className="text-white/50 text-xs mt-1 underline">
+                    点击前往原始链接观看
+                  </a>
+                </div>
+              </div>
+            )}
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-xl font-bold text-[var(--color-text-primary)]">{playingVideo.title}</h2>
+              <button onClick={() => setPlayingVideo(null)} className="p-2 text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)]">
+                <X className="w-5 h-5" />
+              </button>
             </div>
-            <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
-              <iframe
-                src={video.embedUrl}
-                className="absolute inset-0 w-full h-full rounded-lg"
-                allowFullScreen
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-              />
+            <div className="flex items-center gap-3 text-sm text-[var(--color-text-secondary)] mb-4">
+              <span className="px-2 py-0.5 rounded bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)]">{playingVideo.category}</span>
+              {playingVideo.views && <span>{playingVideo.views}次播放</span>}
+              {playingVideo.duration && <span>时长 {playingVideo.duration}</span>}
+            </div>
+            {playingVideo.desc && (
+              <div className="glass-card p-4 mb-4">
+                <h3 className="font-bold text-[var(--color-text-primary)] mb-3 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-[var(--color-accent-primary)]" />
+                  视频简介
+                </h3>
+                <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
+                  {playingVideo.desc}
+                </p>
+                {playingVideo.tags && playingVideo.tags.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-[var(--color-border)]">
+                    <h4 className="text-sm font-medium text-[var(--color-text-primary)] mb-2">关联知识点</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {playingVideo.tags.map(tag => (
+                        <span key={tag} className="px-2 py-1 text-xs rounded-full bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)] cursor-pointer hover:bg-[var(--color-accent-primary)]/20">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* 右侧推荐视频列表 */}
+          <div className="w-72 flex-shrink-0">
+            <div className="glass-card p-4 sticky top-0">
+              <h3 className="font-bold text-[var(--color-text-primary)] mb-3 flex items-center gap-2">
+                <Video className="w-4 h-4 text-[var(--color-accent-secondary)]" />
+                推荐视频
+              </h3>
+              <div className="space-y-3 max-h-[500px] overflow-y-auto">
+                {videos.filter(v => v.id !== playingVideo.id).slice(0, 5).map(v => (
+                  <div
+                    key={v.id}
+                    className="flex gap-3 cursor-pointer group"
+                    onClick={() => setPlayingVideo(v)}
+                  >
+                    <div className={`w-24 h-14 rounded bg-gradient-to-br ${v.color || 'from-blue-500 to-cyan-500'} flex-shrink-0 flex items-center justify-center`}>
+                      <Play className="w-5 h-5 text-white/70" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-[var(--color-text-primary)] line-clamp-2 group-hover:text-[var(--color-accent-primary)] transition-colors">
+                        {v.title}
+                      </p>
+                      <p className="text-xs text-[var(--color-text-muted)] mt-1">{v.duration} · {v.views}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        );
-      })()}
+        </div>
+      )}
 
-      {/* 视频列表 */}
-      <div className="grid grid-cols-2 gap-4">
-        {filtered.map(video => {
-          const CatIcon = getCategoryIcon(video.category);
-          return (
-            <div key={video.id} className="glass-card p-4 hover:scale-[1.01] transition-all group">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-lg bg-[var(--color-accent-primary)]/10 flex items-center justify-center group-hover:bg-[var(--color-accent-primary)]/20 transition-colors">
-                    <CatIcon className="w-6 h-6 text-[var(--color-accent-primary)]" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-[var(--color-text-primary)] mb-1">{video.title}</h3>
-                    <span className="text-xs px-2 py-0.5 bg-[var(--color-accent-secondary)]/10 text-[var(--color-accent-secondary)] rounded-full">
-                      {video.category}
-                    </span>
+      {/* 视频卡片列表 */}
+      {!playingVideo && (
+        <div className="grid grid-cols-3 gap-5">
+          {filtered.map((video, idx) => {
+            return (
+              <div
+                key={video.id}
+                className="glass-card overflow-hidden cursor-pointer hover:scale-[1.02] transition-all duration-300 group"
+                onClick={() => video.embedUrl && setPlayingVideo(video)}
+              >
+                {/* 缩略图 */}
+                <div className={`relative aspect-video bg-gradient-to-br ${video.color || 'from-blue-500 to-cyan-500'} flex items-center justify-center`}>
+                  <Play className="w-12 h-12 text-white/80 group-hover:scale-125 transition-transform" />
+                  {video.duration && (
+                    <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
+                      {video.duration}
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center">
+                      <Play className="w-7 h-7 text-gray-800 ml-1" />
+                    </div>
                   </div>
                 </div>
-                <button onClick={() => handleDelete(video.id)} className="p-1.5 text-[var(--color-text-muted)] hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all">
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                {/* 信息 */}
+                <div className="p-4">
+                  <h3 className="font-medium text-[var(--color-text-primary)] mb-2 line-clamp-2 group-hover:text-[var(--color-accent-primary)] transition-colors">
+                    {video.title}
+                  </h3>
+                  <div className="flex items-center justify-between text-xs text-[var(--color-text-secondary)]">
+                    <span className="px-2 py-0.5 rounded bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)]">{video.category}</span>
+                    <div className="flex items-center gap-2">
+                      {video.views && <span>{video.views}次播放</span>}
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDelete(video.id); }}
+                        className="p-1 text-[var(--color-text-muted)] hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                  {!video.embedUrl && (
+                    <a
+                      href={video.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="mt-2 inline-flex items-center gap-1 text-xs text-[var(--color-accent-secondary)] hover:underline"
+                    >
+                      <ExternalLink className="w-3 h-3" /> 前往原始链接
+                    </a>
+                  )}
+                </div>
               </div>
-              <div className="flex gap-2">
-                {video.embedUrl && (
-                  <button
-                    onClick={() => setPlayingId(video.id)}
-                    className="btn-primary text-xs flex items-center gap-1.5 py-1.5 px-3"
-                  >
-                    <Play className="w-3 h-3" /> 在线播放
-                  </button>
-                )}
-                <a
-                  href={video.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-tech text-xs flex items-center gap-1.5 py-1.5 px-3"
-                >
-                  <ExternalLink className="w-3 h-3" /> 原始链接
-                </a>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
 
-      {filtered.length === 0 && (
+      {/* 空状态 */}
+      {filtered.length === 0 && !playingVideo && (
         <div className="text-center py-12">
           <Video className="w-12 h-12 text-[var(--color-text-muted)] mx-auto mb-3" />
           <p className="text-[var(--color-text-secondary)]">暂无该分类的视频资源</p>

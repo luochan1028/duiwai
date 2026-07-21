@@ -4,19 +4,22 @@ import {
   MessageSquare, Network, Route, Code2, FileCheck, BarChart3,
   Bot, Zap, Shield, Sparkles, BookOpen, Cpu, Database, Lightbulb,
   ShieldCheck, Video, FileText, Edit3, Calendar, ArrowUpRight,
+  PlayCircle, Heart, Plus,
   ZoomIn, ZoomOut, Maximize2, Info, ArrowRight, Send,
-  TrendingUp, Target, Award, Clock, ChevronRight,
+  Target, Award, Clock, ChevronRight,
   CheckCircle2, Circle, ClipboardList, BookMarked,
   FlaskConical, RotateCw, GraduationCap, AlertTriangle,
   Upload, Copy, Bug, GitCompare, CheckCircle, AlertCircle,
   Users, TrendingDown, Minus, School, Activity, Settings2, Filter,
   Trophy, XCircle, Bookmark, BookmarkCheck, ChevronLeft,
+  TrendingUp,
 } from 'lucide-react';
 import {
   graphNodes, graphLinks, categoryColors, highFreqQuestions, classStats,
   knowledgePoints, radarChartData, userProgress, teachingCalendar,
   pendingTasks, learningReport, qaDatabase,
 } from '@/data/mockData';
+import { useTheme } from '@/contexts/ThemeContext';
 
 // ==================== 场景定义 ====================
 
@@ -31,12 +34,22 @@ interface DemoScene {
 const scenes: DemoScene[] = [
   {
     id: 'intro', title: '开场', duration: 60,
-    narration: '大家好，欢迎观看计组智学教育智能体演示视频。计组智学是为计算机组成原理课程量身打造的AI辅导平台，深度契合十五五教育规划五大育人理念：立德树人、科教融汇、拔尖创新、多元协同和质量导向。',
-    navTarget: 'qa',
+    narration: '大家好，欢迎观看计组智学教育智能体演示视频。计组智学是为计算机组成原理课程量身打造的AI辅导平台，深度契合十五五教育规划五大育人理念，积极实践未来教育新范式。',
+    navTarget: 'philosophy',
+  },
+  {
+    id: 'philosophy-1', title: '教育理念·十五五规划', duration: 60,
+    narration: '首先让我们了解产品背后的教育理念。计组智学深度契合十五五教育规划五大育人理念：立德树人，坚持五育并举，摒弃唯成绩论；科教融汇，产教融合，以科研赋能教学；拔尖创新，交叉融合，培养复合型人才；多元协同，全周期赋能，构建协同育人生态；破除唯分数，重质效，发挥教育评价指挥棒作用。',
+    navTarget: 'philosophy',
+  },
+  {
+    id: 'philosophy-2', title: '教育理念·未来教育八大特点', duration: 60,
+    narration: '计组智学积极实践未来教育八大特点：从工具理性向人的复归，关注人格养成与创造力培养；个性化学习与人机协同，实现千人千面定制化辅导；教师角色转型，从知识传授者转向学习设计师；泛在化学习，7乘24小时随时随地可学；跨学科融合，打破单一学科壁垒；能力本位评价，生成动态成长画像；技术赋能教育公平，优质资源低成本辐射；社交化学习生态，自选制探究式学习激发内驱力。',
+    navTarget: 'philosophy',
   },
   {
     id: 'architecture', title: '系统架构', duration: 60,
-    narration: '系统采用三层架构设计。底层融合课程标准、教学日历、超星题库和实验指导书四大数据源。中层部署AI对话引擎、个性化推荐算法和代码调试引擎三大核心引擎。上层提供智能问答、知识图谱、学习路径、实验辅助、自测系统和教师端六大功能模块。',
+    narration: '系统采用三层架构设计。底层融合课程标准、教学日历、超星题库和实验指导书四大数据源。中层部署AI对话引擎、个性化推荐算法和代码调试引擎三大核心引擎。上层提供智能问答、知识图谱、学习路径、实验辅助、视频资源、自测系统和教师端七大功能模块。',
     navTarget: 'qa',
   },
   {
@@ -80,6 +93,16 @@ const scenes: DemoScene[] = [
     navTarget: 'lab',
   },
   {
+    id: 'video-1', title: '视频资源·分类与列表', duration: 60,
+    narration: '视频资源模块集成了丰富的课程视频。顶部分类标签支持按类型筛选，包括课程讲解、实验指导、重点难点等多个类别。视频卡片展示标题、分类标签和时长，点击即可播放。支持Bilibili和YouTube等平台链接自动解析，也可以手动添加自定义视频资源。',
+    navTarget: 'video',
+  },
+  {
+    id: 'video-2', title: '视频资源·在线播放', duration: 60,
+    narration: '点击视频卡片后，内嵌播放器直接在页面内播放，无需跳转。支持全屏观看，自动记忆播放进度。视频与知识点关联，观看后可直接跳转相关练习。视频资源库持续更新，配合教学日历推荐对应周次的学习视频，打造沉浸式多媒体学习体验。',
+    navTarget: 'video',
+  },
+  {
     id: 'quiz-1', title: '自测系统·抽题配置', duration: 60,
     narration: '自测系统支持按知识点和难度动态抽题。首先选择知识点，如Cache映射、IEEE754、DMA方式等十二个知识点可选。然后选择难度级别，包括简单、中等和困难。再设置题目数量，5到20题可选。底部显示题库匹配结果，确认后点击开始答题。',
     navTarget: 'quiz',
@@ -96,17 +119,17 @@ const scenes: DemoScene[] = [
   },
   {
     id: 'teacher-2', title: '教师端·柱状图与建议', duration: 60,
-    narration: '知识点掌握度柱状图用渐变色直观展示各模块掌握情况。系统根据高频问题趋势自动生成教学调整建议，为教学优化提供数据支撑。例如Cache映射相关提问上升22%，建议增加课堂练习时间。',
+    narration: '知识点掌握度柱状图用渐变色直观展示各模块掌握情况。系统根据高频问题趋势自动生成教学调整建议，为教学优化提供数据支撑。例如Cache映射相关提问上升百分之二十二，建议增加课堂练习时间。',
     navTarget: 'teacher',
   },
   {
     id: 'results', title: '应用成效', duration: 60,
-    narration: '在86名学生的4周试点中，智能体日均活跃用户62人，累计回答问题1347次，实验代码辅助调用213次。布尔代数化简和指令系统设计两个难点模块的随堂测验平均分分别提升12.3%和9.7%。满意度调查显示，91.2%的学生认为智能体显著提升学习体验，86.7%表示更愿意主动探索课程难点。',
+    narration: '在86名学生的4周试点中，智能体日均活跃用户62人，累计回答问题1347次，实验代码辅助调用213次。布尔代数化简和指令系统设计两个难点模块的随堂测验平均分分别提升百分之十二点三和百分之九点七。满意度调查显示，百分之九十一点二的学生认为智能体显著提升学习体验，百分之八十六点七表示更愿意主动探索课程难点。',
     navTarget: 'teacher',
   },
   {
     id: 'outro', title: '总结', duration: 60,
-    narration: '计组智学教育智能体，实现了AI技术与专业课程的深度耦合，积极实践未来教育八大特点：从工具理性向人的复归、个性化学习与人机协同、教师角色转型、泛在化学习、跨学科融合、能力本位评价、技术赋能教育公平、社交化学习生态。知识深度融合教学日历，教-学-评-辅形成闭环，数据安全并重，架构可迁移至数据结构、操作系统等课程。谢谢！试用平台，可以访问：http://159.138.92.82/qa',
+    narration: '计组智学教育智能体，实现了AI技术与专业课程的深度耦合，深度契合十五五教育规划五大育人理念，积极实践未来教育八大特点。知识深度融合教学日历，教-学-评-辅形成闭环，数据安全并重，架构可迁移至数据结构、操作系统等课程。谢谢！试用平台，可以访问：http://159.138.92.82/qa',
     navTarget: 'qa',
   },
 ];
@@ -154,6 +177,14 @@ interface TeacherInteract {
   showBarChart: boolean;
   showSuggestions: boolean;
 }
+interface PhilosophyInteract {
+  show15thPlan: boolean;
+  showFutureEdu: boolean;
+}
+interface VideoInteract {
+  showList: boolean;
+  showPlayer: boolean;
+}
 
 interface InteractState {
   qa: QAInteract;
@@ -162,6 +193,8 @@ interface InteractState {
   lab: LabInteract;
   quiz: QuizInteract;
   teacher: TeacherInteract;
+  philosophy: PhilosophyInteract;
+  video: VideoInteract;
 }
 
 const defaultInteract = (): InteractState => ({
@@ -171,6 +204,8 @@ const defaultInteract = (): InteractState => ({
   lab: { showCode: false, showUpload: false, showDebugResult: false, showDiff: false, showScore: false },
   quiz: { showConfig: false, showQuestion: false, showResult: false },
   teacher: { showClassStats: false, showTop10: false, showBarChart: false, showSuggestions: false },
+  philosophy: { show15thPlan: false, showFutureEdu: false },
+  video: { showList: false, showPlayer: false },
 });
 
 // ==================== 开场内容 ====================
@@ -197,6 +232,114 @@ function IntroContent() {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+// ==================== 教育理念内容 ====================
+
+function PhilosophyContent({ interact }: { interact: { show15thPlan: boolean; showFutureEdu: boolean } }) {
+  const philosophy15th = [
+    { icon: '🎯', title: '立德树人 · 五育并举', color: 'text-red-400', borderColor: 'border-red-500/30', bgColor: 'bg-red-500/10',
+      points: ['将立德树人作为高校育人的根本任务，坚持"四全育人"', '摒弃"唯成绩论"，注重德智体美劳全面发展', '产品体现：教学团队审核机制确保内容正确'] },
+    { icon: '🔬', title: '科教融汇 · 产教融合', color: 'text-blue-400', borderColor: 'border-blue-500/30', bgColor: 'bg-blue-500/10',
+      points: ['教学、科研与国家重大科技攻关深度绑定', '专业设置精准对接产业升级与市场需求', '产品体现：实验辅助结合真实硬件平台'] },
+    { icon: '💡', title: '拔尖创新 · 交叉融合', color: 'text-purple-400', borderColor: 'border-purple-500/30', bgColor: 'bg-purple-500/10',
+      points: ['聚焦关键领域，发展新兴交叉学科', '深化新工科建设，培养复合型人才', '产品体现：知识图谱展现跨知识点关联'] },
+    { icon: '🤝', title: '多元协同 · 全周期赋能', color: 'text-green-400', borderColor: 'border-green-500/30', bgColor: 'bg-green-500/10',
+      points: ['学校主导、家庭筑基、社会支撑协同育人', '贯穿入学适应到就业升学全周期', '产品体现：教学日历联动+课前课后闭环'] },
+    { icon: '📊', title: '破除唯分数 · 重质效', color: 'text-amber-400', borderColor: 'border-amber-500/30', bgColor: 'bg-amber-500/10',
+      points: ['破除"唯分数、唯名校、唯学历"功利化倾向', '完善学业评价，加强创新能力评价', '产品体现：掌握度雷达图多维度评估'] },
+  ];
+
+  const futureEducation = [
+    { icon: '❤️', title: '人的复归', desc: '从工具理性向人格养成转变，关注价值观与创造力' },
+    { icon: '🤖', title: '人机协同', desc: '千人千面个性化学习，AI学伴定制化辅导' },
+    { icon: '🎓', title: '角色转型', desc: '教师从知识传授者转向学习设计师' },
+    { icon: '🌐', title: '泛在学习', desc: '打破教室局限，7×24小时时时可学' },
+    { icon: '🔗', title: '跨学科融合', desc: '打破学科壁垒，模块化课程动态迭代' },
+    { icon: '📈', title: '能力本位', desc: '过程性评价，大数据生成动态成长画像' },
+    { icon: '⚖️', title: '教育公平', desc: '优质教育资源低成本大规模辐射' },
+    { icon: '👥', title: '社交化生态', desc: '自选制探究式学习，游戏化激发内驱力' },
+  ];
+
+  return (
+    <div className="w-full h-full overflow-y-auto p-6 space-y-6">
+      {/* 标题 */}
+      <div className="relative">
+        <div className="flex items-center gap-3 mb-2">
+          <BookOpen className="w-8 h-8 text-accent-cyan" />
+          <h1 className="text-2xl font-bold text-text-primary">教育理念</h1>
+        </div>
+        <p className="text-text-secondary ml-11">
+          计组智学深度契合国家教育发展战略，积极实践未来教育新范式
+        </p>
+      </div>
+
+      {/* 十五五规划 */}
+      {interact.show15thPlan && (
+        <section className="animate-fade-in">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-1 h-6 bg-accent-cyan rounded-full" />
+            <h2 className="text-xl font-bold text-text-primary">十五五教育规划 · 五大育人理念</h2>
+          </div>
+          <div className="grid grid-cols-1 gap-4">
+            {philosophy15th.map((item, idx) => (
+              <div
+                key={idx}
+                className={`glass-card p-5 border-l-4 ${item.borderColor} hover:border-l-[6px] transition-all animate-fade-in-up`}
+                style={{ animationDelay: `${idx * 150}ms` }}
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <div className={`w-10 h-10 rounded-lg ${item.bgColor} flex items-center justify-center text-xl`}>
+                    {item.icon}
+                  </div>
+                  <h3 className={`text-lg font-bold ${item.color}`}>{item.title}</h3>
+                </div>
+                <div className="ml-13 space-y-2">
+                  {item.points.map((point, pi) => (
+                    <div key={pi} className="flex gap-2">
+                      <span className={`text-xs mt-1.5 flex-shrink-0 ${pi === item.points.length - 1 ? 'text-accent-cyan' : 'text-text-muted'}`}>
+                        {pi === item.points.length - 1 ? '★' : '•'}
+                      </span>
+                      <p className={`text-sm ${pi === item.points.length - 1 ? 'text-accent-cyan font-medium' : 'text-text-secondary'}`}>
+                        {point}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 未来教育八大特点 */}
+      {interact.showFutureEdu && (
+        <section className="animate-fade-in">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-1 h-6 bg-accent-purple rounded-full" />
+            <h2 className="text-xl font-bold text-text-primary">未来教育 · 八大特点</h2>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            {futureEducation.map((item, idx) => (
+              <div
+                key={idx}
+                className="glass-card p-5 hover:scale-[1.02] transition-all duration-300 animate-fade-in-up"
+                style={{ animationDelay: `${idx * 100}ms` }}
+              >
+                <div className="flex items-start gap-3">
+                  <div className="text-3xl">{item.icon}</div>
+                  <div>
+                    <h3 className="text-base font-bold text-accent-purple mb-1">{item.title}</h3>
+                    <p className="text-sm text-text-secondary leading-relaxed">{item.desc}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
@@ -1260,6 +1403,185 @@ const DIFFICULTY_OPTIONS = [
 
 const COUNT_OPTIONS = [5, 10, 15, 20].map(c => ({ value: c, label: `${c} 题` }));
 
+// ==================== 视频资源内容 ====================
+
+function VideoContent({ interact }: { interact: VideoInteract }) {
+  const videos = [
+    { id: '1', title: '计算机组成原理 - CPU工作原理', category: '课程讲解', duration: '18:32', views: '2.3万', bvid: 'BV1tY411T7jZ', color: 'from-blue-500 to-cyan-500' },
+    { id: '2', title: '汇编语言程序设计入门', category: '实验指导', duration: '24:15', views: '1.8万', bvid: 'BV1E64y1X7aS', color: 'from-green-500 to-emerald-500' },
+    { id: '3', title: '存储系统与Cache原理', category: '课程讲解', duration: '32:08', views: '3.1万', bvid: 'BV1vi4y1g7cP', color: 'from-purple-500 to-pink-500' },
+    { id: '4', title: '指令系统设计详解', category: '重点难点', duration: '28:45', views: '4.2万', bvid: 'BV1D44y1v7jL', color: 'from-amber-500 to-orange-500' },
+    { id: '5', title: '流水线技术与性能分析', category: '重点难点', duration: '21:20', views: '1.5万', bvid: 'BV1ab4y1z7mK', color: 'from-red-500 to-rose-500' },
+    { id: '6', title: 'IO系统与中断机制', category: '课程讲解', duration: '16:55', views: '9.8千', bvid: 'BV1nm4y1p7qR', color: 'from-indigo-500 to-blue-500' },
+  ];
+  const categories = ['全部', '课程讲解', '实验指导', '重点难点'];
+  const [activeCategory, setActiveCategory] = useState('全部');
+
+  useEffect(() => {
+    if (interact.showList) setActiveCategory('全部');
+  }, [interact.showList]);
+
+  const filtered = activeCategory === '全部' ? videos : videos.filter(v => v.category === activeCategory);
+
+  return (
+    <div className="w-full h-full flex flex-col p-6 overflow-hidden">
+      {/* 标题栏 */}
+      <div className="flex items-center justify-between mb-5 flex-shrink-0">
+        <div className="flex items-center gap-3">
+          <PlayCircle className="w-8 h-8 text-accent-cyan" />
+          <div>
+            <h1 className="text-2xl font-bold text-text-primary">视频资源</h1>
+            <p className="text-sm text-text-secondary">精选课程视频，助力深度学习</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <button className="btn-secondary px-4 py-2 text-sm flex items-center gap-2">
+            <Plus className="w-4 h-4" /> 添加视频
+          </button>
+        </div>
+      </div>
+
+      {/* 分类标签 */}
+      {interact.showList && (
+        <div className="flex items-center gap-2 mb-5 flex-shrink-0 animate-fade-in">
+          {categories.map((cat, idx) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 animate-fade-in-up ${
+                activeCategory === cat
+                  ? 'bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30'
+                  : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
+              }`}
+              style={{ animationDelay: `${idx * 80}ms` }}
+            >
+              {cat}
+            </button>
+          ))}
+          <div className="ml-auto text-sm text-text-muted">共 {filtered.length} 个视频</div>
+        </div>
+      )}
+
+      {/* 视频列表 or 播放器 */}
+      <div className="flex-1 overflow-y-auto">
+        {!interact.showPlayer && interact.showList && (
+          <div className="grid grid-cols-3 gap-5">
+            {filtered.map((video, idx) => (
+              <div
+                key={video.id}
+                className="glass-card overflow-hidden cursor-pointer hover:scale-[1.02] transition-all duration-300 group animate-fade-in-up"
+                style={{ animationDelay: `${idx * 100}ms` }}
+              >
+                {/* 缩略图 */}
+                <div className={`relative aspect-video bg-gradient-to-br ${video.color} flex items-center justify-center`}>
+                  <Play className="w-12 h-12 text-white/80 group-hover:scale-125 transition-transform" />
+                  <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
+                    {video.duration}
+                  </div>
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center">
+                      <Play className="w-7 h-7 text-gray-800 ml-1" />
+                    </div>
+                  </div>
+                </div>
+                {/* 信息 */}
+                <div className="p-4">
+                  <h3 className="font-medium text-text-primary mb-2 line-clamp-2 group-hover:text-accent-cyan transition-colors">
+                    {video.title}
+                  </h3>
+                  <div className="flex items-center justify-between text-xs text-text-secondary">
+                    <span className="px-2 py-0.5 rounded bg-accent-cyan/10 text-accent-cyan">{video.category}</span>
+                    <span>{video.views}次播放</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* 播放器视图 */}
+        {interact.showPlayer && (
+          <div className="h-full flex gap-5 animate-fade-in">
+            {/* 主播放器 */}
+            <div className="flex-1 flex flex-col">
+              <div className="relative bg-black rounded-lg overflow-hidden aspect-video mb-4 flex items-center justify-center">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/30 to-purple-600/30" />
+                <div className="relative text-center">
+                  <PlayCircle className="w-16 h-16 text-white/80 mx-auto mb-2 animate-pulse" />
+                  <p className="text-white/70 text-sm">正在加载视频...</p>
+                  <p className="text-white/50 text-xs mt-1">CPU工作原理 - 计算机组成原理</p>
+                </div>
+                {/* 播放控件 */}
+                <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/80 to-transparent flex items-center px-4 gap-3">
+                  <Play className="w-5 h-5 text-white" />
+                  <div className="flex-1 h-1 bg-white/20 rounded-full">
+                    <div className="h-full w-1/3 bg-accent-cyan rounded-full" />
+                  </div>
+                  <span className="text-white text-xs">6:20 / 18:32</span>
+                  <Maximize className="w-4 h-4 text-white/70" />
+                </div>
+              </div>
+              <h2 className="text-xl font-bold text-text-primary mb-2">计算机组成原理 - CPU工作原理</h2>
+              <div className="flex items-center gap-3 text-sm text-text-secondary mb-4">
+                <span className="px-2 py-0.5 rounded bg-accent-cyan/10 text-accent-cyan">课程讲解</span>
+                <span>2.3万次播放</span>
+                <span>时长 18:32</span>
+              </div>
+              <div className="glass-card p-4 flex-1">
+                <h3 className="font-bold text-text-primary mb-3 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-accent-cyan" />
+                  视频简介
+                </h3>
+                <p className="text-sm text-text-secondary leading-relaxed">
+                  本视频详细讲解CPU的基本结构和工作原理，包括运算器、控制器、寄存器组等核心部件的功能与协作机制。
+                  通过动画演示指令执行的完整流程，帮助学生深入理解计算机系统的核心运作方式。
+                </p>
+                <div className="mt-4 pt-4 border-t border-accent-cyan/10">
+                  <h4 className="text-sm font-medium text-text-primary mb-2">关联知识点</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {['CPU结构', '运算器', '控制器', '指令周期', '寄存器'].map(tag => (
+                      <span key={tag} className="px-2 py-1 text-xs rounded-full bg-accent-cyan/10 text-accent-cyan cursor-pointer hover:bg-accent-cyan/20">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 右侧播放列表 */}
+            <div className="w-72 flex-shrink-0">
+              <div className="glass-card p-4 h-full overflow-y-auto">
+                <h3 className="font-bold text-text-primary mb-3 flex items-center gap-2">
+                  <Video className="w-4 h-4 text-accent-purple" />
+                  推荐视频
+                </h3>
+                <div className="space-y-3">
+                  {videos.slice(1, 5).map((v, idx) => (
+                    <div key={v.id} className="flex gap-3 cursor-pointer group">
+                      <div className={`w-24 h-14 rounded bg-gradient-to-br ${v.color} flex-shrink-0 flex items-center justify-center`}>
+                        <Play className="w-5 h-5 text-white/70" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-text-primary line-clamp-2 group-hover:text-accent-cyan transition-colors">
+                          {v.title}
+                        </p>
+                        <p className="text-xs text-text-muted mt-1">{v.duration} · {v.views}次</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ==================== 自测系统内容 ====================
+
 function QuizContent({ interact }: { interact: QuizInteract }) {
   return (
     <div className="w-full h-full flex flex-col px-8 py-6 overflow-hidden">
@@ -1787,10 +2109,12 @@ function OutroContent() {
 // ==================== 侧边栏 ====================
 
 const sidebarNavItems = [
+  { id: 'philosophy', label: '教育理念', icon: BookOpen },
   { id: 'qa', label: '智能问答', icon: MessageSquare },
   { id: 'graph', label: '知识图谱', icon: Network },
   { id: 'path', label: '学习路径', icon: Route },
   { id: 'lab', label: '实验辅助', icon: Code2 },
+  { id: 'video', label: '视频资源', icon: PlayCircle },
   { id: 'quiz', label: '自测系统', icon: FileCheck },
 ];
 
@@ -1890,6 +2214,7 @@ function Sidebar({ activeNav }: { activeNav: string }) {
 // ==================== 主页面 ====================
 
 export default function DemoPage() {
+  const { theme: originalTheme, setTheme } = useTheme();
   const [currentScene, setCurrentScene] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -1902,6 +2227,7 @@ export default function DemoPage() {
   const speechEndTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const nextSceneRef = useRef<() => void>(() => {});
+  const originalThemeRef = useRef(originalTheme);
 
   const scene = scenes[currentScene];
   // 估算实际总时长：每字符280ms + 每场景3秒间隔
@@ -2015,6 +2341,12 @@ export default function DemoPage() {
     const timers: ReturnType<typeof setTimeout>[] = [];
 
     switch (scene.id) {
+      case 'philosophy-1':
+        timers.push(t(() => setInteractState(s => ({ ...s, philosophy: { ...s.philosophy, show15thPlan: true } })), 500));
+        break;
+      case 'philosophy-2':
+        timers.push(t(() => setInteractState(s => ({ ...s, philosophy: { ...s.philosophy, show15thPlan: true, showFutureEdu: true } })), 300));
+        break;
       case 'qa-1':
         timers.push(t(() => setInteractState(s => ({ ...s, qa: { ...s.qa, typing: true } })), 500));
         timers.push(t(() => setInteractState(s => ({ ...s, qa: { ...s.qa, typing: false, showAnswer: true } })), 3500));
@@ -2054,6 +2386,12 @@ export default function DemoPage() {
         timers.push(t(() => setInteractState(s => ({ ...s, lab: { ...s.lab, showCode: true, showUpload: true, showDebugResult: true, showDiff: true } })), 6000));
         timers.push(t(() => setInteractState(s => ({ ...s, lab: { ...s.lab, showCode: true, showUpload: true, showDebugResult: true, showDiff: true, showScore: true } })), 12000));
         break;
+      case 'video-1':
+        timers.push(t(() => setInteractState(s => ({ ...s, video: { ...s.video, showList: true } })), 300));
+        break;
+      case 'video-2':
+        timers.push(t(() => setInteractState(s => ({ ...s, video: { ...s.video, showList: true, showPlayer: true } })), 500));
+        break;
       case 'quiz-1':
         timers.push(t(() => setInteractState(s => ({ ...s, quiz: { ...s.quiz, showConfig: true } })), 300));
         break;
@@ -2074,8 +2412,12 @@ export default function DemoPage() {
     return () => timers.forEach(t => clearTimeout(t));
   }, [currentScene, isPlaying, scene.id]);
 
-  // 加载语音列表
+  // 加载语音列表 + 应用红色主题
   useEffect(() => {
+    // 保存原主题并切换到红色主题（白底红字）
+    originalThemeRef.current = originalTheme;
+    setTheme('red');
+
     window.speechSynthesis.getVoices();
     window.speechSynthesis.onvoiceschanged = () => {
       window.speechSynthesis.getVoices();
@@ -2086,6 +2428,8 @@ export default function DemoPage() {
       if (speechEndTimerRef.current) clearTimeout(speechEndTimerRef.current);
       if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
       if (timerRef.current) clearInterval(timerRef.current);
+      // 恢复原主题
+      setTheme(originalThemeRef.current);
     };
   }, []);
 
@@ -2098,11 +2442,13 @@ export default function DemoPage() {
   const renderContent = () => {
     const sid = scene.id;
     if (sid === 'intro') return <IntroContent />;
+    if (sid.startsWith('philosophy')) return <PhilosophyContent interact={interactState.philosophy} />;
     if (sid === 'architecture') return <ArchitectureContent />;
     if (sid.startsWith('qa')) return <QAContent interact={interactState.qa} />;
     if (sid.startsWith('graph')) return <GraphContent interact={interactState.graph} />;
     if (sid.startsWith('path')) return <PathContent interact={interactState.path} />;
     if (sid.startsWith('lab')) return <LabContent interact={interactState.lab} />;
+    if (sid.startsWith('video')) return <VideoContent interact={interactState.video} />;
     if (sid.startsWith('quiz')) return <QuizContent interact={interactState.quiz} />;
     if (sid.startsWith('teacher')) return <TeacherContent interact={interactState.teacher} />;
     if (sid === 'results') return <ResultsContent />;
@@ -2112,10 +2458,12 @@ export default function DemoPage() {
 
   const getNavTarget = () => {
     const sid = scene.id;
+    if (sid.startsWith('philosophy')) return 'philosophy';
     if (sid.startsWith('qa')) return 'qa';
     if (sid.startsWith('graph')) return 'graph';
     if (sid.startsWith('path')) return 'path';
     if (sid.startsWith('lab')) return 'lab';
+    if (sid.startsWith('video')) return 'video';
     if (sid.startsWith('quiz')) return 'quiz';
     if (sid.startsWith('teacher')) return 'teacher';
     return scene.navTarget;
