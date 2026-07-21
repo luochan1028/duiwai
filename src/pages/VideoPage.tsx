@@ -119,10 +119,7 @@ const colorGradients = [
 ];
 
 export default function VideoPage() {
-  const [videos, setVideos] = useState<VideoItem[]>(() => {
-    const saved = localStorage.getItem('jizu-videos');
-    return saved ? JSON.parse(saved) : defaultVideos;
-  });
+  const [videos, setVideos] = useState<VideoItem[]>(defaultVideos);
   const [activeCategory, setActiveCategory] = useState('全部');
   const [showAdd, setShowAdd] = useState(false);
   const [newTitle, setNewTitle] = useState('');
@@ -148,18 +145,14 @@ export default function VideoPage() {
       tags: [],
       color: colorGradients[colorIdx],
     };
-    const updated = [...videos, newItem];
-    setVideos(updated);
-    localStorage.setItem('jizu-videos', JSON.stringify(updated));
+    setVideos([...videos, newItem]);
     setNewTitle('');
     setNewUrl('');
     setShowAdd(false);
   };
 
   const handleDelete = (id: string) => {
-    const updated = videos.filter(v => v.id !== id);
-    setVideos(updated);
-    localStorage.setItem('jizu-videos', JSON.stringify(updated));
+    setVideos(videos.filter(v => v.id !== id));
     if (playingVideo?.id === id) setPlayingVideo(null);
   };
 
