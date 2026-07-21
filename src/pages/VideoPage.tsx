@@ -277,98 +277,121 @@ export default function VideoPage() {
         <div className="ml-auto text-sm text-[var(--color-text-muted)]">共 {filtered.length} 个视频</div>
       </div>
 
-      {/* 播放器视图 */}
+      {/* 播放器模态框 */}
       {playingVideo && (
-        <div className="flex gap-5 animate-fade-in">
-          {/* 主播放器 */}
-          <div className="flex-1 flex flex-col">
-            {playingVideo.embedUrl ? (
-              <div className="relative w-full mb-4" style={{ paddingBottom: '56.25%' }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-8 animate-fade-in">
+          {/* 背景遮罩 */}
+          <div
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={() => setPlayingVideo(null)}
+          />
+          
+          {/* 播放器内容 */}
+          <div className="relative w-full max-w-5xl glass-card rounded-xl overflow-hidden animate-scale-in">
+            {/* 关闭按钮 */}
+            <button
+              onClick={() => setPlayingVideo(null)}
+              className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-all hover:scale-110"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            
+            {/* 视频区域 */}
+            <div className="relative bg-black" style={{ aspectRatio: '16/9' }}>
+              {playingVideo.embedUrl ? (
                 <iframe
                   src={playingVideo.embedUrl}
-                  className="absolute inset-0 w-full h-full rounded-lg"
+                  className="w-full h-full"
                   allowFullScreen
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
                 />
-              </div>
-            ) : playingVideo.url ? (
-              <div className="relative w-full mb-4 bg-black rounded-lg overflow-hidden" style={{ aspectRatio: '16/9' }}>
+              ) : playingVideo.url ? (
                 <video
                   src={playingVideo.url}
                   controls
                   className="w-full h-full"
-                  poster={playingVideo.url}
+                  poster={playingVideo.thumbnail || playingVideo.url}
                 />
-              </div>
-            ) : (
-              <div className="relative bg-black rounded-lg overflow-hidden mb-4 flex items-center justify-center" style={{ aspectRatio: '16/9' }}>
-                <div className={`absolute inset-0 bg-gradient-to-br ${playingVideo.color || 'from-blue-600 to-purple-600'}/30`} />
-                <div className="relative text-center">
-                  <PlayCircle className="w-16 h-16 text-white/80 mx-auto mb-2 animate-pulse" />
-                  <p className="text-white/70 text-sm">无法播放</p>
-                </div>
-              </div>
-            )}
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-xl font-bold text-[var(--color-text-primary)]">{playingVideo.title}</h2>
-              <button onClick={() => setPlayingVideo(null)} className="p-2 text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)]">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="flex items-center gap-3 text-sm text-[var(--color-text-secondary)] mb-4">
-              <span className="px-2 py-0.5 rounded bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)]">{playingVideo.category}</span>
-              {playingVideo.views && <span>{playingVideo.views}次播放</span>}
-              {playingVideo.duration && <span>时长 {playingVideo.duration}</span>}
-            </div>
-            {playingVideo.desc && (
-              <div className="glass-card p-4 mb-4">
-                <h3 className="font-bold text-[var(--color-text-primary)] mb-3 flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-[var(--color-accent-primary)]" />
-                  视频简介
-                </h3>
-                <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-                  {playingVideo.desc}
-                </p>
-                {playingVideo.tags && playingVideo.tags.length > 0 && (
-                  <div className="mt-4 pt-4 border-t border-[var(--color-border)]">
-                    <h4 className="text-sm font-medium text-[var(--color-text-primary)] mb-2">关联知识点</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {playingVideo.tags.map(tag => (
-                        <span key={tag} className="px-2 py-1 text-xs rounded-full bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)] cursor-pointer hover:bg-[var(--color-accent-primary)]/20">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className={`absolute inset-0 bg-gradient-to-br ${playingVideo.color || 'from-blue-600 to-purple-600'}/30`} />
+                  <div className="relative text-center">
+                    <PlayCircle className="w-16 h-16 text-white/80 mx-auto mb-2 animate-pulse" />
+                    <p className="text-white/70 text-sm">无法播放</p>
                   </div>
-                )}
+                </div>
+              )}
+            </div>
+            
+            {/* 视频信息 */}
+            <div className="p-6">
+              <h2 className="text-xl font-bold text-[var(--color-text-primary)] mb-3">{playingVideo.title}</h2>
+              <div className="flex items-center gap-3 text-sm text-[var(--color-text-secondary)] mb-4">
+                <span className="px-2 py-0.5 rounded bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)]">{playingVideo.category}</span>
+                {playingVideo.views && <span>{playingVideo.views}次播放</span>}
+                {playingVideo.duration && <span>时长 {playingVideo.duration}</span>}
               </div>
-            )}
-          </div>
-
-          {/* 右侧推荐视频列表 */}
-          <div className="w-72 flex-shrink-0">
-            <div className="glass-card p-4 sticky top-0">
+              {playingVideo.desc && (
+                <div className="mb-4">
+                  <h3 className="font-bold text-[var(--color-text-primary)] mb-2 flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-[var(--color-accent-primary)]" />
+                    视频简介
+                  </h3>
+                  <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
+                    {playingVideo.desc}
+                  </p>
+                </div>
+              )}
+              {playingVideo.tags && playingVideo.tags.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-medium text-[var(--color-text-primary)] mb-2">关联知识点</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {playingVideo.tags.map(tag => (
+                      <span key={tag} className="px-2 py-1 text-xs rounded-full bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)] cursor-pointer hover:bg-[var(--color-accent-primary)]/20">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* 推荐视频 */}
+            <div className="px-6 pb-6">
               <h3 className="font-bold text-[var(--color-text-primary)] mb-3 flex items-center gap-2">
                 <Video className="w-4 h-4 text-[var(--color-accent-secondary)]" />
                 推荐视频
               </h3>
-              <div className="space-y-3 max-h-[500px] overflow-y-auto">
-                {videos.filter(v => v.id !== playingVideo.id).slice(0, 5).map(v => (
+              <div className="flex gap-4 overflow-x-auto pb-2">
+                {videos.filter(v => v.id !== playingVideo.id).slice(0, 6).map(v => (
                   <div
                     key={v.id}
-                    className="flex gap-3 cursor-pointer group"
+                    className="flex-shrink-0 w-48 cursor-pointer group"
                     onClick={() => setPlayingVideo(v)}
                   >
-                    <div className={`w-24 h-14 rounded bg-gradient-to-br ${v.color || 'from-blue-500 to-cyan-500'} flex-shrink-0 flex items-center justify-center`}>
-                      <Play className="w-5 h-5 text-white/70" />
+                    <div className={`relative aspect-video rounded-lg overflow-hidden ${v.thumbnail ? '' : `bg-gradient-to-br ${v.color || 'from-blue-500 to-cyan-500'}`}`}>
+                      {v.thumbnail ? (
+                        <img src={v.thumbnail} alt={v.title} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Play className="w-8 h-8 text-white/70" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center">
+                          <Play className="w-5 h-5 text-gray-800 ml-0.5" />
+                        </div>
+                      </div>
+                      {v.duration && (
+                        <div className="absolute bottom-1.5 right-1.5 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
+                          {v.duration}
+                        </div>
+                      )}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-[var(--color-text-primary)] line-clamp-2 group-hover:text-[var(--color-accent-primary)] transition-colors">
-                        {v.title}
-                      </p>
-                      <p className="text-xs text-[var(--color-text-muted)] mt-1">{v.duration} · {v.views}</p>
-                    </div>
+                    <p className="text-sm text-[var(--color-text-primary)] mt-2 line-clamp-2 group-hover:text-[var(--color-accent-primary)] transition-colors">
+                      {v.title}
+                    </p>
                   </div>
                 ))}
               </div>
