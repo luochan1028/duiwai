@@ -4,7 +4,7 @@ import {
   ChevronRight, Target, Lightbulb, GraduationCap, Shield,
   Upload, Play, Trash2, Plus, X, Video, Lock, User,
 } from 'lucide-react';
-import { saveVideoFile, loadVideoFile, deleteVideoFile, saveVideoMeta, loadVideoMeta } from '@/lib/videoStorage';
+import { saveVideoFile, loadVideoFile, deleteVideoFile, saveVideoMeta, loadVideoMeta, generateThumbnail } from '@/lib/videoStorage';
 
 interface RedEducationItem {
   id: string;
@@ -201,12 +201,13 @@ export default function RedEducationPage() {
       try {
         const videoId = `v${Date.now()}`;
         const url = await saveVideoFile(videoId, file);
+        const thumbnail = await generateThumbnail(url);
         const video: VideoCase = {
           id: videoId,
           title: newVideo.title || file.name.replace(/\.[^/.]+$/, ''),
           category: newVideo.category,
           url,
-          thumbnail: url,
+          thumbnail,
           duration: '00:00',
           playCount: 0,
           description: newVideo.description,

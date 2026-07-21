@@ -3,7 +3,7 @@ import {
   Video, Plus, ExternalLink, Trash2, Play, Film, Youtube, FileVideo,
   PlayCircle, FileText, Maximize, X, Lock, User, Upload,
 } from 'lucide-react';
-import { saveVideoFile, loadVideoFile, deleteVideoFile, saveVideoMeta, loadVideoMeta } from '@/lib/videoStorage';
+import { saveVideoFile, loadVideoFile, deleteVideoFile, saveVideoMeta, loadVideoMeta, generateThumbnail } from '@/lib/videoStorage';
 
 interface VideoItem {
   id: string;
@@ -16,6 +16,7 @@ interface VideoItem {
   desc?: string;
   tags?: string[];
   color?: string;
+  thumbnail?: string;
 }
 
 interface UserRole {
@@ -183,6 +184,7 @@ export default function VideoPage() {
       try {
         const videoId = Date.now().toString();
         const url = await saveVideoFile(videoId, file);
+        const thumbnail = await generateThumbnail(url);
         const colorIdx = videos.length % colorGradients.length;
         const newItem: VideoItem = {
           id: videoId,
@@ -195,6 +197,7 @@ export default function VideoPage() {
           desc: newVideo.description || '用户上传的视频资源',
           tags: newVideo.tags.split(/[,，\s]+/).filter(Boolean),
           color: colorGradients[colorIdx],
+          thumbnail,
         };
         const updated = [...videos, newItem];
         setVideos(updated);
@@ -377,7 +380,9 @@ export default function VideoPage() {
               >
                 {/* 缩略图 */}
                 <div className={`relative aspect-video ${video.url && !video.embedUrl ? 'bg-black' : `bg-gradient-to-br ${video.color || 'from-blue-500 to-cyan-500'}`} flex items-center justify-center`}>
-                  {video.url && !video.embedUrl ? (
+                  {video.thumbnail ? (
+                    <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" />
+                  ) : video.url && !video.embedUrl ? (
                     <img src={video.url} alt={video.title} className="w-full h-full object-cover" />
                   ) : (
                     <Play className="w-12 h-12 text-white/80 group-hover:scale-125 transition-transform" />

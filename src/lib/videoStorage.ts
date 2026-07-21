@@ -52,6 +52,53 @@ export async function loadVideoFile(id: string): Promise<string | null> {
   });
 }
 
+// 从视频文件生成封面图片（取第一帧）
+export async function generateThumbnail(videoUrl: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement('video');
+    video.crossOrigin = 'anonymous';
+    video.src = videoUrl;
+    video.preload = 'metadata';
+
+    const cleanup = () => {
+      video.pause();
+      video.src = '';
+      video.removeEventListener('loadeddata', onLoaded);
+      video.removeEventListener('error', onError);
+    };
+
+    const onLoaded = () => {
+      try {
+        video.currentTime = 0.5;
+        const canvas = document.createElement('canvas');
+        canvas.width = 640;
+        canvas.height = 360;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          cleanup();
+          reject(new Error('无法创建画布上下文'));
+          return;
+        }
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const thumbnail = canvas.toDataURL('image/jpeg', 0.8);
+        cleanup();
+        resolve(thumbnail);
+      } catch (err) {
+        cleanup();
+        reject(err);
+      }
+    };
+
+    const onError = () => {
+      cleanup();
+      reject(new Error('视频加载失败，无法生成封面'));
+    };
+
+    video.addEventListener('loadeddata', onLoaded);
+    video.addEventListener('error', onError);
+  });
+}
+
 // 删除视频文件
 export async function deleteVideoFile(id: string): Promise<void> {
   const db = await openDB();
