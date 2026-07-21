@@ -13,7 +13,7 @@ import {
   Users, TrendingDown, Minus, School, Activity, Settings2, Filter,
   Trophy, XCircle, Bookmark, BookmarkCheck, ChevronLeft,
   TrendingUp, User,
-  Flag,
+  Flag, Star,
 } from 'lucide-react';
 import {
   graphNodes, graphLinks, categoryColors, highFreqQuestions, classStats,
@@ -49,87 +49,92 @@ const scenes: DemoScene[] = [
     navTarget: 'philosophy',
   },
   {
-    id: 'red-education', title: '红色育人·课程思政', duration: 28,
-    narration: '红色育人模块将红色基因融入专业教学。涵盖课程思政、红色文化传承、科技报国、红色网络阵地等六大维度。管理员可上传红色视频案例，激发学生科技报国情怀。',
+    id: 'red-education-1', title: '红色育人·课程与文化', duration: 32,
+    narration: '红色育人模块将红色基因融入专业教学，涵盖六大维度。第一是课程育人，讲述银河一号、龙芯CPU等国产计算机奋斗史，激发科技报国情怀。第二是文化育人，依托四川红色资源，组织学生参观邓小平故里、川陕革命根据地，将红色基因传承与专业学习有机结合。',
     navTarget: 'red-education',
   },
   {
-    id: 'architecture', title: '系统架构', duration: 25,
+    id: 'red-education-2', title: '红色育人·实践与管理', duration: 32,
+    narration: '第三是实践育人，关注国家卡脖子技术，设置龙芯指令集汇编实验，鼓励参加挑战杯。第四是网络育人，结合网络空间安全专业特色，建设红色网络阵地。第五是心理育人，学习路径中设置红色激励机制，关怀学习困难学生。第六是管理育人，建立思政覆盖度评价体系。管理员可上传红色视频案例，所有视频支持IndexedDB持久化存储，刷新后不丢失。',
+    navTarget: 'red-education',
+  },
+  {
+    id: 'architecture', title: '系统架构', duration: 22,
     narration: '系统采用三层架构。底层融合课程标准、教学日历、题库和实验指导书四大数据源。中层部署AI对话引擎、推荐算法和代码调试引擎三大核心引擎。上层提供九大功能模块。',
     navTarget: 'qa',
   },
   {
-    id: 'qa-1', title: '智能问答·提问与回答', duration: 27,
+    id: 'qa-1', title: '智能问答·提问与回答', duration: 25,
     narration: '首先是智能问答模块。页面顶部展示热门问题，带有知识点标签。学生输入问题后，AI逐字呈现回答，支持Markdown格式，包含表格和列表。',
     navTarget: 'qa',
   },
   {
-    id: 'qa-2', title: '智能问答·关联与审核', duration: 27,
+    id: 'qa-2', title: '智能问答·关联与审核', duration: 25,
     narration: 'AI回答底部自动关联教学日历，推荐关联微课资源。知识点标签可点击跳转到知识图谱。每条回答都有教学团队已审核标识，学习数据本地化存储。',
     navTarget: 'qa',
   },
   {
-    id: 'graph-1', title: '知识图谱·画布交互', duration: 25,
+    id: 'graph-1', title: '知识图谱·画布交互', duration: 22,
     narration: '知识图谱模块展示课程核心概念及其关联关系。画布支持拖拽平移和滚轮缩放。点击任意节点，关联节点和连线自动高亮。',
     navTarget: 'graph',
   },
   {
-    id: 'graph-2', title: '知识图谱·详情与路径', duration: 25,
+    id: 'graph-2', title: '知识图谱·详情与路径', duration: 22,
     narration: '右侧详情面板展示选中节点的名称、分类和描述。提供跨模块跳转按钮，实现知识图谱与问答、自测的无缝衔接。还有五步学习路径建议。',
     navTarget: 'graph',
   },
   {
-    id: 'path-1', title: '学习路径·统计与进度', duration: 27,
+    id: 'path-1', title: '学习路径·统计与进度', duration: 25,
     narration: '学习路径模块是教-学-评-辅闭环的核心。顶部展示学习数据统计卡片，雷达图呈现六维掌握度。各章节进度条展示学习进度，薄弱知识点用红色标签标注。',
     navTarget: 'path',
   },
   {
-    id: 'path-2', title: '学习路径·计划与报告', duration: 27,
+    id: 'path-2', title: '学习路径·计划与报告', duration: 25,
     narration: '系统自动推送本周学习计划，分课前预习和课后巩固。待完成任务列表按类型分类。个性化推荐区提供薄弱点突破和拓展阅读建议。可生成学习报告。',
     navTarget: 'path',
   },
   {
-    id: 'lab-1', title: '实验辅助·编辑器', duration: 25,
+    id: 'lab-1', title: '实验辅助·编辑器', duration: 22,
     narration: '实验辅助模块提供代码级支持。左侧列出实验项目，中间代码编辑器支持8086汇编语法高亮。工具栏提供上传代码、重置和复制功能。',
     navTarget: 'lab',
   },
   {
-    id: 'lab-2', title: '实验辅助·调试与对比', duration: 25,
+    id: 'lab-2', title: '实验辅助·调试与对比', duration: 22,
     narration: '点击智能调试按钮后，右侧显示调试结果。错误用红色标记，显示行号和修复建议。可查看代码对比视图，还有优化建议和质量评分。',
     navTarget: 'lab',
   },
   {
-    id: 'video-1', title: '视频资源·列表与上传', duration: 27,
-    narration: '视频资源模块集成丰富的课程视频。管理员登录后可上传本地视频案例，支持IndexedDB持久化存储，刷新后不丢失。分类标签支持按类型快速筛选。',
+    id: 'video-1', title: '视频资源·列表与上传', duration: 25,
+    narration: '视频资源模块集成丰富的课程视频。管理员登录后显示右上角上传按钮和网格中的上传卡片。上传视频时自动截取第一帧作为封面，IndexedDB持久化存储，刷新不丢失。管理员可在视频卡片悬停时看到删除按钮。',
     navTarget: 'video',
   },
   {
-    id: 'video-2', title: '视频资源·在线播放', duration: 27,
-    narration: '点击视频卡片即可播放。内嵌播放器支持进度控制和全屏观看。视频与知识点关联，配合教学日历推荐对应周次的学习视频，右侧推荐列表快速切换。',
+    id: 'video-2', title: '视频资源·模态框播放', duration: 25,
+    narration: '点击视频卡片后弹出全屏模态框播放器，带背景模糊和缩放动画。右上角圆形关闭按钮，点击背景也可关闭。视频下方展示标题、分类、播放次数和关联知识点，底部横向滚动推荐视频列表，快速切换。',
     navTarget: 'video',
   },
   {
-    id: 'quiz-1', title: '自测系统·抽题配置', duration: 25,
+    id: 'quiz-1', title: '自测系统·抽题配置', duration: 22,
     narration: '自测系统支持按知识点和难度动态抽题。选择知识点、难度级别和题目数量，底部显示题库匹配结果，确认后开始答题。',
     navTarget: 'quiz',
   },
   {
-    id: 'quiz-2', title: '自测系统·答题与成绩', duration: 25,
+    id: 'quiz-2', title: '自测系统·答题与成绩', duration: 22,
     narration: '答题界面显示答题进度环形图和题目导航。提交后展示成绩分析，识别薄弱知识点，提供重新抽题和查看解析功能。',
     navTarget: 'quiz',
   },
   {
-    id: 'teacher-1', title: '教师端·班级与问题', duration: 25,
+    id: 'teacher-1', title: '教师端·班级与问题', duration: 22,
     narration: '教师端提供学情分析仪表盘。班级统计卡片展示活跃用户、平均分和完成率。高频问题TOP10排行帮助教师了解学生困惑集中点。',
     navTarget: 'teacher',
   },
   {
-    id: 'teacher-2', title: '教师端·柱状图与建议', duration: 25,
+    id: 'teacher-2', title: '教师端·柱状图与建议', duration: 22,
     narration: '知识点掌握度柱状图用渐变色展示各模块掌握情况。系统根据高频问题趋势自动生成教学调整建议，为教学优化提供数据支撑。',
     navTarget: 'teacher',
   },
   {
-    id: 'results', title: '应用成效', duration: 22,
+    id: 'results', title: '应用成效', duration: 20,
     narration: '在86名学生的4周试点中，日均活跃用户62人，累计回答问题1347次。难点模块随堂测验平均分提升12.3%和9.7%。91.2%的学生认为智能体显著提升学习体验。',
     navTarget: 'teacher',
   },
@@ -192,6 +197,18 @@ interface VideoInteract {
   showPlayer: boolean;
   showAdmin: boolean;
   showUploadCard: boolean;
+  showDeleteBtn: boolean;
+  showVideoModal: boolean;
+}
+interface RedEducationInteract {
+  showStats: boolean;
+  showDim1: boolean;
+  showDim2: boolean;
+  showDim3: boolean;
+  showDim4: boolean;
+  showDim5: boolean;
+  showDim6: boolean;
+  showVideoSection: boolean;
 }
 
 interface InteractState {
@@ -203,6 +220,7 @@ interface InteractState {
   teacher: TeacherInteract;
   philosophy: PhilosophyInteract;
   video: VideoInteract;
+  redEdu: RedEducationInteract;
 }
 
 const defaultInteract = (): InteractState => ({
@@ -213,7 +231,8 @@ const defaultInteract = (): InteractState => ({
   quiz: { showConfig: false, showQuestion: false, showResult: false },
   teacher: { showClassStats: false, showTop10: false, showBarChart: false, showSuggestions: false },
   philosophy: { show15thPlan: false, showFutureEdu: false },
-  video: { showList: false, showPlayer: false, showAdmin: false, showUploadCard: false },
+  video: { showList: false, showPlayer: false, showAdmin: false, showUploadCard: false, showDeleteBtn: false, showVideoModal: false },
+  redEdu: { showStats: false, showDim1: false, showDim2: false, showDim3: false, showDim4: false, showDim5: false, showDim6: false, showVideoSection: false },
 });
 
 // ==================== 开场内容 ====================
@@ -354,50 +373,213 @@ function PhilosophyContent({ interact }: { interact: { show15thPlan: boolean; sh
 
 // ==================== 红色育人内容 ====================
 
-function RedEducationContent() {
-  const [activeIdx, setActiveIdx] = useState(0);
-  useEffect(() => {
-    const t = setInterval(() => setActiveIdx(p => (p + 1) % 3), 2500);
-    return () => clearInterval(t);
-  }, []);
-  const items = [
-    { icon: BookOpen, title: '红色课程思政', desc: '讲述银河一号、龙芯CPU等国产计算机奋斗史，激发科技报国情怀', color: 'text-red-600', bg: 'bg-red-500/10' },
-    { icon: Flag, title: '红色文化传承', desc: '依托四川红色资源（邓小平故里、川陕革命根据地）开展主题实践', color: 'text-rose-600', bg: 'bg-rose-500/10' },
-    { icon: Zap, title: '红色科技报国', desc: '关注卡脖子技术攻关，设置龙芯指令集汇编实验，参加挑战杯', color: 'text-orange-600', bg: 'bg-orange-500/10' },
+function RedEducationContent({ interact }: { interact: RedEducationInteract }) {
+  const dimensions = [
+    {
+      id: 1,
+      icon: BookOpen,
+      title: '课程育人',
+      titleEn: 'Course',
+      desc: '将红色育人元素深度融入计算机组成原理课程教学。通过讲述我国计算机发展史中的科学家精神，如"银河一号"超级计算机的研制历程，激发学生科技报国情怀。在指令系统设计中引入国产龙芯CPU案例分析。',
+      keywords: ['科学家精神', '银河一号', '龙芯CPU', '工程伦理'],
+      color: 'text-red-600',
+      bg: 'bg-red-500/10',
+      border: 'border-red-500/30',
+    },
+    {
+      id: 2,
+      icon: Flag,
+      title: '文化育人',
+      titleEn: 'Culture',
+      desc: '依托四川红色资源，组织学生参观邓小平故里、川陕革命根据地，开展红色文化主题实践活动。撰写技术发展与社会进步主题报告，将红色基因传承与专业学习有机结合。',
+      keywords: ['邓小平故里', '川陕革命', '红色基因', '主题实践'],
+      color: 'text-rose-600',
+      bg: 'bg-rose-500/10',
+      border: 'border-rose-500/30',
+    },
+    {
+      id: 3,
+      icon: Zap,
+      title: '实践育人',
+      titleEn: 'Practice',
+      desc: '引导学生关注国家"卡脖子"技术攻关领域。在实验辅助模块中设置国产芯片相关实验项目，如基于龙芯指令集的汇编编程实践。鼓励参加"挑战杯"、"互联网+"等创新创业大赛。',
+      keywords: ['卡脖子技术', '龙芯指令集', '挑战杯', '创新创业'],
+      color: 'text-orange-600',
+      bg: 'bg-orange-500/10',
+      border: 'border-orange-500/30',
+    },
+    {
+      id: 4,
+      icon: Shield,
+      title: '网络育人',
+      titleEn: 'Network',
+      desc: '结合网络空间安全专业特色，建设红色网络文化传播阵地。在视频资源模块设立"红色科技"专栏，推送我国科技工作者奋斗故事。通过智能问答解答科技伦理、网络安全法治等问题。',
+      keywords: ['网络安全', '科技伦理', '红色专栏', '法治教育'],
+      color: 'text-rose-600',
+      bg: 'bg-rose-500/10',
+      border: 'border-rose-500/30',
+    },
+    {
+      id: 5,
+      icon: Heart,
+      title: '心理育人',
+      titleEn: 'Psychology',
+      desc: '关注学生学习心理健康。在学习路径模块中设置"红色激励"机制，当学生遇到学习困难时推送革命先辈攻坚克难的故事激励。建立学习状态预警系统，对成绩下滑学生进行关怀干预。',
+      keywords: ['心理健康', '红色激励', '学习预警', '关怀干预'],
+      color: 'text-pink-600',
+      bg: 'bg-pink-500/10',
+      border: 'border-pink-500/30',
+    },
+    {
+      id: 6,
+      icon: Award,
+      title: '管理育人',
+      titleEn: 'Management',
+      desc: '建立红色育人成效评价体系。在教师端学情分析中增设"思政元素覆盖度"指标，统计课程中融入的红色育人案例数量。学生端学习报告增加"价值观培养"维度，关注科技报国、工匠精神成长。',
+      keywords: ['思政覆盖度', '价值观培养', '工匠精神', '成效评价'],
+      color: 'text-amber-600',
+      bg: 'bg-amber-500/10',
+      border: 'border-amber-500/30',
+    },
   ];
+
+  const visibleDims = dimensions.filter(d => {
+    if (d.id === 1) return interact.showDim1;
+    if (d.id === 2) return interact.showDim2;
+    if (d.id === 3) return interact.showDim3;
+    if (d.id === 4) return interact.showDim4;
+    if (d.id === 5) return interact.showDim5;
+    if (d.id === 6) return interact.showDim6;
+    return false;
+  });
+
   return (
-    <div className="p-8 space-y-5 animate-fade-in">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="p-3 rounded-xl bg-gradient-to-br from-red-600 to-rose-600">
-          <Flag className="w-7 h-7 text-white" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-text-primary">红色育人</h1>
-          <p className="text-sm text-text-secondary">将红色基因融入专业教学，培养科技报国时代新人</p>
-        </div>
-      </div>
-      <div className="grid grid-cols-4 gap-4">
-        {[{ label: '思政案例', value: '48' }, { label: '红色视频', value: '12' }, { label: '实践活动', value: '6' }, { label: '覆盖学生', value: '86' }].map(s => (
-          <div key={s.label} className="glass-card p-4 text-center">
-            <div className="text-2xl font-tech font-bold text-red-600">{s.value}</div>
-            <div className="text-xs text-text-secondary mt-1">{s.label}</div>
+    <div className="w-full h-full flex flex-col p-6 overflow-hidden">
+      {/* 标题栏 */}
+      <div className="flex items-center justify-between mb-4 flex-shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="p-3 rounded-xl bg-gradient-to-br from-red-600 to-rose-600">
+            <Flag className="w-7 h-7 text-white" />
           </div>
-        ))}
+          <div>
+            <h1 className="text-2xl font-bold text-text-primary">红色育人</h1>
+            <p className="text-sm text-text-secondary">将红色基因融入专业教学，培养科技报国时代新人</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 text-sm text-text-secondary">
+            <User className="w-4 h-4" />
+            <span>admin</span>
+            <span className="px-2 py-0.5 text-xs rounded bg-red-500 text-white">管理员</span>
+          </div>
+          <button className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+            <Upload className="w-4 h-4" />
+            上传视频案例
+          </button>
+        </div>
       </div>
-      <div className="space-y-3">
-        {items.map((item, idx) => (
-          <div key={item.title} className={`glass-card p-5 border-l-4 border-red-500/30 transition-all ${idx === activeIdx ? 'scale-[1.02] border-red-500' : ''}`}>
-            <div className="flex items-start gap-4">
-              <div className={`p-3 rounded-lg ${item.bg}`}>
-                <item.icon className={`w-6 h-6 ${item.color}`} />
+
+      {/* 统计卡片 */}
+      {interact.showStats && (
+        <div className="grid grid-cols-4 gap-3 mb-4 flex-shrink-0 animate-fade-in-up">
+          {[
+            { label: '思政案例', value: '48', icon: BookOpen, color: 'text-red-600' },
+            { label: '红色视频', value: '12', icon: Star, color: 'text-amber-600' },
+            { label: '实践活动', value: '6', icon: Users, color: 'text-orange-600' },
+            { label: '覆盖学生', value: '86', icon: GraduationCap, color: 'text-rose-600' },
+          ].map((stat, idx) => (
+            <div key={stat.label} className="glass-card p-3 flex items-center gap-2 animate-fade-in-up" style={{ animationDelay: `${idx * 80}ms` }}>
+              <stat.icon className={`w-6 h-6 ${stat.color}`} />
+              <div>
+                <div className="text-xl font-bold text-text-primary">{stat.value}</div>
+                <div className="text-xs text-text-secondary">{stat.label}</div>
               </div>
-              <div className="flex-1">
-                <h3 className="font-bold text-text-primary mb-1">{item.title}</h3>
-                <p className="text-sm text-text-secondary leading-relaxed">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* 六大育人维度 */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="grid grid-cols-2 gap-3">
+          {visibleDims.map((dim, idx) => (
+            <div
+              key={dim.id}
+              className={`glass-card p-4 border-l-4 ${dim.border} animate-fade-in-up`}
+              style={{ animationDelay: `${idx * 100}ms` }}
+            >
+              <div className="flex items-start gap-3 mb-2">
+                <div className={`p-2 rounded-lg ${dim.bg} flex-shrink-0`}>
+                  <dim.icon className={`w-5 h-5 ${dim.color}`} />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-text-primary">{dim.title}</h3>
+                    <span className="text-xs text-text-muted">{dim.titleEn}</span>
+                  </div>
+                  <p className="text-xs text-text-secondary leading-relaxed mt-1 line-clamp-3">
+                    {dim.desc}
+                  </p>
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {dim.keywords.slice(0, 3).map(kw => (
+                      <span key={kw} className="px-1.5 py-0.5 text-xs rounded bg-red-500/10 text-red-600">
+                        {kw}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* 视频案例区 */}
+        {interact.showVideoSection && (
+          <div className="mt-4 animate-fade-in-up">
+            <h3 className="text-base font-bold text-text-primary mb-3 flex items-center gap-2">
+              <Video className="w-4 h-4 text-red-600" />
+              视频案例库
+              <span className="text-xs text-text-muted font-normal">（IndexedDB持久化存储）</span>
+            </h3>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { title: '银河一号研制历程', cat: '课程育人', dur: '15:32' },
+                { title: '邓小平故里参观纪实', cat: '文化育人', dur: '08:45' },
+                { title: '龙芯CPU技术攻坚', cat: '实践育人', dur: '22:18' },
+              ].map((v, idx) => (
+                <div
+                  key={v.title}
+                  className="glass-card overflow-hidden cursor-pointer hover:scale-[1.02] transition-all group animate-fade-in-up"
+                  style={{ animationDelay: `${idx * 120}ms` }}
+                >
+                  <div className="relative aspect-video bg-gradient-to-br from-red-600/20 to-rose-600/20 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-gradient-to-br from-red-600 to-rose-700 opacity-40" />
+                    <Play className="w-8 h-8 text-white/80 relative group-hover:scale-125 transition-transform" />
+                    <div className="absolute bottom-1.5 right-1.5 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
+                      {v.dur}
+                    </div>
+                    <button className="absolute top-1.5 right-1.5 p-1.5 bg-black/50 rounded opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600">
+                      <Trash2 className="w-3.5 h-3.5 text-white" />
+                    </button>
+                  </div>
+                  <div className="p-3">
+                    <h4 className="font-medium text-text-primary text-sm line-clamp-1">{v.title}</h4>
+                    <div className="flex items-center justify-between mt-1 text-xs text-text-secondary">
+                      <span className="px-1.5 py-0.5 rounded bg-red-500/10 text-red-600">{v.cat}</span>
+                      <span>{Math.floor(Math.random() * 900 + 100)}次播放</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <div className="glass-card h-full min-h-[140px] flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-red-300 transition-colors border-2 border-dashed border-red-500/30 animate-fade-in-up">
+                <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
+                  <Plus className="w-5 h-5 text-red-600" />
+                </div>
+                <span className="text-xs text-text-secondary">上传视频</span>
               </div>
             </div>
           </div>
-        ))}
+        )}
       </div>
     </div>
   );
@@ -1529,9 +1711,9 @@ function VideoContent({ interact }: { interact: VideoInteract }) {
         </div>
       )}
 
-      {/* 视频列表 or 播放器 */}
+      {/* 视频列表 */}
       <div className="flex-1 overflow-y-auto">
-        {!interact.showPlayer && interact.showList && (
+        {interact.showList && (
           <div className="grid grid-cols-3 gap-5">
             {filtered.map((video, idx) => (
               <div
@@ -1585,86 +1767,100 @@ function VideoContent({ interact }: { interact: VideoInteract }) {
             )}
           </div>
         )}
+      </div>
 
-        {/* 播放器视图 */}
-        {interact.showPlayer && (
-          <div className="h-full flex gap-5 animate-fade-in">
-            {/* 主播放器 */}
-            <div className="flex-1 flex flex-col">
-              <div className="relative bg-black rounded-lg overflow-hidden aspect-video mb-4">
-                {/* 视频播放画面模拟 */}
-                <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-white/10 flex items-center justify-center">
-                      <PlayCircle className="w-10 h-10 text-white/60" />
-                    </div>
-                    <p className="text-white/50 text-sm">CPU工作原理 - 视频播放中</p>
+      {/* 播放器模态框 */}
+      {interact.showVideoModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-8 animate-fade-in">
+          {/* 背景遮罩 */}
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+
+          {/* 播放器内容 */}
+          <div className="relative w-full max-w-5xl glass-card rounded-xl overflow-hidden animate-scale-in">
+            {/* 关闭按钮 */}
+            <button className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-all hover:scale-110">
+              <XCircle className="w-6 h-6" />
+            </button>
+
+            {/* 视频区域 */}
+            <div className="relative bg-black" style={{ aspectRatio: '16/9' }}>
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-white/10 flex items-center justify-center">
+                    <PlayCircle className="w-10 h-10 text-white/60" />
                   </div>
-                </div>
-                {/* 播放控件 */}
-                <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/80 to-transparent flex items-center px-4 gap-3">
-                  <Play className="w-5 h-5 text-white" />
-                  <div className="flex-1 h-1 bg-white/20 rounded-full">
-                    <div className="h-full w-1/3 bg-accent-cyan rounded-full" />
-                  </div>
-                  <span className="text-white text-xs">6:20 / 18:32</span>
-                  <Maximize className="w-4 h-4 text-white/70" />
+                  <p className="text-white/50 text-sm">CPU工作原理 - 视频播放中</p>
                 </div>
               </div>
-              <h2 className="text-xl font-bold text-text-primary mb-2">计算机组成原理 - CPU工作原理</h2>
+              {/* 播放控件 */}
+              <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/80 to-transparent flex items-center px-4 gap-3">
+                <Play className="w-5 h-5 text-white" />
+                <div className="flex-1 h-1 bg-white/20 rounded-full">
+                  <div className="h-full w-1/3 bg-accent-cyan rounded-full" />
+                </div>
+                <span className="text-white text-xs">6:20 / 18:32</span>
+                <Maximize className="w-4 h-4 text-white/70" />
+              </div>
+            </div>
+
+            {/* 视频信息 */}
+            <div className="p-6">
+              <h2 className="text-xl font-bold text-text-primary mb-3">计算机组成原理 - CPU工作原理</h2>
               <div className="flex items-center gap-3 text-sm text-text-secondary mb-4">
                 <span className="px-2 py-0.5 rounded bg-accent-cyan/10 text-accent-cyan">课程讲解</span>
                 <span>2.3万次播放</span>
                 <span>时长 18:32</span>
               </div>
-              <div className="glass-card p-4 flex-1">
-                <h3 className="font-bold text-text-primary mb-3 flex items-center gap-2">
+              <div className="mb-4">
+                <h3 className="font-bold text-text-primary mb-2 flex items-center gap-2">
                   <FileText className="w-4 h-4 text-accent-cyan" />
                   视频简介
                 </h3>
                 <p className="text-sm text-text-secondary leading-relaxed">
                   {videos[0].desc}
                 </p>
-                <div className="mt-4 pt-4 border-t border-accent-cyan/10">
-                  <h4 className="text-sm font-medium text-text-primary mb-2">关联知识点</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {videos[0].tags.map(tag => (
-                      <span key={tag} className="px-2 py-1 text-xs rounded-full bg-accent-cyan/10 text-accent-cyan cursor-pointer hover:bg-accent-cyan/20">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
               </div>
-            </div>
-
-            {/* 右侧播放列表 */}
-            <div className="w-72 flex-shrink-0">
-              <div className="glass-card p-4 h-full overflow-y-auto">
-                <h3 className="font-bold text-text-primary mb-3 flex items-center gap-2">
-                  <Video className="w-4 h-4 text-accent-purple" />
-                  推荐视频
-                </h3>
-                <div className="space-y-3">
-                  {videos.slice(1, 5).map((v, idx) => (
-                    <div key={v.id} className="flex gap-3 cursor-pointer group">
-                      <div className={`w-24 h-14 rounded bg-gradient-to-br ${v.color} flex-shrink-0 flex items-center justify-center`}>
-                        <Play className="w-5 h-5 text-white/70" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-text-primary line-clamp-2 group-hover:text-accent-cyan transition-colors">
-                          {v.title}
-                        </p>
-                        <p className="text-xs text-text-muted mt-1">{v.duration} · {v.views}次</p>
-                      </div>
-                    </div>
+              <div>
+                <h4 className="text-sm font-medium text-text-primary mb-2">关联知识点</h4>
+                <div className="flex flex-wrap gap-2">
+                  {videos[0].tags.map(tag => (
+                    <span key={tag} className="px-2 py-1 text-xs rounded-full bg-accent-cyan/10 text-accent-cyan">
+                      {tag}
+                    </span>
                   ))}
                 </div>
               </div>
             </div>
+
+            {/* 推荐视频横向滚动 */}
+            <div className="px-6 pb-6">
+              <h3 className="font-bold text-text-primary mb-3 flex items-center gap-2">
+                <Video className="w-4 h-4 text-accent-purple" />
+                推荐视频
+              </h3>
+              <div className="flex gap-4 overflow-x-auto pb-2">
+                {videos.slice(1, 6).map((v, idx) => (
+                  <div
+                    key={v.id}
+                    className="flex-shrink-0 w-48 cursor-pointer group animate-fade-in-up"
+                    style={{ animationDelay: `${idx * 80}ms` }}
+                  >
+                    <div className={`relative aspect-video rounded-lg overflow-hidden bg-gradient-to-br ${v.color} flex items-center justify-center`}>
+                      <Play className="w-8 h-8 text-white/70 group-hover:scale-125 transition-transform" />
+                      <div className="absolute bottom-1.5 right-1.5 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
+                        {v.duration}
+                      </div>
+                    </div>
+                    <p className="text-sm text-text-primary mt-2 line-clamp-2 group-hover:text-accent-cyan transition-colors">
+                      {v.title}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -2443,6 +2639,19 @@ export default function DemoPage() {
       case 'philosophy-2':
         timers.push(t(() => setInteractState(s => ({ ...s, philosophy: { ...s.philosophy, show15thPlan: true, showFutureEdu: true } })), 300));
         break;
+      case 'red-education-1':
+        // 显示统计 + 课程育人 + 文化育人
+        timers.push(t(() => setInteractState(s => ({ ...s, redEdu: { ...s.redEdu, showStats: true, showDim1: true } })), 500));
+        timers.push(t(() => setInteractState(s => ({ ...s, redEdu: { ...s.redEdu, showStats: true, showDim1: true, showDim2: true } })), 4000));
+        timers.push(t(() => setInteractState(s => ({ ...s, redEdu: { ...s.redEdu, showStats: true, showDim1: true, showDim2: true, showVideoSection: true } })), 9000));
+        break;
+      case 'red-education-2':
+        // 显示实践 + 网络 + 心理 + 管理四个维度（保留前两个维度）
+        timers.push(t(() => setInteractState(s => ({ ...s, redEdu: { ...s.redEdu, showStats: true, showDim1: true, showDim2: true, showDim3: true, showVideoSection: true } })), 300));
+        timers.push(t(() => setInteractState(s => ({ ...s, redEdu: { ...s.redEdu, showStats: true, showDim1: true, showDim2: true, showDim3: true, showDim4: true, showVideoSection: true } })), 5000));
+        timers.push(t(() => setInteractState(s => ({ ...s, redEdu: { ...s.redEdu, showStats: true, showDim1: true, showDim2: true, showDim3: true, showDim4: true, showDim5: true, showVideoSection: true } })), 10000));
+        timers.push(t(() => setInteractState(s => ({ ...s, redEdu: { ...s.redEdu, showStats: true, showDim1: true, showDim2: true, showDim3: true, showDim4: true, showDim5: true, showDim6: true, showVideoSection: true } })), 15000));
+        break;
       case 'qa-1':
         timers.push(t(() => setInteractState(s => ({ ...s, qa: { ...s.qa, typing: true } })), 500));
         timers.push(t(() => setInteractState(s => ({ ...s, qa: { ...s.qa, typing: false, showAnswer: true } })), 3500));
@@ -2488,7 +2697,8 @@ export default function DemoPage() {
         timers.push(t(() => setInteractState(s => ({ ...s, video: { ...s.video, showList: true, showAdmin: true, showUploadCard: true } })), 10000));
         break;
       case 'video-2':
-        timers.push(t(() => setInteractState(s => ({ ...s, video: { ...s.video, showList: true, showAdmin: true, showUploadCard: true, showPlayer: true } })), 500));
+        timers.push(t(() => setInteractState(s => ({ ...s, video: { ...s.video, showList: true, showAdmin: true, showUploadCard: true, showVideoModal: true } })), 500));
+        timers.push(t(() => setInteractState(s => ({ ...s, video: { ...s.video, showList: true, showAdmin: true, showUploadCard: true, showVideoModal: true, showDeleteBtn: true } })), 12000));
         break;
       case 'quiz-1':
         timers.push(t(() => setInteractState(s => ({ ...s, quiz: { ...s.quiz, showConfig: true } })), 300));
@@ -2541,7 +2751,7 @@ export default function DemoPage() {
     const sid = scene.id;
     if (sid === 'intro') return <IntroContent />;
     if (sid.startsWith('philosophy')) return <PhilosophyContent interact={interactState.philosophy} />;
-    if (sid === 'red-education') return <RedEducationContent />;
+    if (sid.startsWith('red-education')) return <RedEducationContent interact={interactState.redEdu} />;
     if (sid === 'architecture') return <ArchitectureContent />;
     if (sid.startsWith('qa')) return <QAContent interact={interactState.qa} />;
     if (sid.startsWith('graph')) return <GraphContent interact={interactState.graph} />;
