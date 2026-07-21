@@ -58,18 +58,18 @@ export async function generateThumbnail(videoUrl: string): Promise<string> {
     const video = document.createElement('video');
     video.crossOrigin = 'anonymous';
     video.src = videoUrl;
-    video.preload = 'metadata';
+    video.preload = 'auto';
 
     const cleanup = () => {
       video.pause();
       video.src = '';
       video.removeEventListener('loadeddata', onLoaded);
       video.removeEventListener('error', onError);
+      video.removeEventListener('seeked', onSeeked);
     };
 
-    const onLoaded = () => {
+    const onSeeked = () => {
       try {
-        video.currentTime = 0.5;
         const canvas = document.createElement('canvas');
         canvas.width = 640;
         canvas.height = 360;
@@ -89,12 +89,17 @@ export async function generateThumbnail(videoUrl: string): Promise<string> {
       }
     };
 
+    const onLoaded = () => {
+      video.currentTime = 0.5;
+    };
+
     const onError = () => {
       cleanup();
       reject(new Error('视频加载失败，无法生成封面'));
     };
 
     video.addEventListener('loadeddata', onLoaded);
+    video.addEventListener('seeked', onSeeked);
     video.addEventListener('error', onError);
   });
 }

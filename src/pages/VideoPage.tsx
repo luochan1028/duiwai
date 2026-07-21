@@ -392,6 +392,14 @@ export default function VideoPage() {
                       {video.duration}
                     </div>
                   )}
+                  {userRole.isAdmin && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleDelete(video.id); }}
+                      className="absolute top-2 right-2 p-2 bg-black/50 rounded opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600"
+                    >
+                      <Trash2 className="w-4 h-4 text-white" />
+                    </button>
+                  )}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                     <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center">
                       <Play className="w-7 h-7 text-gray-800 ml-1" />
@@ -407,14 +415,6 @@ export default function VideoPage() {
                     <span className="px-2 py-0.5 rounded bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)]">{video.category}</span>
                     <div className="flex items-center gap-2">
                       {video.views && <span>{video.views}次播放</span>}
-                      {userRole.isAdmin && (
-                        <button
-                          onClick={(e) => { e.stopPropagation(); handleDelete(video.id); }}
-                          className="p-1 text-[var(--color-text-muted)] hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </button>
-                      )}
                     </div>
                   </div>
                   {!video.embedUrl && video.url && !video.url.startsWith('blob:') && (
