@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import {
   Flag, Star, Award, BookOpen, Users, Heart, Zap,
   ChevronRight, Target, Lightbulb, GraduationCap, Shield,
-  Upload, Play, Trash2, Plus, X, Video,
+  Upload, Play, Trash2, Plus, X, Video, Lock, User,
 } from 'lucide-react';
 
 interface RedEducationItem {
@@ -28,6 +28,13 @@ interface VideoCase {
   description: string;
   tags: string[];
 }
+
+interface UserRole {
+  isAdmin: boolean;
+  username: string;
+}
+
+const ADMIN_CREDENTIALS = { username: 'admin', password: 'admin' };
 
 const redEducationItems: RedEducationItem[] = [
   {
@@ -149,8 +156,21 @@ export default function RedEducationPage() {
   const [videos, setVideos] = useState<VideoCase[]>(defaultVideos);
   const [selectedVideo, setSelectedVideo] = useState<VideoCase | null>(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [showPermissionDenied, setShowPermissionDenied] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [userRole, setUserRole] = useState<UserRole>({
+    isAdmin: false,
+    username: '普通用户',
+  });
+
+  const [loginForm, setLoginForm] = useState({
+    username: '',
+    password: '',
+    error: '',
+  });
 
   const [newVideo, setNewVideo] = useState({
     title: '',
@@ -167,6 +187,18 @@ export default function RedEducationPage() {
   const filteredVideos = activeCategory === '全部'
     ? videos
     : videos.filter(v => v.category === activeCategory);
+
+  const handleLogin = () => {
+    if (loginForm.username === ADMIN_CREDENTIALS.username &&
+        loginForm.password === ADMIN_CREDENTIALS.password) {
+      setUserRole({ isAdmin: true, username: loginForm.username });
+      setShowLoginModal(false);
+      setLoginForm({ username: '', password: '', error: '' });
+      setShowUploadModal(true);
+    } else {
+      setLoginForm(f => ({ ...f, error: '用户名或密码错误，请输入 admin/admin' }));
+    }
+  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -203,6 +235,22 @@ export default function RedEducationPage() {
     setVideos(v => v.filter(video => video.id !== id));
   };
 
+  const handleUploadClick = () => {
+    if (userRole.isAdmin) {
+      setShowUploadModal(true);
+    } else {
+      setShowLoginModal(true);
+    }
+  };
+
+  const handleVideoAction = (action: 'upload' | 'delete') => {
+    if (!userRole.isAdmin) {
+      setShowPermissionDenied(true);
+      return false;
+    }
+    return true;
+  };
+
   return (
     <div className="p-6 space-y-5 animate-fade-in">
       {/* 标题栏 */}
@@ -216,13 +264,22 @@ export default function RedEducationPage() {
             <p className="text-sm text-[var(--color-text-secondary)]">将红色基因融入专业教学，培养科技报国时代新人</p>
           </div>
         </div>
-        <button
-          onClick={() => setShowUploadModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-        >
-          <Upload className="w-4 h-4" />
-          上传视频案例
-        </button>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
+            <User className="w-4 h-4" />
+            <span>{userRole.username}</span>
+            {userRole.isAdmin && (
+              <span className="px-2 py-0.5 text-xs rounded bg-red-500 text-white">管理员</span>
+            )}
+          </div>
+          <button
+            onClick={handleUploadClick}
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          >
+            <Upload className="w-4 h-4" />
+            上传视频案例
+          </button>
+        </div>
       </div>
 
       {/* 统计卡片 */}
@@ -278,12 +335,14 @@ export default function RedEducationPage() {
                 <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/60 rounded text-xs text-white">
                   {video.duration}
                 </div>
-                <button
-                  onClick={(e) => { e.stopPropagation(); handleDeleteVideo(video.id); }}
-                  className="absolute top-2 right-2 p-1.5 bg-black/50 rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
-                >
-                  <Trash2 className="w-4 h-4 text-white" />
-                </button>
+                {userRole.isAdmin && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleDeleteVideo(video.id); }}
+                    className="absolute top-2 right-2 p-1.5 bg-black/50 rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                  >
+                    <Trash2 className="w-4 h-4 text-white" />
+                  </button>
+                )}
               </div>
               <div className="p-4">
                 <h3 className="font-bold text-[var(--color-text-primary)] text-sm mb-1 truncate">{video.title}</h3>
@@ -301,15 +360,17 @@ export default function RedEducationPage() {
               </div>
             </div>
           ))}
-          <div
-            onClick={() => setShowUploadModal(true)}
-            className="glass-card h-full flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-red-300 transition-colors border-2 border-dashed border-[var(--color-border)]"
-          >
-            <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
-              <Plus className="w-6 h-6 text-red-600" />
+          {userRole.isAdmin && (
+            <div
+              onClick={() => setShowUploadModal(true)}
+              className="glass-card h-full flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-red-300 transition-colors border-2 border-dashed border-[var(--color-border)]"
+            >
+              <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
+                <Plus className="w-6 h-6 text-red-600" />
+              </div>
+              <span className="text-sm text-[var(--color-text-secondary)]">上传视频</span>
             </div>
-            <span className="text-sm text-[var(--color-text-secondary)]">上传视频</span>
-          </div>
+          )}
         </div>
       </div>
 
@@ -414,6 +475,70 @@ export default function RedEducationPage() {
                     {tag}
                   </span>
                 ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 登录弹窗 */}
+      {showLoginModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-8">
+          <div className="bg-[var(--color-bg-secondary)] rounded-2xl max-w-md w-full overflow-hidden">
+            <div className="p-6 border-b border-[var(--color-border)] flex items-center justify-between">
+              <h3 className="text-lg font-bold text-[var(--color-text-primary)] flex items-center gap-2">
+                <Lock className="w-5 h-5 text-red-600" />
+                管理员登录
+              </h3>
+              <button
+                onClick={() => setShowLoginModal(false)}
+                className="text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)]"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">用户名</label>
+                <input
+                  type="text"
+                  value={loginForm.username}
+                  onChange={(e) => setLoginForm(f => ({ ...f, username: e.target.value, error: '' }))}
+                  className="w-full px-3 py-2 bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:border-red-400"
+                  placeholder="输入管理员用户名"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">密码</label>
+                <input
+                  type="password"
+                  value={loginForm.password}
+                  onChange={(e) => setLoginForm(f => ({ ...f, password: e.target.value, error: '' }))}
+                  className="w-full px-3 py-2 bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:border-red-400"
+                  placeholder="输入管理员密码"
+                />
+              </div>
+              {loginForm.error && (
+                <div className="p-3 bg-red-50 rounded-lg text-red-600 text-sm">
+                  {loginForm.error}
+                </div>
+              )}
+              <div className="text-xs text-[var(--color-text-secondary)] bg-[var(--color-bg-primary)] p-3 rounded-lg">
+                默认管理员账号：admin / admin
+              </div>
+              <div className="flex justify-end gap-3 pt-4">
+                <button
+                  onClick={() => setShowLoginModal(false)}
+                  className="px-4 py-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={handleLogin}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  登录
+                </button>
               </div>
             </div>
           </div>
@@ -534,6 +659,27 @@ export default function RedEducationPage() {
                   上传视频
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 权限提示弹窗 */}
+      {showPermissionDenied && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-8">
+          <div className="bg-[var(--color-bg-secondary)] rounded-2xl max-w-md w-full overflow-hidden">
+            <div className="p-6 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-50 flex items-center justify-center">
+                <Lock className="w-8 h-8 text-red-600" />
+              </div>
+              <h3 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">权限不足</h3>
+              <p className="text-[var(--color-text-secondary)] mb-6">普通用户不允许修改视频，请联系管理员。</p>
+              <button
+                onClick={() => setShowPermissionDenied(false)}
+                className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                确定
+              </button>
             </div>
           </div>
         </div>
