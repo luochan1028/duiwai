@@ -21,6 +21,7 @@ import {
   pendingTasks, learningReport, qaDatabase,
 } from '@/data/mockData';
 import { useTheme } from '@/contexts/ThemeContext';
+import { loadVideoMeta, loadVideoFile } from '@/lib/videoStorage';
 
 // ==================== 场景定义 ====================
 
@@ -374,6 +375,24 @@ function PhilosophyContent({ interact }: { interact: { show15thPlan: boolean; sh
 // ==================== 红色育人内容 ====================
 
 function RedEducationContent({ interact }: { interact: RedEducationInteract }) {
+  const [videos, setVideos] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadVideos = async () => {
+      const meta = loadVideoMeta('red-education-video-meta');
+      if (meta && meta.length > 0) {
+        const loaded = await Promise.all(
+          meta.map(async (m) => {
+            const url = await loadVideoFile(m.id);
+            return { ...m, url: url || '' };
+          })
+        );
+        setVideos(loaded.filter(v => v.url));
+      }
+    };
+    loadVideos();
+  }, []);
+
   const dimensions = [
     {
       id: 1,
@@ -542,21 +561,21 @@ function RedEducationContent({ interact }: { interact: RedEducationInteract }) {
               <span className="text-xs text-text-muted font-normal">（IndexedDB持久化存储）</span>
             </h3>
             <div className="grid grid-cols-3 gap-3">
-              {[
-                { title: '银河一号研制历程', cat: '课程育人', dur: '15:32' },
-                { title: '邓小平故里参观纪实', cat: '文化育人', dur: '08:45' },
-                { title: '龙芯CPU技术攻坚', cat: '实践育人', dur: '22:18' },
-              ].map((v, idx) => (
+              {videos.length > 0 ? videos.map((v, idx) => (
                 <div
-                  key={v.title}
+                  key={v.id}
                   className="glass-card overflow-hidden cursor-pointer hover:scale-[1.02] transition-all group animate-fade-in-up"
                   style={{ animationDelay: `${idx * 120}ms` }}
                 >
                   <div className="relative aspect-video bg-gradient-to-br from-red-600/20 to-rose-600/20 flex items-center justify-center">
-                    <div className="absolute inset-0 bg-gradient-to-br from-red-600 to-rose-700 opacity-40" />
+                    {v.thumbnail ? (
+                      <img src={v.thumbnail} alt={v.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-br from-red-600 to-rose-700 opacity-40" />
+                    )}
                     <Play className="w-8 h-8 text-white/80 relative group-hover:scale-125 transition-transform" />
                     <div className="absolute bottom-1.5 right-1.5 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
-                      {v.dur}
+                      {v.duration || '未知'}
                     </div>
                     <button className="absolute top-1.5 right-1.5 p-1.5 bg-black/50 rounded opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600">
                       <Trash2 className="w-3.5 h-3.5 text-white" />
@@ -565,12 +584,40 @@ function RedEducationContent({ interact }: { interact: RedEducationInteract }) {
                   <div className="p-3">
                     <h4 className="font-medium text-text-primary text-sm line-clamp-1">{v.title}</h4>
                     <div className="flex items-center justify-between mt-1 text-xs text-text-secondary">
-                      <span className="px-1.5 py-0.5 rounded bg-red-500/10 text-red-600">{v.cat}</span>
-                      <span>{Math.floor(Math.random() * 900 + 100)}次播放</span>
+                      <span className="px-1.5 py-0.5 rounded bg-red-500/10 text-red-600">{v.category}</span>
+                      <span>{v.playCount || Math.floor(Math.random() * 900 + 100)}次播放</span>
                     </div>
                   </div>
                 </div>
-              ))}
+              )) : (
+                [{ title: '银河一号研制历程', cat: '课程育人', dur: '15:32' },
+                 { title: '邓小平故里参观纪实', cat: '文化育人', dur: '08:45' },
+                 { title: '龙芯CPU技术攻坚', cat: '实践育人', dur: '22:18' }].map((v, idx) => (
+                  <div
+                    key={v.title}
+                    className="glass-card overflow-hidden cursor-pointer hover:scale-[1.02] transition-all group animate-fade-in-up"
+                    style={{ animationDelay: `${idx * 120}ms` }}
+                  >
+                    <div className="relative aspect-video bg-gradient-to-br from-red-600/20 to-rose-600/20 flex items-center justify-center">
+                      <div className="absolute inset-0 bg-gradient-to-br from-red-600 to-rose-700 opacity-40" />
+                      <Play className="w-8 h-8 text-white/80 relative group-hover:scale-125 transition-transform" />
+                      <div className="absolute bottom-1.5 right-1.5 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
+                        {v.dur}
+                      </div>
+                      <button className="absolute top-1.5 right-1.5 p-1.5 bg-black/50 rounded opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600">
+                        <Trash2 className="w-3.5 h-3.5 text-white" />
+                      </button>
+                    </div>
+                    <div className="p-3">
+                      <h4 className="font-medium text-text-primary text-sm line-clamp-1">{v.title}</h4>
+                      <div className="flex items-center justify-between mt-1 text-xs text-text-secondary">
+                        <span className="px-1.5 py-0.5 rounded bg-red-500/10 text-red-600">{v.cat}</span>
+                        <span>{Math.floor(Math.random() * 900 + 100)}次播放</span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
               <div className="glass-card h-full min-h-[140px] flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-red-300 transition-colors border-2 border-dashed border-red-500/30 animate-fade-in-up">
                 <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
                   <Plus className="w-5 h-5 text-red-600" />
@@ -1647,7 +1694,25 @@ const COUNT_OPTIONS = [5, 10, 15, 20].map(c => ({ value: c, label: `${c} 题` })
 // ==================== 视频资源内容 ====================
 
 function VideoContent({ interact }: { interact: VideoInteract }) {
-  const videos = [
+  const [realVideos, setRealVideos] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadVideos = async () => {
+      const meta = loadVideoMeta('video-page-meta');
+      if (meta && meta.length > 0) {
+        const loaded = await Promise.all(
+          meta.map(async (m) => {
+            const url = await loadVideoFile(m.id);
+            return { ...m, url: url || '' };
+          })
+        );
+        setRealVideos(loaded.filter(v => v.url));
+      }
+    };
+    loadVideos();
+  }, []);
+
+  const mockVideos = [
     { id: '1', title: '计算机组成原理 - CPU工作原理', category: '课程讲解', duration: '18:32', views: '2.3万', color: 'from-blue-500 to-cyan-500', desc: '本视频详细讲解CPU的基本结构和工作原理，包括运算器、控制器、寄存器组等核心部件的功能与协作机制。', tags: ['CPU结构', '运算器', '控制器', '指令周期'] },
     { id: '2', title: '汇编语言程序设计入门', category: '实验指导', duration: '24:15', views: '1.8万', color: 'from-green-500 to-emerald-500', desc: '从零开始学习8086汇编语言，掌握基本指令和程序结构，配合实验案例加深理解。', tags: ['汇编语言', '8086', '程序设计'] },
     { id: '3', title: '存储系统与Cache原理', category: '课程讲解', duration: '32:08', views: '3.1万', color: 'from-purple-500 to-pink-500', desc: '深入讲解存储器层次结构，Cache工作原理和地址映射方式，理解存储系统性能优化。', tags: ['存储系统', 'Cache', '地址映射'] },
@@ -1655,6 +1720,8 @@ function VideoContent({ interact }: { interact: VideoInteract }) {
     { id: '5', title: '流水线技术与性能分析', category: '重点难点', duration: '21:20', views: '1.5万', color: 'from-red-500 to-rose-500', desc: '讲解流水线工作原理、性能指标计算和相关冒险处理，提升对高性能计算的理解。', tags: ['流水线', '性能分析', '冒险处理'] },
     { id: '6', title: 'IO系统与中断机制', category: '课程讲解', duration: '16:55', views: '9.8千', color: 'from-indigo-500 to-blue-500', desc: '介绍IO系统的组成和工作方式，中断机制的实现和应用场景。', tags: ['IO系统', '中断', 'DMA'] },
   ];
+
+  const videos = realVideos.length > 0 ? realVideos : mockVideos;
   const categories = ['全部', '课程讲解', '实验指导', '重点难点', '其他'];
   const [activeCategory, setActiveCategory] = useState('全部');
 
@@ -1722,10 +1789,14 @@ function VideoContent({ interact }: { interact: VideoInteract }) {
                 style={{ animationDelay: `${idx * 100}ms` }}
               >
                 {/* 缩略图 */}
-                <div className={`relative aspect-video bg-gradient-to-br ${video.color} flex items-center justify-center`}>
-                  <Play className="w-12 h-12 text-white/80 group-hover:scale-125 transition-transform" />
+                <div className={`relative aspect-video ${video.thumbnail ? 'bg-black' : `bg-gradient-to-br ${video.color}`} flex items-center justify-center`}>
+                  {video.thumbnail ? (
+                    <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <Play className="w-12 h-12 text-white/80 group-hover:scale-125 transition-transform" />
+                  )}
                   <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
-                    {video.duration}
+                    {video.duration || '未知'}
                   </div>
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                     <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center">
@@ -1750,7 +1821,7 @@ function VideoContent({ interact }: { interact: VideoInteract }) {
                   <div className="flex items-center justify-between text-xs text-text-secondary">
                     <span className="px-2 py-0.5 rounded bg-accent-cyan/10 text-accent-cyan">{video.category}</span>
                     <div className="flex items-center gap-2">
-                      <span>{video.views}次播放</span>
+                      <span>{video.views || video.playCount || '0'}次播放</span>
                     </div>
                   </div>
                 </div>
@@ -2607,13 +2678,6 @@ export default function DemoPage() {
     }, 1000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [isPlaying, currentScene]);
-
-  // 兜底超时（仅在语音引擎完全失效时触发）
-  useEffect(() => {
-    if (sceneElapsed >= scene.duration && isPlaying) {
-      nextScene();
-    }
-  }, [sceneElapsed, scene.duration, isPlaying, nextScene]);
 
   // 语音播放：场景切换时触发
   useEffect(() => {
