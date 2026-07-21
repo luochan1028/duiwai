@@ -9,6 +9,7 @@ import QuizPage from "@/pages/QuizPage";
 import TeacherPage from "@/pages/TeacherPage";
 import PhilosophyPage from "@/pages/PhilosophyPage";
 import VideoPage from "@/pages/VideoPage";
+import RedEducationPage from "@/pages/RedEducationPage";
 import DemoPage from "@/pages/DemoPage";
 
 export default function App() {
@@ -18,14 +19,17 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Navigate to="/qa" replace />} />
+            {/* 学生端功能 */}
+            <Route path="philosophy" element={<PhilosophyPage />} />
+            <Route path="red-education" element={<RedEducationPage />} />
             <Route path="qa" element={<QAPage />} />
             <Route path="graph" element={<GraphPage />} />
             <Route path="path" element={<PathPage />} />
             <Route path="lab" element={<LabPage />} />
-            <Route path="quiz" element={<QuizPage />} />
-            <Route path="teacher" element={<TeacherPage />} />
-            <Route path="philosophy" element={<PhilosophyPage />} />
             <Route path="video" element={<VideoPage />} />
+            <Route path="quiz" element={<QuizPage />} />
+            {/* 教师端功能 */}
+            <Route path="teacher" element={<TeacherPage />} />
           </Route>
           <Route path="/demo" element={<DemoPage />} />
         </Routes>

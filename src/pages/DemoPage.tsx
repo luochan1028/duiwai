@@ -13,6 +13,7 @@ import {
   Users, TrendingDown, Minus, School, Activity, Settings2, Filter,
   Trophy, XCircle, Bookmark, BookmarkCheck, ChevronLeft,
   TrendingUp,
+  Flag,
 } from 'lucide-react';
 import {
   graphNodes, graphLinks, categoryColors, highFreqQuestions, classStats,
@@ -46,6 +47,11 @@ const scenes: DemoScene[] = [
     id: 'philosophy-2', title: '教育理念·未来教育新范式', duration: 20,
     narration: '计组智学积极实践未来教育新范式，关注个性化学习、人机协同、教师角色转型和能力本位评价，为每位学生提供定制化辅导。',
     navTarget: 'philosophy',
+  },
+  {
+    id: 'red-education', title: '红色育人·课程思政', duration: 28,
+    narration: '红色育人模块将红色基因融入专业教学。涵盖课程思政、红色文化传承、科技报国、红色网络阵地等六大维度。通过讲述我国计算机发展史中的科学家精神，激发学生科技报国情怀。',
+    navTarget: 'red-education',
   },
   {
     id: 'architecture', title: '系统架构', duration: 28,
@@ -340,6 +346,57 @@ function PhilosophyContent({ interact }: { interact: { show15thPlan: boolean; sh
           </div>
         </section>
       )}
+    </div>
+  );
+}
+
+// ==================== 红色育人内容 ====================
+
+function RedEducationContent() {
+  const [activeIdx, setActiveIdx] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setActiveIdx(p => (p + 1) % 3), 2500);
+    return () => clearInterval(t);
+  }, []);
+  const items = [
+    { icon: BookOpen, title: '红色课程思政', desc: '讲述银河一号、龙芯CPU等国产计算机奋斗史，激发科技报国情怀', color: 'text-red-600', bg: 'bg-red-500/10' },
+    { icon: Flag, title: '红色文化传承', desc: '依托四川红色资源（邓小平故里、川陕革命根据地）开展主题实践', color: 'text-rose-600', bg: 'bg-rose-500/10' },
+    { icon: Zap, title: '红色科技报国', desc: '关注卡脖子技术攻关，设置龙芯指令集汇编实验，参加挑战杯', color: 'text-orange-600', bg: 'bg-orange-500/10' },
+  ];
+  return (
+    <div className="p-8 space-y-5 animate-fade-in">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="p-3 rounded-xl bg-gradient-to-br from-red-600 to-rose-600">
+          <Flag className="w-7 h-7 text-white" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-text-primary">红色育人</h1>
+          <p className="text-sm text-text-secondary">将红色基因融入专业教学，培养科技报国时代新人</p>
+        </div>
+      </div>
+      <div className="grid grid-cols-4 gap-4">
+        {[{ label: '思政案例', value: '48' }, { label: '红色视频', value: '12' }, { label: '实践活动', value: '6' }, { label: '覆盖学生', value: '86' }].map(s => (
+          <div key={s.label} className="glass-card p-4 text-center">
+            <div className="text-2xl font-tech font-bold text-red-600">{s.value}</div>
+            <div className="text-xs text-text-secondary mt-1">{s.label}</div>
+          </div>
+        ))}
+      </div>
+      <div className="space-y-3">
+        {items.map((item, idx) => (
+          <div key={item.title} className={`glass-card p-5 border-l-4 border-red-500/30 transition-all ${idx === activeIdx ? 'scale-[1.02] border-red-500' : ''}`}>
+            <div className="flex items-start gap-4">
+              <div className={`p-3 rounded-lg ${item.bg}`}>
+                <item.icon className={`w-6 h-6 ${item.color}`} />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-text-primary mb-1">{item.title}</h3>
+                <p className="text-sm text-text-secondary leading-relaxed">{item.desc}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -2106,8 +2163,9 @@ function OutroContent() {
 
 // ==================== 侧边栏 ====================
 
-const sidebarNavItems = [
+const sidebarStudentItems = [
   { id: 'philosophy', label: '教育理念', icon: BookOpen },
+  { id: 'red-education', label: '红色育人', icon: Flag },
   { id: 'qa', label: '智能问答', icon: MessageSquare },
   { id: 'graph', label: '知识图谱', icon: Network },
   { id: 'path', label: '学习路径', icon: Route },
@@ -2138,8 +2196,13 @@ function Sidebar({ activeNav }: { activeNav: string }) {
 
       {/* 导航 */}
       <nav className="flex-1 py-4 overflow-y-auto">
+        {/* 学生端分组 */}
         <div className="px-3 space-y-1">
-          {sidebarNavItems.map((item) => {
+          <p className="px-4 text-xs text-text-secondary/60 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+            <GraduationCap className="w-3 h-3" />
+            学生端
+          </p>
+          {sidebarStudentItems.map((item) => {
             const isActive = activeNav === item.id;
             return (
               <div key={item.id} className={`sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${
@@ -2156,9 +2219,12 @@ function Sidebar({ activeNav }: { activeNav: string }) {
         {/* 分隔线 */}
         <div className="mx-4 my-4 border-t border-accent-cyan/10" />
 
-        {/* 教师端 */}
+        {/* 教师端分组 */}
         <div className="px-3 space-y-1 mb-4">
-          <p className="px-4 text-xs text-text-secondary/60 uppercase tracking-wider mb-1">教师端</p>
+          <p className="px-4 text-xs text-text-secondary/60 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+            <BarChart3 className="w-3 h-3" />
+            教师端
+          </p>
           {sidebarTeacherItems.map((item) => {
             const isActive = activeNav === item.id;
             return (
@@ -2441,6 +2507,7 @@ export default function DemoPage() {
     const sid = scene.id;
     if (sid === 'intro') return <IntroContent />;
     if (sid.startsWith('philosophy')) return <PhilosophyContent interact={interactState.philosophy} />;
+    if (sid === 'red-education') return <RedEducationContent />;
     if (sid === 'architecture') return <ArchitectureContent />;
     if (sid.startsWith('qa')) return <QAContent interact={interactState.qa} />;
     if (sid.startsWith('graph')) return <GraphContent interact={interactState.graph} />;
@@ -2457,6 +2524,7 @@ export default function DemoPage() {
   const getNavTarget = () => {
     const sid = scene.id;
     if (sid.startsWith('philosophy')) return 'philosophy';
+    if (sid.startsWith('red-education')) return 'red-education';
     if (sid.startsWith('qa')) return 'qa';
     if (sid.startsWith('graph')) return 'graph';
     if (sid.startsWith('path')) return 'path';

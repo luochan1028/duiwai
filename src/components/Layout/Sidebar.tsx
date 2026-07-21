@@ -10,11 +10,15 @@ import {
   BarChart3,
   Shield,
   BookOpen,
-  Video
+  Video,
+  Flag,
+  GraduationCap,
 } from 'lucide-react';
 
-const navItems = [
+// 学生端导航项
+const studentItems = [
   { id: 'philosophy', label: '教育理念', icon: BookOpen, path: '/philosophy' },
+  { id: 'red-education', label: '红色育人', icon: Flag, path: '/red-education' },
   { id: 'qa', label: '智能问答', icon: MessageSquare, path: '/qa' },
   { id: 'graph', label: '知识图谱', icon: Network, path: '/graph' },
   { id: 'path', label: '学习路径', icon: Route, path: '/path' },
@@ -23,6 +27,7 @@ const navItems = [
   { id: 'quiz', label: '自测系统', icon: FileCheck, path: '/quiz' },
 ];
 
+// 教师端导航项
 const teacherItems = [
   { id: 'teacher', label: '学情分析', icon: BarChart3, path: '/teacher' },
 ];
@@ -42,11 +47,16 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
-      
+
       {/* 导航菜单 */}
       <nav className="flex-1 py-4 overflow-y-auto">
+        {/* 学生端分组 */}
         <div className="px-3 space-y-1">
-          {navItems.map((item, index) => (
+          <p className="px-4 text-xs text-[var(--color-text-secondary)]/60 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+            <GraduationCap className="w-3 h-3" />
+            学生端
+          </p>
+          {studentItems.map((item, index) => (
             <NavLink
               key={item.id}
               to={item.path}
@@ -64,13 +74,16 @@ export default function Sidebar() {
             </NavLink>
           ))}
         </div>
-        
+
         {/* 分隔线 */}
         <div className="mx-4 my-4 border-t border-[var(--color-border)]" />
 
-        {/* 教师端入口 */}
+        {/* 教师端分组 */}
         <div className="px-3 space-y-1 mb-4">
-          <p className="px-4 text-xs text-[var(--color-text-secondary)]/60 uppercase tracking-wider mb-1">教师端</p>
+          <p className="px-4 text-xs text-[var(--color-text-secondary)]/60 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+            <BarChart3 className="w-3 h-3" />
+            教师端
+          </p>
           {teacherItems.map((item) => (
             <NavLink
               key={item.id}
@@ -112,7 +125,7 @@ export default function Sidebar() {
           </div>
         </div>
       </nav>
-      
+
       {/* 底部用户信息 */}
       <div className="p-4 border-t border-[var(--color-border)]">
         <div className="flex items-center gap-3 mb-2">
