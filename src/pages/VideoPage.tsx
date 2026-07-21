@@ -75,9 +75,16 @@ export default function VideoPage() {
     tags: '',
   });
 
-  const [userRole, setUserRole] = useState<UserRole>({
-    isAdmin: false,
-    username: '普通用户',
+  const [userRole, setUserRole] = useState<UserRole>(() => {
+    const saved = localStorage.getItem('video-page-user');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return { isAdmin: false, username: '普通用户' };
+      }
+    }
+    return { isAdmin: false, username: '普通用户' };
   });
 
   const [loginForm, setLoginForm] = useState({
@@ -108,7 +115,9 @@ export default function VideoPage() {
   const handleLogin = () => {
     if (loginForm.username === ADMIN_CREDENTIALS.username &&
         loginForm.password === ADMIN_CREDENTIALS.password) {
-      setUserRole({ isAdmin: true, username: loginForm.username });
+      const role = { isAdmin: true, username: loginForm.username };
+      setUserRole(role);
+      localStorage.setItem('video-page-user', JSON.stringify(role));
       setShowLoginModal(false);
       setLoginForm({ username: '', password: '', error: '' });
       setShowAdd(true);
