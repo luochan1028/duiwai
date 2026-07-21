@@ -15,7 +15,7 @@ const THEME_KEY = 'jizu-theme';
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<ThemeMode>(() => {
     const saved = localStorage.getItem(THEME_KEY) as ThemeMode;
-    return saved || 'dark';
+    return saved || 'red';
   });
 
   const setTheme = (newTheme: ThemeMode) => {
