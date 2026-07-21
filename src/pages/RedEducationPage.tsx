@@ -105,41 +105,7 @@ const redEducationItems: RedEducationItem[] = [
   },
 ];
 
-const defaultVideos: VideoCase[] = [
-  {
-    id: 'v1',
-    title: '银河一号超级计算机研制历程',
-    category: '课程育人',
-    url: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    thumbnail: 'https://images.unsplash.com/photo-1605379399642-870262d3d051?w=400&h=225&fit=crop',
-    duration: '05:23',
-    playCount: 328,
-    description: '讲述我国第一台亿次超级计算机"银河一号"的研制历程，展现科技工作者攻坚克难的科学家精神。',
-    tags: ['银河一号', '超级计算机', '科学家精神'],
-  },
-  {
-    id: 'v2',
-    title: '龙芯CPU自主创新之路',
-    category: '实践育人',
-    url: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&h=225&fit=crop',
-    duration: '08:45',
-    playCount: 256,
-    description: '介绍龙芯CPU从无到有的自主创新之路，激励学生投身国产芯片研发事业。',
-    tags: ['龙芯', '国产芯片', '自主创新'],
-  },
-  {
-    id: 'v3',
-    title: '邓小平科技思想与中国计算机事业',
-    category: '文化育人',
-    url: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop',
-    duration: '12:15',
-    playCount: 189,
-    description: '探讨邓小平科技思想对我国计算机事业发展的深远影响，传承红色科技基因。',
-    tags: ['邓小平', '科技思想', '红色基因'],
-  },
-];
+const defaultVideos: VideoCase[] = [];
 
 const categories = ['全部', '课程育人', '文化育人', '实践育人', '管理育人', '网络育人', '心理育人'];
 

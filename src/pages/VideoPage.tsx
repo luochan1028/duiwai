@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import {
   Video, Plus, ExternalLink, Trash2, Play, Film, Youtube, FileVideo,
-  PlayCircle, FileText, Maximize, X, Lock, User,
+  PlayCircle, FileText, Maximize, X, Lock, User, Upload,
 } from 'lucide-react';
 
 interface VideoItem {
@@ -62,6 +62,16 @@ export default function VideoPage() {
   const [newCategory, setNewCategory] = useState('其他');
   const [playingVideo, setPlayingVideo] = useState<VideoItem | null>(null);
   const [showPermissionDenied, setShowPermissionDenied] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [newVideo, setNewVideo] = useState({
+    title: '',
+    category: '课程讲解',
+    description: '',
+    tags: '',
+  });
 
   const [userRole, setUserRole] = useState<UserRole>({
     isAdmin: false,
@@ -127,6 +137,47 @@ export default function VideoPage() {
     }
   };
 
+  const handleUploadClick = () => {
+    if (userRole.isAdmin) {
+      setShowUploadModal(true);
+    } else {
+      setShowLoginModal(true);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setUploadProgress(0);
+      const interval = setInterval(() => {
+        setUploadProgress(p => {
+          if (p >= 100) {
+            clearInterval(interval);
+            const url = URL.createObjectURL(file);
+            const colorIdx = videos.length % colorGradients.length;
+            const newItem: VideoItem = {
+              id: Date.now().toString(),
+              title: newVideo.title || file.name.replace(/\.[^/.]+$/, ''),
+              url,
+              category: newVideo.category,
+              embedUrl: undefined,
+              duration: '未知',
+              views: '0',
+              desc: newVideo.description || '用户上传的视频资源',
+              tags: newVideo.tags.split(/[,，\s]+/).filter(Boolean),
+              color: colorGradients[colorIdx],
+            };
+            setVideos([...videos, newItem]);
+            setShowUploadModal(false);
+            setNewVideo({ title: '', category: '课程讲解', description: '', tags: '' });
+            return 100;
+          }
+          return p + 10;
+        });
+      }, 200);
+    }
+  };
+
   const getCategoryIcon = (cat: string) => {
     switch (cat) {
       case '课程讲解': return Film;
@@ -156,13 +207,22 @@ export default function VideoPage() {
             )}
           </div>
           {userRole.isAdmin && (
-            <button
-              onClick={handleAddClick}
-              className="btn-primary flex items-center gap-2 px-4 py-2"
-            >
-              <Plus className="w-4 h-4" />
-              添加视频
-            </button>
+            <>
+              <button
+                onClick={handleAddClick}
+                className="btn-primary flex items-center gap-2 px-4 py-2"
+              >
+                <Plus className="w-4 h-4" />
+                添加视频链接
+              </button>
+              <button
+                onClick={handleUploadClick}
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                <Upload className="w-4 h-4" />
+                上传视频文件
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -475,6 +535,126 @@ export default function VideoPage() {
               >
                 确定
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 上传视频文件弹窗 */}
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-8">
+          <div className="bg-[var(--color-bg-secondary)] rounded-2xl max-w-2xl w-full overflow-hidden">
+            <div className="p-6 border-b border-[var(--color-border)] flex items-center justify-between">
+              <h3 className="text-lg font-bold text-[var(--color-text-primary)]">上传视频文件</h3>
+              <button
+                onClick={() => {
+                  setShowUploadModal(false);
+                  setNewVideo({ title: '', category: '课程讲解', description: '', tags: '' });
+                }}
+                className="text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)]"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              {uploadProgress > 0 && uploadProgress < 100 && (
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-[var(--color-text-secondary)]">上传进度</span>
+                    <span className="text-red-600">{uploadProgress}%</span>
+                  </div>
+                  <div className="w-full h-2 bg-[var(--color-bg-primary)] rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-red-500 to-rose-500 transition-all duration-200"
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">视频标题</label>
+                  <input
+                    type="text"
+                    value={newVideo.title}
+                    onChange={(e) => setNewVideo(v => ({ ...v, title: e.target.value }))}
+                    className="w-full px-3 py-2 bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:border-red-400"
+                    placeholder="输入视频标题"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">分类</label>
+                  <select
+                    value={newVideo.category}
+                    onChange={(e) => setNewVideo(v => ({ ...v, category: e.target.value }))}
+                    className="w-full px-3 py-2 bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:border-red-400"
+                  >
+                    <option value="课程讲解">课程讲解</option>
+                    <option value="实验指导">实验指导</option>
+                    <option value="重点难点">重点难点</option>
+                    <option value="其他">其他</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">视频描述</label>
+                <textarea
+                  value={newVideo.description}
+                  onChange={(e) => setNewVideo(v => ({ ...v, description: e.target.value }))}
+                  className="w-full px-3 py-2 bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:border-red-400"
+                  rows={3}
+                  placeholder="输入视频描述"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">标签（用逗号或空格分隔）</label>
+                <input
+                  type="text"
+                  value={newVideo.tags}
+                  onChange={(e) => setNewVideo(v => ({ ...v, tags: e.target.value }))}
+                  className="w-full px-3 py-2 bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:border-red-400"
+                  placeholder="如：CPU结构, 运算器"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">选择视频文件</label>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="video/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full p-4 border-2 border-dashed border-[var(--color-border)] rounded-lg hover:border-red-400 transition-colors flex items-center justify-center gap-2 text-[var(--color-text-secondary)]"
+                >
+                  <Upload className="w-5 h-5" />
+                  点击选择视频文件或拖拽到此处
+                </button>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4">
+                <button
+                  onClick={() => {
+                    setShowUploadModal(false);
+                    setNewVideo({ title: '', category: '课程讲解', description: '', tags: '' });
+                  }}
+                  className="px-4 py-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  上传视频
+                </button>
+              </div>
             </div>
           </div>
         </div>
