@@ -206,73 +206,15 @@ export default function VideoPage() {
               <span className="px-2 py-0.5 text-xs rounded bg-red-500 text-white">管理员</span>
             )}
           </div>
-          {userRole.isAdmin && (
-            <>
-              <button
-                onClick={handleAddClick}
-                className="btn-primary flex items-center gap-2 px-4 py-2"
-              >
-                <Plus className="w-4 h-4" />
-                添加视频链接
-              </button>
-              <button
-                onClick={handleUploadClick}
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-              >
-                <Upload className="w-4 h-4" />
-                上传视频文件
-              </button>
-            </>
-          )}
+          <button
+            onClick={handleUploadClick}
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          >
+            <Upload className="w-4 h-4" />
+            上传视频案例
+          </button>
         </div>
       </div>
-
-      {/* 添加表单 */}
-      {showAdd && userRole.isAdmin && (
-        <div className="glass-card p-5 space-y-4 animate-fade-in-up">
-          <h3 className="text-base font-bold text-[var(--color-text-primary)]">添加新视频</h3>
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className="text-xs text-[var(--color-text-secondary)] mb-1 block">视频标题</label>
-              <input
-                value={newTitle}
-                onChange={e => setNewTitle(e.target.value)}
-                placeholder="输入视频标题"
-                className="w-full px-3 py-2 bg-[var(--color-bg-primary)]/50 border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:border-[var(--color-accent-primary)]"
-              />
-            </div>
-            <div>
-              <label className="text-xs text-[var(--color-text-secondary)] mb-1 block">视频链接</label>
-              <input
-                value={newUrl}
-                onChange={e => setNewUrl(e.target.value)}
-                placeholder="Bilibili / YouTube / 其他"
-                className="w-full px-3 py-2 bg-[var(--color-bg-primary)]/50 border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:border-[var(--color-accent-primary)]"
-              />
-            </div>
-            <div>
-              <label className="text-xs text-[var(--color-text-secondary)] mb-1 block">分类</label>
-              <select
-                value={newCategory}
-                onChange={e => setNewCategory(e.target.value)}
-                className="w-full px-3 py-2 bg-[var(--color-bg-primary)]/50 border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-accent-primary)]"
-              >
-                <option value="课程讲解">课程讲解</option>
-                <option value="实验指导">实验指导</option>
-                <option value="重点难点">重点难点</option>
-                <option value="其他">其他</option>
-              </select>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <button onClick={handleAdd} className="btn-primary text-sm">确认添加</button>
-            <button onClick={() => setShowAdd(false)} className="btn-tech text-sm">取消</button>
-          </div>
-          <p className="text-xs text-[var(--color-text-muted)]">
-            支持Bilibili（BV号链接自动解析）、YouTube及直接embed链接
-          </p>
-        </div>
-      )}
 
       {/* 分类标签 */}
       <div className="flex items-center gap-2">
@@ -444,11 +386,23 @@ export default function VideoPage() {
               </div>
             );
           })}
+          {/* 管理员上传卡片 */}
+          {userRole.isAdmin && (
+            <div
+              onClick={() => setShowUploadModal(true)}
+              className="glass-card h-full flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-red-300 transition-colors border-2 border-dashed border-[var(--color-border)] min-h-[200px]"
+            >
+              <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
+                <Plus className="w-6 h-6 text-red-600" />
+              </div>
+              <span className="text-sm text-[var(--color-text-secondary)]">上传视频</span>
+            </div>
+          )}
         </div>
       )}
 
       {/* 空状态 */}
-      {filtered.length === 0 && !playingVideo && (
+      {filtered.length === 0 && !playingVideo && !userRole.isAdmin && (
         <div className="text-center py-12">
           <Video className="w-12 h-12 text-[var(--color-text-muted)] mx-auto mb-3" />
           <p className="text-[var(--color-text-secondary)]">暂无视频资源，请联系管理员添加</p>
