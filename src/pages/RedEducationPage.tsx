@@ -4,7 +4,8 @@ import {
   ChevronRight, Target, Lightbulb, GraduationCap, Shield,
   Upload, Play, Trash2, Plus, X, Video, Lock, User,
 } from 'lucide-react';
-import { saveVideoFile, loadVideoFile, deleteVideoFile, saveVideoMeta, loadVideoMeta, generateThumbnail } from '@/lib/videoStorage';
+import { saveVideoFile, loadVideoFile, deleteVideoFile, saveVideoMeta, loadVideoMeta, generateThumbnail, fetchServerVideos, uploadServerVideo, deleteServerVideo } from '@/lib/videoStorage';
+import type { VideoItem } from '@/types';
 
 interface RedEducationItem {
   id: string;
@@ -18,16 +19,9 @@ interface RedEducationItem {
   keywords: string[];
 }
 
-interface VideoCase {
-  id: string;
-  title: string;
-  category: string;
-  url: string;
-  thumbnail: string;
-  duration: string;
-  playCount: number;
-  description: string;
-  tags: string[];
+interface VideoCase extends VideoItem {
+  description?: string;
+  playCount?: number;
 }
 
 interface UserRole {
@@ -106,7 +100,14 @@ const redEducationItems: RedEducationItem[] = [
   },
 ];
 
-const defaultVideos: VideoCase[] = [];
+const defaultVideos: VideoCase[] = [
+  { id: 'red-1', title: '银河一号超级计算机研制历程', category: '课程育人', duration: '25:30', views: '5.2万', desc: '讲述我国第一台亿次超级计算机"银河一号"的研制历程，展现科研工作者攻坚克难的奋斗精神。', tags: ['银河一号', '超级计算机', '科研精神'], color: 'from-red-500 to-rose-500' },
+  { id: 'red-2', title: '龙芯CPU自主创新之路', category: '课程育人', duration: '19:45', views: '3.8万', desc: '介绍国产龙芯CPU的发展历程，从"两弹一星"精神到自主可控的芯片研发之路。', tags: ['龙芯', '自主创新', '芯片研发'], color: 'from-amber-500 to-orange-500' },
+  { id: 'red-3', title: '邓小平故里红色研学', category: '文化育人', duration: '16:20', views: '2.1万', desc: '跟随镜头探访邓小平故里，了解改革开放总设计师的生平事迹，感受红色文化传承。', tags: ['邓小平', '红色旅游', '文化传承'], color: 'from-green-500 to-emerald-500' },
+  { id: 'red-4', title: '川陕革命根据地历史回顾', category: '文化育人', duration: '22:10', views: '1.5万', desc: '回顾川陕革命根据地的光辉历史，学习革命先辈的英勇事迹和崇高精神。', tags: ['川陕革命根据地', '红色历史', '革命精神'], color: 'from-purple-500 to-pink-500' },
+  { id: 'red-5', title: '"挑战杯"红色主题竞赛', category: '实践育人', duration: '14:35', views: '9.6千', desc: '展示学生参加"挑战杯"红色主题竞赛的精彩瞬间，科技报国，青春建功。', tags: ['挑战杯', '创新创业', '科技报国'], color: 'from-blue-500 to-cyan-500' },
+  { id: 'red-6', title: '网络安全法治教育', category: '网络育人', duration: '18:00', views: '4.2万', desc: '结合网络空间安全专业特色，讲解网络安全法律法规，构建清朗网络空间。', tags: ['网络安全', '法治教育', '网络伦理'], color: 'from-indigo-500 to-blue-500' },
+];
 
 const categories = ['全部', '课程育人', '文化育人', '实践育人', '管理育人', '网络育人', '心理育人'];
 
@@ -159,17 +160,28 @@ export default function RedEducationPage() {
 
   // 页面加载时从 IndexedDB 恢复视频
   useEffect(() => {
-    const meta = loadVideoMeta(META_KEY);
-    if (meta && meta.length > 0) {
-      Promise.all(
-        meta.map(async (m) => {
-          const url = await loadVideoFile(m.id);
-          return { ...m, url: url || '' };
-        })
-      ).then(loaded => {
-        setVideos(loaded.filter(v => v.url));
-      });
-    }
+    const loadVideos = async () => {
+      const serverVideos = await fetchServerVideos(META_KEY);
+      if (serverVideos.length > 0) {
+        setVideos(serverVideos);
+        return;
+      }
+
+      const meta = loadVideoMeta(META_KEY);
+      if (meta && meta.length > 0) {
+        const loaded = await Promise.all(
+          meta.map(async (m) => {
+            const url = await loadVideoFile(m.id);
+            return { ...m, url: url || '' };
+          })
+        );
+        const validVideos = loaded.filter(v => v.url);
+        if (validVideos.length > 0) {
+          setVideos(validVideos);
+        }
+      }
+    };
+    loadVideos();
   }, []);
 
   const handleLogin = () => {
@@ -199,6 +211,27 @@ export default function RedEducationPage() {
       }, 200);
 
       try {
+        const serverResult = await uploadServerVideo(
+          META_KEY,
+          file,
+          newVideo.title || file.name.replace(/\.[^/.]+$/, ''),
+          newVideo.category,
+          newVideo.description || '',
+          newVideo.tags
+        );
+
+        if (serverResult) {
+          setVideos(v => {
+            const updated = [...v, serverResult];
+            saveVideoMeta(META_KEY, updated);
+            return updated;
+          });
+          setShowUploadModal(false);
+          setNewVideo({ title: '', category: '课程育人', url: '', description: '', tags: '' });
+          setUploadProgress(0);
+          return;
+        }
+
         const videoId = `v${Date.now()}`;
         const url = await saveVideoFile(videoId, file);
         const thumbnail = await generateThumbnail(url);
@@ -228,13 +261,15 @@ export default function RedEducationPage() {
     }
   };
 
-  const handleDeleteVideo = (id: string) => {
+  const handleDeleteVideo = async (id: string) => {
     setVideos(v => {
       const updated = v.filter(video => video.id !== id);
       saveVideoMeta(META_KEY, updated);
       return updated;
     });
     deleteVideoFile(id).catch(() => {});
+    deleteServerVideo(META_KEY, id).catch(() => {});
+    if (selectedVideo?.id === id) setSelectedVideo(null);
   };
 
   const handleUploadClick = () => {
@@ -285,7 +320,7 @@ export default function RedEducationPage() {
       </div>
 
       {/* 统计卡片 */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {stats.map(stat => (
           <div key={stat.label} className="glass-card p-4 flex items-center gap-3">
             <stat.icon className={`w-8 h-8 ${stat.color}`} />
@@ -320,10 +355,10 @@ export default function RedEducationPage() {
           <Video className="w-5 h-5 text-red-600" />
           视频案例库
         </h2>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredVideos.map(video => (
             <div
-              key={video.id}
+              key={video.url || video.id}
               onClick={() => setSelectedVideo(video)}
               className="glass-card overflow-hidden cursor-pointer hover:scale-[1.02] transition-all duration-300 group"
             >
@@ -415,7 +450,7 @@ export default function RedEducationPage() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
             {filtered.map(item => (
               <div
                 key={item.id}
@@ -452,7 +487,7 @@ export default function RedEducationPage() {
 
       {/* 视频播放弹窗 */}
       {selectedVideo && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-8">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-2 md:p-8">
           <div className="bg-[var(--color-bg-secondary)] rounded-2xl max-w-5xl w-full overflow-hidden">
             <div className="relative bg-black aspect-video">
               <video src={selectedVideo.url} controls className="w-full h-full" />
@@ -485,7 +520,7 @@ export default function RedEducationPage() {
 
       {/* 登录弹窗 */}
       {showLoginModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-8">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 md:p-8">
           <div className="bg-[var(--color-bg-secondary)] rounded-2xl max-w-md w-full overflow-hidden">
             <div className="p-6 border-b border-[var(--color-border)] flex items-center justify-between">
               <h3 className="text-lg font-bold text-[var(--color-text-primary)] flex items-center gap-2">
@@ -549,7 +584,7 @@ export default function RedEducationPage() {
 
       {/* 上传视频弹窗 */}
       {showUploadModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-8">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 md:p-8">
           <div className="bg-[var(--color-bg-secondary)] rounded-2xl max-w-2xl w-full overflow-hidden">
             <div className="p-6 border-b border-[var(--color-border)] flex items-center justify-between">
               <h3 className="text-lg font-bold text-[var(--color-text-primary)]">上传视频案例</h3>
@@ -579,7 +614,7 @@ export default function RedEducationPage() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">视频标题</label>
                   <input
@@ -668,7 +703,7 @@ export default function RedEducationPage() {
 
       {/* 权限提示弹窗 */}
       {showPermissionDenied && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-8">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 md:p-8">
           <div className="bg-[var(--color-bg-secondary)] rounded-2xl max-w-md w-full overflow-hidden">
             <div className="p-6 text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-50 flex items-center justify-center">

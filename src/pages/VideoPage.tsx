@@ -3,21 +3,8 @@ import {
   Video, Plus, ExternalLink, Trash2, Play, Film, Youtube, FileVideo,
   PlayCircle, FileText, Maximize, X, Lock, User, Upload,
 } from 'lucide-react';
-import { saveVideoFile, loadVideoFile, deleteVideoFile, saveVideoMeta, loadVideoMeta, generateThumbnail } from '@/lib/videoStorage';
-
-interface VideoItem {
-  id: string;
-  title: string;
-  url: string;
-  category: string;
-  embedUrl?: string;
-  duration?: string;
-  views?: string;
-  desc?: string;
-  tags?: string[];
-  color?: string;
-  thumbnail?: string;
-}
+import { saveVideoFile, loadVideoFile, deleteVideoFile, saveVideoMeta, loadVideoMeta, generateThumbnail, fetchServerVideos, uploadServerVideo, addServerVideoUrl, deleteServerVideo } from '@/lib/videoStorage';
+import type { VideoItem } from '@/types';
 
 interface UserRole {
   isAdmin: boolean;
@@ -26,7 +13,14 @@ interface UserRole {
 
 const ADMIN_CREDENTIALS = { username: 'admin', password: 'admin' };
 
-const defaultVideos: VideoItem[] = [];
+const defaultVideos: VideoItem[] = [
+  { id: '1', title: '计算机组成原理 - CPU工作原理', category: '课程讲解', duration: '18:32', views: '2.3万', desc: '本视频详细讲解CPU的基本结构和工作原理，包括运算器、控制器、寄存器组等核心部件的功能与协作机制。', tags: ['CPU结构', '运算器', '控制器', '指令周期'], color: 'from-blue-500 to-cyan-500' },
+  { id: '2', title: '汇编语言程序设计入门', category: '实验指导', duration: '24:15', views: '1.8万', desc: '从零开始学习8086汇编语言，掌握基本指令和程序结构，配合实验案例加深理解。', tags: ['汇编语言', '8086', '程序设计'], color: 'from-green-500 to-emerald-500' },
+  { id: '3', title: '存储系统与Cache原理', category: '课程讲解', duration: '32:08', views: '3.1万', desc: '深入讲解存储器层次结构，Cache工作原理和地址映射方式，理解存储系统性能优化。', tags: ['存储系统', 'Cache', '地址映射'], color: 'from-purple-500 to-pink-500' },
+  { id: '4', title: '指令系统设计详解', category: '重点难点', duration: '28:45', views: '4.2万', desc: '全面解析指令系统的设计原则、指令格式和寻址方式，重点突破指令编码难点。', tags: ['指令系统', '寻址方式', '指令编码'], color: 'from-amber-500 to-orange-500' },
+  { id: '5', title: '流水线技术与性能分析', category: '重点难点', duration: '21:20', views: '1.5万', desc: '讲解流水线工作原理、性能指标计算和相关冒险处理，提升对高性能计算的理解。', tags: ['流水线', '性能分析', '冒险处理'], color: 'from-red-500 to-rose-500' },
+  { id: '6', title: 'IO系统与中断机制', category: '课程讲解', duration: '16:55', views: '9.8千', desc: '介绍IO系统的组成和工作方式，中断机制的实现和应用场景。', tags: ['IO系统', '中断', 'DMA'], color: 'from-indigo-500 to-blue-500' },
+];
 
 const categories = ['全部', '课程讲解', '实验指导', '重点难点', '其他'];
 
@@ -99,17 +93,28 @@ export default function VideoPage() {
 
   // 页面加载时从 IndexedDB 恢复视频
   useEffect(() => {
-    const meta = loadVideoMeta(META_KEY);
-    if (meta && meta.length > 0) {
-      Promise.all(
-        meta.map(async (m) => {
-          const url = await loadVideoFile(m.id);
-          return { ...m, url: url || '' };
-        })
-      ).then(loaded => {
-        setVideos(loaded.filter(v => v.url));
-      });
-    }
+    const loadVideos = async () => {
+      const serverVideos = await fetchServerVideos(META_KEY);
+      if (serverVideos.length > 0) {
+        setVideos(serverVideos);
+        return;
+      }
+
+      const meta = loadVideoMeta(META_KEY);
+      if (meta && meta.length > 0) {
+        const loaded = await Promise.all(
+          meta.map(async (m) => {
+            const url = await loadVideoFile(m.id);
+            return { ...m, url: url || '' };
+          })
+        );
+        const validVideos = loaded.filter(v => v.url);
+        if (validVideos.length > 0) {
+          setVideos(validVideos);
+        }
+      }
+    };
+    loadVideos();
   }, []);
 
   const handleLogin = () => {
@@ -126,29 +131,40 @@ export default function VideoPage() {
     }
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!newTitle.trim() || !newUrl.trim()) return;
     const embedUrl = getEmbedUrl(newUrl);
     const colorIdx = videos.length % colorGradients.length;
-    const newItem: VideoItem = {
-      id: Date.now().toString(),
-      title: newTitle.trim(),
-      url: newUrl.trim(),
-      category: newCategory,
-      embedUrl,
-      duration: '未知',
-      views: '0',
-      desc: '用户添加的视频资源',
-      tags: [],
-      color: colorGradients[colorIdx],
-    };
-    setVideos([...videos, newItem]);
-    setNewTitle('');
-    setNewUrl('');
-    setShowAdd(false);
+    
+    const serverResult = await addServerVideoUrl(META_KEY, newTitle.trim(), newUrl.trim(), newCategory);
+    if (serverResult) {
+      serverResult.embedUrl = embedUrl;
+      serverResult.color = colorGradients[colorIdx];
+      setVideos([...videos, serverResult]);
+      setNewTitle('');
+      setNewUrl('');
+      setShowAdd(false);
+    } else {
+      const newItem: VideoItem = {
+        id: Date.now().toString(),
+        title: newTitle.trim(),
+        url: newUrl.trim(),
+        category: newCategory,
+        embedUrl,
+        duration: '未知',
+        views: '0',
+        desc: '用户添加的视频资源',
+        tags: [],
+        color: colorGradients[colorIdx],
+      };
+      setVideos([...videos, newItem]);
+      setNewTitle('');
+      setNewUrl('');
+      setShowAdd(false);
+    }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (!userRole.isAdmin) {
       setShowPermissionDenied(true);
       return;
@@ -157,6 +173,7 @@ export default function VideoPage() {
     setVideos(updated);
     saveVideoMeta(META_KEY, updated);
     deleteVideoFile(id).catch(() => {});
+    deleteServerVideo(META_KEY, id).catch(() => {});
     if (playingVideo?.id === id) setPlayingVideo(null);
   };
 
@@ -191,6 +208,27 @@ export default function VideoPage() {
       }, 200);
 
       try {
+        const serverResult = await uploadServerVideo(
+          META_KEY,
+          file,
+          newVideo.title || file.name.replace(/\.[^/.]+$/, ''),
+          newVideo.category,
+          newVideo.description || '',
+          newVideo.tags
+        );
+
+        if (serverResult) {
+          const colorIdx = videos.length % colorGradients.length;
+          serverResult.color = colorGradients[colorIdx];
+          const updated = [...videos, serverResult];
+          setVideos(updated);
+          saveVideoMeta(META_KEY, updated);
+          setShowUploadModal(false);
+          setNewVideo({ title: '', category: '课程讲解', description: '', tags: '' });
+          setUploadProgress(0);
+          return;
+        }
+
         const videoId = Date.now().toString();
         const url = await saveVideoFile(videoId, file);
         const thumbnail = await generateThumbnail(url);
@@ -279,7 +317,7 @@ export default function VideoPage() {
 
       {/* 播放器模态框 */}
       {playingVideo && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-8 animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 md:p-8 animate-fade-in">
           {/* 背景遮罩 */}
           <div
             className="absolute inset-0 bg-black/80 backdrop-blur-sm"
@@ -364,9 +402,9 @@ export default function VideoPage() {
                 推荐视频
               </h3>
               <div className="flex gap-4 overflow-x-auto pb-2">
-                {videos.filter(v => v.id !== playingVideo.id).slice(0, 6).map(v => (
+                {videos.filter(v => (v.url || v.id) !== (playingVideo.url || playingVideo.id)).slice(0, 6).map(v => (
                   <div
-                    key={v.id}
+                    key={v.url || v.id}
                     className="flex-shrink-0 w-48 cursor-pointer group"
                     onClick={() => setPlayingVideo(v)}
                   >
@@ -402,11 +440,11 @@ export default function VideoPage() {
 
       {/* 视频卡片列表 */}
       {!playingVideo && (
-        <div className="grid grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
           {filtered.map((video, idx) => {
             return (
               <div
-                key={video.id}
+                key={video.url || video.id}
                 className="glass-card overflow-hidden cursor-pointer hover:scale-[1.02] transition-all duration-300 group"
                 onClick={() => setPlayingVideo(video)}
               >
@@ -489,7 +527,7 @@ export default function VideoPage() {
 
       {/* 登录弹窗 */}
       {showLoginModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-8">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 md:p-8">
           <div className="bg-[var(--color-bg-secondary)] rounded-2xl max-w-md w-full overflow-hidden">
             <div className="p-6 border-b border-[var(--color-border)] flex items-center justify-between">
               <h3 className="text-lg font-bold text-[var(--color-text-primary)] flex items-center gap-2">
@@ -553,7 +591,7 @@ export default function VideoPage() {
 
       {/* 权限提示弹窗 */}
       {showPermissionDenied && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-8">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 md:p-8">
           <div className="bg-[var(--color-bg-secondary)] rounded-2xl max-w-md w-full overflow-hidden">
             <div className="p-6 text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-50 flex items-center justify-center">
@@ -574,7 +612,7 @@ export default function VideoPage() {
 
       {/* 上传视频文件弹窗 */}
       {showUploadModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-8">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 md:p-8">
           <div className="bg-[var(--color-bg-secondary)] rounded-2xl max-w-2xl w-full overflow-hidden">
             <div className="p-6 border-b border-[var(--color-border)] flex items-center justify-between">
               <h3 className="text-lg font-bold text-[var(--color-text-primary)]">上传视频文件</h3>

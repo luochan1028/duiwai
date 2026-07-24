@@ -563,7 +563,7 @@ function RedEducationContent({ interact }: { interact: RedEducationInteract }) {
             <div className="grid grid-cols-3 gap-3">
               {videos.length > 0 ? videos.map((v, idx) => (
                 <div
-                  key={v.id}
+                  key={v.url || v.id}
                   className="glass-card overflow-hidden cursor-pointer hover:scale-[1.02] transition-all group animate-fade-in-up"
                   style={{ animationDelay: `${idx * 120}ms` }}
                 >
@@ -1784,7 +1784,7 @@ function VideoContent({ interact }: { interact: VideoInteract }) {
           <div className="grid grid-cols-3 gap-5">
             {filtered.map((video, idx) => (
               <div
-                key={video.id}
+                key={video.url || video.id}
                 className="glass-card overflow-hidden cursor-pointer hover:scale-[1.02] transition-all duration-300 group animate-fade-in-up"
                 style={{ animationDelay: `${idx * 100}ms` }}
               >
@@ -1915,7 +1915,7 @@ function VideoContent({ interact }: { interact: VideoInteract }) {
               <div className="flex gap-4 overflow-x-auto pb-2">
                 {videos.slice(1, 6).map((v, idx) => (
                   <div
-                    key={v.id}
+                    key={v.url || v.id}
                     className="flex-shrink-0 w-48 cursor-pointer group animate-fade-in-up"
                     style={{ animationDelay: `${idx * 80}ms` }}
                   >
