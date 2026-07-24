@@ -6,9 +6,9 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-bg-primary circuit-bg text-text-primary">
       <Sidebar />
-      <div className="ml-64 flex flex-col min-h-screen">
+      <div className="md:ml-64 flex flex-col min-h-screen ml-0">
         <TopBar />
-        <main className="flex-1 p-6 overflow-auto">
+        <main className="flex-1 p-4 md:p-6 overflow-auto">
           <Outlet />
         </main>
       </div>

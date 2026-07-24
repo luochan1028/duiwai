@@ -1,36 +1,5 @@
 import { create } from 'zustand';
-import type { QuizQuestion } from '@/data/mockData';
-
-interface Message {
-  id: string;
-  role: 'user' | 'ai';
-  content: string;
-  timestamp: Date;
-  relatedTopics?: string[];
-  week?: number;
-  microCourses?: { title: string; duration: string; url: string; type: string }[];
-  reviewed?: boolean;
-}
-
-interface QuizConfig {
-  knowledgePoint: string | 'all';
-  difficulty: 'easy' | 'medium' | 'hard' | 'all';
-  count: number;
-}
-
-interface DebugResult {
-  errors: DebugIssue[];
-  warnings: DebugIssue[];
-  suggestions: string[];
-  fixedCode?: string;
-}
-
-interface DebugIssue {
-  line: number;
-  type: 'error' | 'warning';
-  message: string;
-  fix?: string;
-}
+import type { Message, QuizQuestion, QuizConfig, DebugResult, DebugIssue } from '@/types';
 
 interface AppState {
   activeTab: string;

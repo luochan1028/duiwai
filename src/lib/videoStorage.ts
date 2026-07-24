@@ -1,58 +1,168 @@
-// 视频文件 IndexedDB 持久化存储
+import type { VideoItem } from '@/types';
+
 const DB_NAME = 'jizu-zhixue-videos';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORE_NAME = 'video-files';
 
-function openDB(): Promise<IDBDatabase> {
+let dbInstance: IDBDatabase | null = null;
+
+const API_BASE = '/api';
+
+export async function fetchServerVideos(key: string): Promise<VideoItem[]> {
+  try {
+    const response = await fetch(`${API_BASE}/videos/${key}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch videos');
+    }
+    return await response.json();
+  } catch {
+    return [];
+  }
+}
+
+export async function uploadServerVideo(
+  key: string,
+  file: File,
+  title: string,
+  category: string,
+  description: string,
+  tags: string
+): Promise<VideoItem | null> {
+  try {
+    const formData = new FormData();
+    formData.append('video', file);
+    formData.append('title', title);
+    formData.append('category', category);
+    formData.append('description', description);
+    formData.append('tags', tags);
+
+    const response = await fetch(`${API_BASE}/videos/${key}`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Upload failed');
+    }
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function addServerVideoUrl(
+  key: string,
+  title: string,
+  url: string,
+  category: string
+): Promise<VideoItem | null> {
+  try {
+    const response = await fetch(`${API_BASE}/videos/${key}/add-url`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ title, url, category }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Add failed');
+    }
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function deleteServerVideo(key: string, id: string): Promise<boolean> {
+  try {
+    const response = await fetch(`${API_BASE}/videos/${key}/${id}`, {
+      method: 'DELETE',
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+export async function openDB(): Promise<IDBDatabase> {
+  if (dbInstance) return dbInstance;
+
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onupgradeneeded = () => {
-      const db = request.result;
+
+    request.onupgradeneeded = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result;
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         db.createObjectStore(STORE_NAME, { keyPath: 'id' });
       }
     };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
 
-// 保存视频文件 Blob 到 IndexedDB
-export async function saveVideoFile(id: string, file: File): Promise<string> {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, 'readwrite');
-    const store = tx.objectStore(STORE_NAME);
-    store.put({ id, file, createdAt: Date.now() });
-    tx.oncomplete = () => {
-      const url = URL.createObjectURL(file);
-      resolve(url);
-    };
-    tx.onerror = () => reject(tx.error);
-  });
-}
-
-// 从 IndexedDB 读取视频文件并创建 blob URL
-export async function loadVideoFile(id: string): Promise<string | null> {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, 'readonly');
-    const store = tx.objectStore(STORE_NAME);
-    const request = store.get(id);
     request.onsuccess = () => {
-      const result = request.result;
-      if (result && result.file) {
-        const url = URL.createObjectURL(result.file);
-        resolve(url);
-      } else {
-        resolve(null);
-      }
+      dbInstance = request.result;
+      resolve(request.result);
     };
-    request.onerror = () => reject(request.error);
+
+    request.onerror = () => {
+      console.error('IndexedDB open error:', request.error);
+      reject(request.error);
+    };
   });
 }
 
-// 从视频文件生成封面图片（取第一帧）
+export async function saveVideoFile(id: string, file: File): Promise<string> {
+  try {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+      store.put({ id, file, createdAt: Date.now() });
+
+      tx.oncomplete = () => {
+        const url = URL.createObjectURL(file);
+        resolve(url);
+      };
+
+      tx.onerror = () => {
+        console.error('IndexedDB transaction error:', tx.error);
+        reject(tx.error);
+      };
+    });
+  } catch (error) {
+    console.error('Failed to save video file:', error);
+    throw error;
+  }
+}
+
+export async function loadVideoFile(id: string): Promise<string | null> {
+  try {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const store = tx.objectStore(STORE_NAME);
+      const request = store.get(id);
+
+      request.onsuccess = () => {
+        const result = request.result;
+        if (result && result.file) {
+          const url = URL.createObjectURL(result.file);
+          resolve(url);
+        } else {
+          resolve(null);
+        }
+      };
+
+      request.onerror = () => {
+        console.error('IndexedDB get error:', request.error);
+        reject(request.error);
+      };
+    });
+  } catch (error) {
+    console.error('Failed to load video file:', error);
+    return null;
+  }
+}
+
 export async function generateThumbnail(videoUrl: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const video = document.createElement('video');
@@ -104,35 +214,45 @@ export async function generateThumbnail(videoUrl: string): Promise<string> {
   });
 }
 
-// 删除视频文件
 export async function deleteVideoFile(id: string): Promise<void> {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, 'readwrite');
-    const store = tx.objectStore(STORE_NAME);
-    store.delete(id);
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
-  });
-}
-
-// 保存视频元数据列表到 localStorage（轻量数据）
-export function saveVideoMeta(key: string, videos: any[]): void {
-  // 不存储 url（blob url 每次会变），只存元数据
-  const meta = videos.map(v => {
-    const { url, ...rest } = v;
-    return rest;
-  });
-  localStorage.setItem(key, JSON.stringify(meta));
-}
-
-// 从 localStorage 读取视频元数据
-export function loadVideoMeta(key: string): any[] | null {
-  const data = localStorage.getItem(key);
-  if (!data) return null;
   try {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+      store.delete(id);
+
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => {
+        console.error('IndexedDB delete error:', tx.error);
+        reject(tx.error);
+      };
+    });
+  } catch (error) {
+    console.error('Failed to delete video file:', error);
+    throw error;
+  }
+}
+
+export function saveVideoMeta(key: string, videos: VideoItem[]): void {
+  try {
+    const meta = videos.map(v => {
+      const { url, ...rest } = v;
+      return rest;
+    });
+    localStorage.setItem(key, JSON.stringify(meta));
+  } catch (error) {
+    console.error('Failed to save video meta:', error);
+  }
+}
+
+export function loadVideoMeta(key: string): VideoItem[] | null {
+  try {
+    const data = localStorage.getItem(key);
+    if (!data) return null;
     return JSON.parse(data);
-  } catch {
+  } catch (error) {
+    console.error('Failed to load video meta:', error);
     return null;
   }
 }

@@ -443,3 +443,103 @@ body {
   background: none;
   pointer-events: none;
 }
+
+/* ==================== 移动端响应式优化 ==================== */
+
+/* 小屏幕设备 */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+
+  /* 模态框全屏 */
+  .fixed.inset-0.z-50 {
+    padding: 0.5rem;
+  }
+
+  /* 模态框内容区域 */
+  .fixed.inset-0.z-50 .glass-card,
+  .fixed.inset-0.z-50 .bg-\[var\(--color-bg-secondary\)\] {
+    max-height: 95vh;
+    overflow-y: auto;
+  }
+
+  /* 视频播放器模态框 */
+  .fixed.inset-0.z-50 .max-w-5xl {
+    max-width: 100%;
+    margin: 0.5rem;
+  }
+
+  /* 表单输入框 */
+  input, textarea, select {
+    font-size: 16px; /* 防止iOS缩放 */
+  }
+
+  /* 按钮触摸友好 */
+  button, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* 导航链接触摸友好 */
+  .sidebar-item {
+    min-height: 48px;
+  }
+
+  /* 分类标签横向滚动 */
+  .flex.items-center.gap-2 {
+    flex-wrap: wrap;
+  }
+
+  /* 减小标题字号 */
+  h1 { font-size: 1.25rem !important; }
+  h2 { font-size: 1.1rem !important; }
+  h3 { font-size: 1rem !important; }
+
+  /* 卡片内边距 */
+  .glass-card {
+    padding: 0.75rem;
+  }
+}
+
+/* 超小屏幕设备 */
+@media (max-width: 480px) {
+  html {
+    font-size: 13px;
+  }
+
+  /* 视频播放器 */
+  video, iframe {
+    max-height: 60vh;
+  }
+
+  /* 统计卡片 */
+  .glass-card.p-4 {
+    padding: 0.5rem;
+  }
+
+  /* 学习状态卡片隐藏（移动端空间不足） */
+  .glass-card .text-2xl {
+    font-size: 1.25rem;
+  }
+}
+
+/* 触摸设备优化 */
+@media (hover: none) {
+  .glass-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .glass-card:active {
+    transform: scale(0.98);
+  }
+}
+
+/* 横屏模式 */
+@media (max-height: 500px) and (orientation: landscape) {
+  .fixed.inset-0.z-50 {
+    align-items: flex-start;
+    padding-top: 0.5rem;
+  }
+}

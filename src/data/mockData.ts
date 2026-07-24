@@ -1,4 +1,4 @@
-// ==================== 接口定义 ====================
+import type { QuizQuestion as BaseQuizQuestion } from '@/types';
 
 export interface QAItem {
   id: string;
@@ -36,15 +36,8 @@ export interface GraphLink {
   relation: string;
 }
 
-export interface QuizQuestion {
-  id: string;
-  type: 'single' | 'multiple' | 'judge';
-  question: string;
-  options: string[];
-  answer: number | number[];
+export interface QuizQuestion extends BaseQuizQuestion {
   explanation: string;
-  knowledgePoint: string;
-  difficulty: 'easy' | 'medium' | 'hard';
 }
 
 export interface ChapterProgress {
@@ -105,8 +98,6 @@ export interface LearningReportItem {
   suggestion?: string;
 }
 
-// ==================== 颜色映射 ====================
-
 export const categoryColors: Record<string, string> = {
   '运算器': '#00d4ff',
   '控制器': '#7b2ff7',
@@ -116,8 +107,6 @@ export const categoryColors: Record<string, string> = {
   '数据表示': '#00d4ff',
   'CPU': '#7b2ff7',
 };
-
-// ==================== 知识点列表（用于抽题筛选）====================
 
 export const knowledgePoints = [
   '存储器层次结构',
@@ -133,8 +122,6 @@ export const knowledgePoints = [
   '寻址方式',
   '指令流水线',
 ];
-
-// ==================== 问答数据库 ====================
 
 export const qaDatabase: QAItem[] = [
   {
@@ -410,8 +397,6 @@ Cache行号 = 主存块号 mod Cache行数
   },
 ];
 
-// ==================== 知识图谱数据 ====================
-
 export const graphNodes: GraphNode[] = [
   { id: 'alu', name: '运算器ALU', category: '运算器', description: '算术逻辑单元，执行加减乘除和逻辑运算', x: 400, y: 150, color: '#00d4ff' },
   { id: 'controller', name: '控制器CU', category: '控制器', description: '控制单元，产生控制信号指挥各部件工作', x: 650, y: 150, color: '#7b2ff7' },
@@ -440,8 +425,6 @@ export const graphLinks: GraphLink[] = [
   { source: 'instruction', target: 'register', relation: '操作' },
 ];
 
-// ==================== 扩充题库（20题）====================
-
 export const quizQuestions: QuizQuestion[] = [
   { id: 'qz1', type: 'single', question: '在计算机中，CPU访问速度最快的存储器是？', options: ['Cache', '主存储器', '寄存器', '硬盘'], answer: 2, explanation: '寄存器位于CPU内部，是访问速度最快的存储单元。速度从快到慢依次为：寄存器 > Cache > 主存 > 硬盘。', knowledgePoint: '存储器层次结构', difficulty: 'easy' },
   { id: 'qz2', type: 'single', question: 'IEEE 754标准中，单精度浮点数的尾数位数是？', options: ['23位', '24位', '32位', '52位'], answer: 1, explanation: 'IEEE 754单精度浮点数格式：1位符号位 + 8位阶码 + 23位尾数。但由于规格化数的尾数最高位隐含为1，所以实际有效位数是24位。', knowledgePoint: 'IEEE 754标准', difficulty: 'medium' },
@@ -464,8 +447,6 @@ export const quizQuestions: QuizQuestion[] = [
   { id: 'qz19', type: 'single', question: '在程序中断方式中，CPU响应中断的时间是？', options: ['任一时刻', '当前指令执行完毕', '当前时钟周期结束', '当前机器周期结束'], answer: 1, explanation: 'CPU在每条指令执行完毕后检查是否有中断请求，如果有且允许中断，则在当前指令执行完毕后响应中断。', knowledgePoint: '中断系统', difficulty: 'medium' },
   { id: 'qz20', type: 'single', question: '某机器主存地址32位，Cache容量256KB，块大小32B，采用4路组相联，则组地址为几位？', options: ['8位', '10位', '11位', '13位'], answer: 2, explanation: 'Cache行数=256KB/32B=8192行=8K行，每组4路，所以组数=8192/4=2048=2^11，组地址为11位。', knowledgePoint: 'Cache映射', difficulty: 'hard' },
 ];
-
-// ==================== 学习进度数据 ====================
 
 export const userProgress: UserProgress = {
   userId: 'student_2025',
@@ -494,8 +475,6 @@ export const radarChartData = {
   values: [85, 72, 68, 55, 78, 40],
 };
 
-// ==================== 教学日历数据 ====================
-
 export const teachingCalendar: TeachingCalendarItem[] = [
   { week: 1, topic: '计算机系统概述', chapter: '第1章', content: '计算机发展历程、层次结构、性能指标', preClassTasks: ['预习教材1.1-1.3节', '了解冯·诺依曼架构'], postClassTasks: ['完成第1章课后习题', '阅读扩展材料：现代计算机架构'] },
   { week: 2, topic: '数据表示-数制与编码', chapter: '第2章', content: '进位计数制、定点数表示、字符编码', preClassTasks: ['预习2.1节数制转换', '复习二进制基础'], postClassTasks: ['完成数制转换练习', '理解ASCII与Unicode'] },
@@ -515,8 +494,6 @@ export const teachingCalendar: TeachingCalendarItem[] = [
   { week: 16, topic: '期末复习', chapter: '全部', content: '知识点梳理、典型题分析', preClassTasks: ['整理各章笔记', '回顾错题'], postClassTasks: ['完成模拟试题', '查漏补缺'] },
 ];
 
-// ==================== 待完成任务 ====================
-
 export const pendingTasks: PendingTask[] = [
   { id: 't1', title: '预习：浮点数表示与运算', type: 'pre-study', chapter: '第2章', deadline: '本周三前', completed: false, description: '预习2.3节，了解IEEE 754标准，观看浮点数转换微课' },
   { id: 't2', title: '练习：Cache映射计算专项', type: 'exercise', chapter: '第3章', deadline: '本周五前', completed: false, description: '完成10道Cache映射计算题，巩固直接映射和组相联映射' },
@@ -525,8 +502,6 @@ export const pendingTasks: PendingTask[] = [
   { id: 't5', title: '预习：指令流水线', type: 'pre-study', chapter: '第4章', deadline: '下周三前', completed: false, description: '预习4.5节，了解流水线原理和冲突类型' },
   { id: 't6', title: '练习：中断与DMA对比', type: 'exercise', chapter: '第5章', deadline: '下周五前', completed: true, description: '完成中断与DMA方式对比分析题' },
 ];
-
-// ==================== 高频问题TOP10 ====================
 
 export const highFreqQuestions: HighFreqQuestion[] = [
   { question: 'Cache三种映射方式的区别和计算', count: 89, category: '存储器', trend: 'up' },
@@ -541,14 +516,10 @@ export const highFreqQuestions: HighFreqQuestion[] = [
   { question: '总线仲裁方式对比', count: 28, category: 'IO系统', trend: 'down' },
 ];
 
-// ==================== 教师端班级统计数据 ====================
-
 export const classStats: StudentStat[] = [
   { class: '网安2025-1班', totalStudents: 43, activeUsers: 38, avgScore: 78.5, completionRate: 82 },
   { class: '网安2025-2班', totalStudents: 43, activeUsers: 41, avgScore: 81.2, completionRate: 88 },
 ];
-
-// ==================== 学习报告数据 ====================
 
 export const learningReport: LearningReportItem[] = [
   { section: '学习概况', content: '本学期累计学习64小时，完成答题127道，正确率78%。当前课程总体进度62%，处于中等水平。', score: 62 },
