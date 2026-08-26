@@ -487,28 +487,31 @@ export default function RedEducationPage() {
 
       {/* 视频播放弹窗 */}
       {selectedVideo && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-2 md:p-8">
-          <div className="bg-[var(--color-bg-secondary)] rounded-2xl max-w-5xl w-full overflow-hidden">
-            <div className="relative bg-black aspect-video">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-2 md:p-4">
+          <div className="bg-[var(--color-bg-secondary)] rounded-xl md:rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="relative bg-black h-[30vh] md:h-auto md:aspect-video">
               <video src={selectedVideo.url} controls className="w-full h-full" />
               <button
                 onClick={() => setSelectedVideo(null)}
-                className="absolute top-4 right-4 p-2 bg-black/50 rounded-full text-white hover:bg-red-600 transition-colors"
+                className="absolute top-2 right-2 p-1.5 bg-black/60 rounded-full text-white hover:bg-red-600 transition-colors z-10"
+                aria-label="关闭"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="p-6">
-              <h3 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">{selectedVideo.title}</h3>
-              <div className="flex items-center gap-4 text-sm text-[var(--color-text-secondary)] mb-3">
+            <div className="p-3 md:p-4">
+              <h3 className="text-base md:text-lg font-bold text-[var(--color-text-primary)] mb-2">{selectedVideo.title}</h3>
+              <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--color-text-secondary)] mb-2">
                 <span className="px-2 py-0.5 rounded bg-red-50 text-red-600">{selectedVideo.category}</span>
                 <span>{selectedVideo.playCount}次播放</span>
                 <span>{selectedVideo.duration}</span>
               </div>
-              <p className="text-sm text-[var(--color-text-secondary)] mb-4">{selectedVideo.description}</p>
-              <div className="flex flex-wrap gap-2">
+              {selectedVideo.description && (
+                <p className="text-xs text-[var(--color-text-secondary)] mb-3 leading-relaxed line-clamp-2">{selectedVideo.description}</p>
+              )}
+              <div className="flex flex-wrap gap-1.5">
                 {selectedVideo.tags.map(tag => (
-                  <span key={tag} className="px-3 py-1 text-xs rounded-full bg-red-50 text-red-700 border border-red-200">
+                  <span key={tag} className="px-2 py-0.5 text-xs rounded-full bg-red-50 text-red-700 border border-red-200">
                     {tag}
                   </span>
                 ))}
