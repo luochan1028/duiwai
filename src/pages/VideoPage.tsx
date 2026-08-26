@@ -3,15 +3,11 @@ import {
   Video, Plus, ExternalLink, Trash2, Play, Film, Youtube, FileVideo,
   PlayCircle, FileText, Maximize, X, Lock, User, Upload,
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { saveVideoFile, loadVideoFile, deleteVideoFile, saveVideoMeta, loadVideoMeta, generateThumbnail, fetchServerVideos, uploadServerVideo, addServerVideoUrl, deleteServerVideo } from '@/lib/videoStorage';
+import VideoThumbnail from '@/components/VideoThumbnail';
+import { useStore } from '@/store/useStore';
 import type { VideoItem } from '@/types';
-
-interface UserRole {
-  isAdmin: boolean;
-  username: string;
-}
-
-const ADMIN_CREDENTIALS = { username: 'admin', password: 'admin' };
 
 const defaultVideos: VideoItem[] = [
   { id: '1', title: '计算机组成原理 - CPU工作原理', category: '课程讲解', duration: '18:32', views: '2.3万', desc: '本视频详细讲解CPU的基本结构和工作原理，包括运算器、控制器、寄存器组等核心部件的功能与协作机制。', tags: ['CPU结构', '运算器', '控制器', '指令周期'], color: 'from-blue-500 to-cyan-500' },
@@ -52,12 +48,10 @@ export default function VideoPage() {
   const [videos, setVideos] = useState<VideoItem[]>(defaultVideos);
   const [activeCategory, setActiveCategory] = useState('全部');
   const [showAdd, setShowAdd] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newUrl, setNewUrl] = useState('');
   const [newCategory, setNewCategory] = useState('其他');
   const [playingVideo, setPlayingVideo] = useState<VideoItem | null>(null);
-  const [showPermissionDenied, setShowPermissionDenied] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -69,23 +63,9 @@ export default function VideoPage() {
     tags: '',
   });
 
-  const [userRole, setUserRole] = useState<UserRole>(() => {
-    const saved = localStorage.getItem('video-page-user');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return { isAdmin: false, username: '普通用户' };
-      }
-    }
-    return { isAdmin: false, username: '普通用户' };
-  });
-
-  const [loginForm, setLoginForm] = useState({
-    username: '',
-    password: '',
-    error: '',
-  });
+  const user = useStore((s) => s.user);
+  const navigate = useNavigate();
+  const isTeacher = user?.role === 'teacher';
 
   const filtered = activeCategory === '全部' ? videos : videos.filter(v => v.category === activeCategory);
 
@@ -116,20 +96,6 @@ export default function VideoPage() {
     };
     loadVideos();
   }, []);
-
-  const handleLogin = () => {
-    if (loginForm.username === ADMIN_CREDENTIALS.username &&
-        loginForm.password === ADMIN_CREDENTIALS.password) {
-      const role = { isAdmin: true, username: loginForm.username };
-      setUserRole(role);
-      localStorage.setItem('video-page-user', JSON.stringify(role));
-      setShowLoginModal(false);
-      setLoginForm({ username: '', password: '', error: '' });
-      setShowAdd(true);
-    } else {
-      setLoginForm(f => ({ ...f, error: '用户名或密码错误，请输入 admin/admin' }));
-    }
-  };
 
   const handleAdd = async () => {
     if (!newTitle.trim() || !newUrl.trim()) return;
@@ -165,10 +131,7 @@ export default function VideoPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!userRole.isAdmin) {
-      setShowPermissionDenied(true);
-      return;
-    }
+    if (!isTeacher) return;
     const updated = videos.filter(v => v.id !== id);
     setVideos(updated);
     saveVideoMeta(META_KEY, updated);
@@ -178,18 +141,19 @@ export default function VideoPage() {
   };
 
   const handleAddClick = () => {
-    if (userRole.isAdmin) {
+    if (isTeacher) {
       setShowAdd(!showAdd);
     } else {
-      setShowLoginModal(true);
+      // 非老师，跳转登录页
+      navigate('/login');
     }
   };
 
   const handleUploadClick = () => {
-    if (userRole.isAdmin) {
+    if (isTeacher) {
       setShowUploadModal(true);
     } else {
-      setShowLoginModal(true);
+      navigate('/login');
     }
   };
 
@@ -284,19 +248,21 @@ export default function VideoPage() {
         <div className="flex items-center gap-3 md:gap-4">
           <div className="flex items-center gap-2 text-xs md:text-sm text-[var(--color-text-secondary)]">
             <User className="w-4 h-4" />
-            <span className="truncate max-w-[80px] md:max-w-none">{userRole.username}</span>
-            {userRole.isAdmin && (
+            <span className="truncate max-w-[80px] md:max-w-none">{user?.username || '游客'}</span>
+            {isTeacher && (
               <span className="px-2 py-0.5 text-xs rounded bg-red-500 text-white">管理员</span>
             )}
           </div>
-          <button
-            onClick={handleUploadClick}
-            className="flex items-center gap-2 px-3 md:px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
-          >
-            <Upload className="w-4 h-4" />
-            <span className="hidden sm:inline">上传视频案例</span>
-            <span className="sm:hidden">上传</span>
-          </button>
+          {isTeacher && (
+            <button
+              onClick={handleUploadClick}
+              className="flex items-center gap-2 px-3 md:px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+            >
+              <Upload className="w-4 h-4" />
+              <span className="hidden sm:inline">上传视频案例</span>
+              <span className="sm:hidden">上传</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -339,7 +305,7 @@ export default function VideoPage() {
             </button>
 
             {/* 视频区域 */}
-            <div className="relative bg-black h-[30vh] md:h-auto md:aspect-video">
+            <div className="relative bg-gradient-to-br from-gray-900 to-gray-800 h-[30vh] md:h-auto md:aspect-video">
               {playingVideo.embedUrl ? (
                 <iframe
                   src={playingVideo.embedUrl}
@@ -352,15 +318,17 @@ export default function VideoPage() {
                 <video
                   src={playingVideo.url}
                   controls
-                  className="w-full h-full"
-                  poster={playingVideo.thumbnail || playingVideo.url}
+                  preload="metadata"
+                  className="w-full h-full bg-black"
+                  poster={playingVideo.thumbnail}
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <div className={`absolute inset-0 bg-gradient-to-br ${playingVideo.color || 'from-blue-600 to-purple-600'}/30`} />
-                  <div className="relative text-center">
+                  <div className="relative text-center px-4">
                     <PlayCircle className="w-12 h-12 text-white/80 mx-auto mb-2 animate-pulse" />
-                    <p className="text-white/70 text-xs">无法播放</p>
+                    <p className="text-white/70 text-xs">暂无视频源</p>
+                    <p className="text-white/50 text-[10px] mt-1 line-clamp-2">{playingVideo.title}</p>
                   </div>
                 </div>
               )}
@@ -453,20 +421,14 @@ export default function VideoPage() {
                 onClick={() => setPlayingVideo(video)}
               >
                 {/* 缩略图 */}
-                <div className={`relative aspect-video ${video.url && !video.embedUrl ? 'bg-black' : `bg-gradient-to-br ${video.color || 'from-blue-500 to-cyan-500'}`} flex items-center justify-center`}>
-                  {video.thumbnail ? (
-                    <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" />
-                  ) : video.url && !video.embedUrl ? (
-                    <img src={video.url} alt={video.title} className="w-full h-full object-cover" />
-                  ) : (
-                    <Play className="w-8 h-8 md:w-10 md:h-10 text-white/80 group-hover:scale-125 transition-transform" />
-                  )}
+                <div className={`relative aspect-video bg-gradient-to-br ${video.color || 'from-blue-500 to-cyan-500'} flex items-center justify-center overflow-hidden`}>
+                  <VideoThumbnail video={video} />
                   {video.duration && (
                     <div className="absolute bottom-1.5 right-1.5 bg-black/70 text-white text-[10px] md:text-xs px-1.5 py-0.5 rounded">
                       {video.duration}
                     </div>
                   )}
-                  {userRole.isAdmin && (
+                  {isTeacher && (
                     <button
                       onClick={(e) => { e.stopPropagation(); handleDelete(video.id); }}
                       className="absolute top-1.5 right-1.5 p-1.5 bg-black/50 rounded opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600"
@@ -507,7 +469,7 @@ export default function VideoPage() {
             );
           })}
           {/* 管理员上传卡片 */}
-          {userRole.isAdmin && (
+          {isTeacher && (
             <div
               onClick={() => setShowUploadModal(true)}
               className="glass-card h-full flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-red-300 transition-colors border-2 border-dashed border-[var(--color-border)] min-h-[150px] md:min-h-[200px]"
@@ -522,95 +484,10 @@ export default function VideoPage() {
       )}
 
       {/* 空状态 */}
-      {filtered.length === 0 && !playingVideo && !userRole.isAdmin && (
+      {filtered.length === 0 && !playingVideo && !isTeacher && (
         <div className="text-center py-12">
           <Video className="w-12 h-12 text-[var(--color-text-muted)] mx-auto mb-3" />
           <p className="text-[var(--color-text-secondary)]">暂无视频资源，请联系管理员添加</p>
-        </div>
-      )}
-
-      {/* 登录弹窗 */}
-      {showLoginModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 md:p-8">
-          <div className="bg-[var(--color-bg-secondary)] rounded-2xl max-w-md w-full overflow-hidden">
-            <div className="p-6 border-b border-[var(--color-border)] flex items-center justify-between">
-              <h3 className="text-lg font-bold text-[var(--color-text-primary)] flex items-center gap-2">
-                <Lock className="w-5 h-5 text-red-600" />
-                管理员登录
-              </h3>
-              <button
-                onClick={() => setShowLoginModal(false)}
-                className="text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)]"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">用户名</label>
-                <input
-                  type="text"
-                  value={loginForm.username}
-                  onChange={(e) => setLoginForm(f => ({ ...f, username: e.target.value, error: '' }))}
-                  className="w-full px-3 py-2 bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:border-red-400"
-                  placeholder="输入管理员用户名"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">密码</label>
-                <input
-                  type="password"
-                  value={loginForm.password}
-                  onChange={(e) => setLoginForm(f => ({ ...f, password: e.target.value, error: '' }))}
-                  className="w-full px-3 py-2 bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:border-red-400"
-                  placeholder="输入管理员密码"
-                />
-              </div>
-              {loginForm.error && (
-                <div className="p-3 bg-red-50 rounded-lg text-red-600 text-sm">
-                  {loginForm.error}
-                </div>
-              )}
-              <div className="text-xs text-[var(--color-text-secondary)] bg-[var(--color-bg-primary)] p-3 rounded-lg">
-                默认管理员账号：admin / admin
-              </div>
-              <div className="flex justify-end gap-3 pt-4">
-                <button
-                  onClick={() => setShowLoginModal(false)}
-                  className="px-4 py-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
-                >
-                  取消
-                </button>
-                <button
-                  onClick={handleLogin}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                >
-                  登录
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 权限提示弹窗 */}
-      {showPermissionDenied && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 md:p-8">
-          <div className="bg-[var(--color-bg-secondary)] rounded-2xl max-w-md w-full overflow-hidden">
-            <div className="p-6 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-50 flex items-center justify-center">
-                <Lock className="w-8 h-8 text-red-600" />
-              </div>
-              <h3 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">权限不足</h3>
-              <p className="text-[var(--color-text-secondary)] mb-6">普通用户不允许修改视频，请联系管理员。</p>
-              <button
-                onClick={() => setShowPermissionDenied(false)}
-                className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-              >
-                确定
-              </button>
-            </div>
-          </div>
         </div>
       )}
 

@@ -14,12 +14,30 @@ app.use(express.json());
 const uploadsDir = path.join(__dirname, 'uploads');
 const videosDir = path.join(uploadsDir, 'videos');
 const metadataDir = path.join(uploadsDir, 'metadata');
+const thumbnailsDir = path.join(uploadsDir, 'thumbnails');
 
 if (!fs.existsSync(videosDir)) {
   fs.mkdirSync(videosDir, { recursive: true });
 }
 if (!fs.existsSync(metadataDir)) {
   fs.mkdirSync(metadataDir, { recursive: true });
+}
+if (!fs.existsSync(thumbnailsDir)) {
+  fs.mkdirSync(thumbnailsDir, { recursive: true });
+}
+
+// 根据视频文件名查找已预生成的缩略图（同名 .jpg/.png）
+function findThumbnailForVideo(filename) {
+  if (!filename) return null;
+  const baseName = filename.replace(/\.[^/.]+$/, '');
+  const candidates = [`${baseName}.jpg`, `${baseName}.png`, `${baseName}.jpeg`];
+  for (const cand of candidates) {
+    const candPath = path.join(thumbnailsDir, cand);
+    if (fs.existsSync(candPath)) {
+      return `/api/thumbnails/${cand}`;
+    }
+  }
+  return null;
 }
 
 const storage = multer.diskStorage({
@@ -130,6 +148,7 @@ function scanVideosFromDir() {
         category,
         filename,
         url: `/api/video-files/${filename}`,
+        thumbnail: findThumbnailForVideo(filename),
         size: stats.size,
         duration: existingVideo?.duration || '未知',
         views: existingVideo?.views || '0',
@@ -189,6 +208,7 @@ app.post('/api/videos/:key', upload.single('video'), (req, res) => {
     tags: tags ? tags.split(/[,，\s]+/).filter(Boolean) : [],
     filename: req.file.filename,
     url: `/api/video-files/${req.file.filename}`,
+    thumbnail: findThumbnailForVideo(req.file.filename),
     size: req.file.size,
     duration: '未知',
     views: '0',
@@ -250,12 +270,38 @@ app.delete('/api/videos/:key/:id', (req, res) => {
 app.get('/api/video-files/:filename', (req, res) => {
   const { filename } = req.params;
   const filePath = path.join(videosDir, filename);
-  
+
   if (!fs.existsSync(filePath)) {
     return res.status(404).json({ error: '文件不存在' });
   }
 
   res.sendFile(filePath);
+});
+
+// 缩略图静态文件服务（预生成的视频封面）
+app.get('/api/thumbnails/:filename', (req, res) => {
+  const { filename } = req.params;
+  const filePath = path.join(thumbnailsDir, filename);
+
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ error: '缩略图不存在' });
+  }
+
+  // 长缓存，缩略图不变
+  res.setHeader('Cache-Control', 'public, max-age=86400');
+  res.sendFile(filePath);
+});
+
+// 列出所有可用的缩略图（用于调试或批量生成后确认）
+app.get('/api/thumbnails', (req, res) => {
+  if (!fs.existsSync(thumbnailsDir)) {
+    return res.json([]);
+  }
+  const files = fs.readdirSync(thumbnailsDir).filter(f => {
+    const ext = path.extname(f).toLowerCase();
+    return ['.jpg', '.jpeg', '.png', '.webp'].includes(ext);
+  });
+  res.json(files);
 });
 
 app.get('/api/health', (req, res) => {

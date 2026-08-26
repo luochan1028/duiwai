@@ -1,7 +1,39 @@
 import { create } from 'zustand';
-import type { Message, QuizQuestion, QuizConfig, DebugResult, DebugIssue } from '@/types';
+import type { Message, QuizQuestion, QuizConfig, DebugResult, DebugIssue, UserInfo } from '@/types';
+import { useUserStore } from './useUserStore';
+
+const AUTH_STORAGE_KEY = 'jizu-auth-user';
+
+function loadUserFromStorage(): UserInfo | null {
+  try {
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as UserInfo;
+  } catch {
+    return null;
+  }
+}
+
+function saveUserToStorage(user: UserInfo | null) {
+  try {
+    if (user) {
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
+    } else {
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+    }
+  } catch {
+    // ignore
+  }
+}
 
 interface AppState {
+  user: UserInfo | null;
+  isAuthenticated: boolean;
+  login: (username: string, password: string) => { success: boolean; message?: string; role?: UserInfo['role'] };
+  logout: () => void;
+  /** 从用户库刷新当前登录用户的最新信息（个人中心编辑后调用） */
+  refreshCurrentUser: () => void;
+
   activeTab: string;
   setActiveTab: (tab: string) => void;
 
@@ -65,7 +97,33 @@ const initialMessages: Message[] = [
   },
 ];
 
-export const useStore = create<AppState>((set) => ({
+export const useStore = create<AppState>((set, get) => ({
+  user: loadUserFromStorage(),
+  isAuthenticated: !!loadUserFromStorage(),
+  login: (username, password) => {
+    const result = useUserStore.getState().authenticate(username, password);
+    if (!result.success || !result.user) {
+      return { success: false, message: result.message || '登录失败' };
+    }
+    const user = result.user;
+    saveUserToStorage(user);
+    set({ user, isAuthenticated: true });
+    return { success: true, role: user.role };
+  },
+  logout: () => {
+    saveUserToStorage(null);
+    set({ user: null, isAuthenticated: false });
+  },
+  refreshCurrentUser: () => {
+    const current = get().user;
+    if (!current) return;
+    const latest = useUserStore.getState().refreshUser(current.id);
+    if (latest) {
+      saveUserToStorage(latest);
+      set({ user: latest });
+    }
+  },
+
   activeTab: 'qa',
   setActiveTab: (tab) => set({ activeTab: tab }),
 

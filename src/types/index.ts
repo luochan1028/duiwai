@@ -63,6 +63,20 @@ export interface UserInfo {
   username: string;
   role: 'student' | 'teacher' | 'admin';
   avatar?: string;
+  /** 姓名/昵称 */
+  name?: string;
+  /** 学号（学生） */
+  studentId?: string;
+  /** 班级 */
+  className?: string;
+  /** 邮箱 */
+  email?: string;
+  /** 手机号 */
+  phone?: string;
+  /** 个人简介 */
+  bio?: string;
+  /** 创建时间戳 */
+  createdAt?: number;
 }
 
 export interface PathNode {
